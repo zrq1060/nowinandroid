@@ -35,6 +35,7 @@ class NiaApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         // Initialize Sync; the system responsible for keeping data in the app up to date.
+        // 初始化同步;负责使应用程序中的数据保持最新的系统。
         Sync.initialize(context = this)
     }
 

@@ -91,6 +91,7 @@ internal fun BookmarksRoute(
 
 /**
  * Displays the user's bookmarked articles. Includes support for loading and empty states.
+ * 显示用户的书签文章。包括对加载和空状态的支持。
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 @Composable
@@ -170,6 +171,7 @@ private fun BookmarksGrid(
     val scrollableState = rememberLazyGridState()
     TrackScrollJank(scrollableState = scrollableState, stateName = "bookmarks:grid")
     LazyVerticalGrid(
+        // 自适应，兼容横屏两列情况。
         columns = Adaptive(300.dp),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -179,18 +181,21 @@ private fun BookmarksGrid(
             .fillMaxSize()
             .testTag("bookmarks:feed"),
     ) {
+        // 新闻提要，共享UI。
         newsFeed(
             feedState = feedState,
             onNewsResourcesCheckedChanged = { id, _ -> removeFromBookmarks(id) },
             onNewsResourceViewed = onNewsResourceViewed,
             onTopicClick = onTopicClick,
         )
+        // 间距
         item(span = { GridItemSpan(maxLineSpan) }) {
             Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
     }
 }
 
+// 空-UI
 @Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
     Column(

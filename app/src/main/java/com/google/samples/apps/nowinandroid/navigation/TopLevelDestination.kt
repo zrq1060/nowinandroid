@@ -27,6 +27,8 @@ import com.google.samples.apps.nowinandroid.feature.interests.R as interestsR
  * Type for the top level destinations in the application. Each of these destinations
  * can contain one or more screens (based on the window size). Navigation from one screen to the
  * next within a single destination will be handled directly in composables.
+ * 键入应用程序中的顶级目的地。这些目的地中的每个都可以包含一个或多个屏幕(基于窗口大小)。
+ * 在单个目的地内从一个屏幕导航到下一个屏幕将直接在可组合物中处理。
  */
 enum class TopLevelDestination(
     val selectedIcon: ImageVector,

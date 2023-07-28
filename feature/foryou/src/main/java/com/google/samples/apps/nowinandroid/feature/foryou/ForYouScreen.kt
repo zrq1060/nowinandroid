@@ -124,6 +124,7 @@ internal fun ForYouRoute(
     )
 }
 
+// ForYou屏-UI
 @Composable
 internal fun ForYouScreen(
     isSyncing: Boolean,
@@ -142,6 +143,7 @@ internal fun ForYouScreen(
     val isFeedLoading = feedState is NewsFeedUiState.Loading
 
     // This code should be called when the UI is ready for use and relates to Time To Full Display.
+    // 当UI准备好使用时，应该调用此代码，并与完全显示时间相关。
     ReportDrawnWhen { !isSyncing && !isOnboardingLoading && !isFeedLoading }
 
     val state = rememberLazyGridState()
@@ -157,12 +159,14 @@ internal fun ForYouScreen(
             .testTag("forYou:feed"),
         state = state,
     ) {
+        // 新用户引导流程（描述+水平标签+Done按钮）
         onboarding(
             onboardingUiState = onboardingUiState,
             onTopicCheckedChanged = onTopicCheckedChanged,
             saveFollowedTopics = saveFollowedTopics,
             // Custom LayoutModifier to remove the enforced parent 16.dp contentPadding
             // from the LazyVerticalGrid and enable edge-to-edge scrolling for this section
+            // 自定义LayoutModifier，从LazyVerticalGrid中删除强制的父级16dp内容填充，并启用此部分的边缘到边缘滚动
             interestsItemModifier = Modifier.layout { measurable, constraints ->
                 val placeable = measurable.measure(
                     constraints.copy(
@@ -175,6 +179,7 @@ internal fun ForYouScreen(
             },
         )
 
+        // 新闻提要列表
         newsFeed(
             feedState = feedState,
             onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
@@ -182,6 +187,7 @@ internal fun ForYouScreen(
             onTopicClick = onTopicClick,
         )
 
+        // 间距
         item(span = { GridItemSpan(maxLineSpan) }, contentType = "bottomSpacing") {
             Column {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -192,6 +198,7 @@ internal fun ForYouScreen(
             }
         }
     }
+    // loading中，动画显示转圈的loading轮子。
     AnimatedVisibility(
         visible = isSyncing || isFeedLoading || isOnboardingLoading,
         enter = slideInVertically(
@@ -214,8 +221,11 @@ internal fun ForYouScreen(
             )
         }
     }
+    // 日至打印
     TrackScreenViewEvent(screenName = "ForYou")
+    // 通知权限
     NotificationPermissionEffect()
+    // 深入链接
     DeepLinkEffect(
         deepLinkedUserNewsResource,
         onDeepLinkOpened,
@@ -225,6 +235,7 @@ internal fun ForYouScreen(
 /**
  * An extension on [LazyListScope] defining the onboarding portion of the for you screen.
  * Depending on the [onboardingUiState], this might emit no items.
+ * LazyListScope上的扩展，定义了for you屏幕的入职部分。根据入职[onboardingUiState]，这可能不会发射任何项目。
  *
  */
 private fun LazyGridScope.onboarding(
@@ -234,11 +245,13 @@ private fun LazyGridScope.onboarding(
     interestsItemModifier: Modifier = Modifier,
 ) {
     when (onboardingUiState) {
+        // Loading、LoadFailed、NotShown不处理。
         OnboardingUiState.Loading,
         OnboardingUiState.LoadFailed,
         OnboardingUiState.NotShown,
         -> Unit
 
+        // Shown展示，描述+水平主题选择列表。
         is OnboardingUiState.Shown -> {
             item(span = { GridItemSpan(maxLineSpan) }, contentType = "onboarding") {
                 Column(modifier = interestsItemModifier) {
@@ -258,12 +271,14 @@ private fun LazyGridScope.onboarding(
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    // 水平主题选择列表
                     TopicSelection(
                         onboardingUiState,
                         onTopicCheckedChanged,
                         Modifier.padding(bottom = 8.dp),
                     )
                     // Done button
+                    // Done 按钮
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth(),
@@ -287,6 +302,7 @@ private fun LazyGridScope.onboarding(
     }
 }
 
+// 水平主题选择列表
 @Composable
 private fun TopicSelection(
     onboardingUiState: OnboardingUiState.Shown,
@@ -333,6 +349,7 @@ private fun TopicSelection(
     }
 }
 
+// 水平主题选择-item
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SingleTopicButton(
@@ -368,6 +385,7 @@ private fun SingleTopicButton(
                     .weight(1f),
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            // 切换按钮
             NiaIconToggleButton(
                 checked = isSelected,
                 onCheckedChange = { checked -> onClick(topicId, checked) },
@@ -409,6 +427,7 @@ fun TopicIcon(
 private fun NotificationPermissionEffect() {
     // Permission requests should only be made from an Activity Context, which is not present
     // in previews
+    // 权限请求应该只从活动上下文发出，它不存在于预览中
     if (LocalInspectionMode.current) return
     if (VERSION.SDK_INT < VERSION_CODES.TIRAMISU) return
     val notificationsPermissionState = rememberPermissionState(

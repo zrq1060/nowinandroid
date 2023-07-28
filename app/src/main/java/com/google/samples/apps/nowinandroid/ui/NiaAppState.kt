@@ -114,11 +114,13 @@ class NiaAppState(
     /**
      * Map of top level destinations to be used in the TopBar, BottomBar and NavRail. The key is the
      * route.
+     * 在TopBar, BottomBar和NavRail中使用的顶级目的地地图。key是route。
      */
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
 
     /**
      * The top level destinations that have unread news resources.
+     * 具有未读新闻资源的顶级目的地。
      */
     val topLevelDestinationsWithUnreadResources: StateFlow<Set<TopLevelDestination>> =
         userNewsResourceRepository.observeAllForFollowedTopics()
@@ -137,6 +139,7 @@ class NiaAppState(
      * UI logic for navigating to a top level destination in the app. Top level destinations have
      * only one copy of the destination of the back stack, and save and restore state whenever you
      * navigate to and from it.
+     * 在应用程序中导航到顶级目的地的UI逻辑。顶级目的地只有一个后堆栈目的地的副本，并且在你导航到或从它导航时保存和恢复状态。
      *
      * @param topLevelDestination: The destination the app needs to navigate to.
      */
@@ -146,11 +149,13 @@ class NiaAppState(
                 // Pop up to the start destination of the graph to
                 // avoid building up a large stack of destinations
                 // on the back stack as users select items
+                // 弹出到图的开始目的地，以避免在用户选择项目时在后堆栈上构建大量目的地堆栈
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }
                 // Avoid multiple copies of the same destination when
                 // reselecting the same item
+                // 重新选择同一项时，避免同一目标的多个副本
                 launchSingleTop = true
                 // Restore state when reselecting a previously selected item
                 restoreState = true
@@ -171,6 +176,7 @@ class NiaAppState(
 
 /**
  * Stores information about navigation events to be used with JankStats
+ * 存储关于与JankStats一起使用的导航事件的信息
  */
 @Composable
 private fun NavigationTrackingSideEffect(navController: NavHostController) {

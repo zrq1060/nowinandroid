@@ -83,6 +83,7 @@ class ForYouViewModel @Inject constructor(
             initialValue = false,
         )
 
+    // 新闻提要列表-UiState
     val feedState: StateFlow<NewsFeedUiState> =
         userNewsResourceRepository.observeAllForFollowedTopics()
             .map(NewsFeedUiState::Success)
@@ -92,6 +93,7 @@ class ForYouViewModel @Inject constructor(
                 initialValue = NewsFeedUiState.Loading,
             )
 
+    // 用户引导流程-UiState
     val onboardingUiState: StateFlow<OnboardingUiState> =
         combine(
             shouldShowOnboarding,

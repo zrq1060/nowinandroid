@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Lazily inject [JankStats], which is used to track jank throughout the app.
+     * 惰性注入[JankStats]，用于在整个应用程序中跟踪jank。
      */
     @Inject
     lateinit var lazyStats: dagger.Lazy<JankStats>
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
         var uiState: MainActivityUiState by mutableStateOf(Loading)
 
         // Update the uiState
+        // 更新uiState
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState
@@ -100,6 +102,7 @@ class MainActivity : ComponentActivity() {
         // Keep the splash screen on-screen until the UI state is loaded. This condition is
         // evaluated each time the app needs to be redrawn so it should be fast to avoid blocking
         // the UI.
+        // 在UI状态加载完成之前，保持启动画面在屏幕上。每次需要重新绘制应用程序时，都会评估此条件，因此它应该很快，以避免阻塞UI。
         splashScreen.setKeepOnScreenCondition {
             when (uiState) {
                 Loading -> true
@@ -109,6 +112,7 @@ class MainActivity : ComponentActivity() {
 
         // Turn off the decor fitting system windows, which allows us to handle insets,
         // including IME animations
+        // 关闭装饰配件系统窗口，它允许我们处理插页，包括IME动画
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -116,6 +120,7 @@ class MainActivity : ComponentActivity() {
             val darkTheme = shouldUseDarkTheme(uiState)
 
             // Update the dark content of the system bars to match the theme
+            // 更新系统栏的深色内容以匹配主题
             DisposableEffect(systemUiController, darkTheme) {
                 systemUiController.systemBarsDarkContentEnabled = !darkTheme
                 onDispose {}
@@ -152,6 +157,7 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Logs the app's Baseline Profile Compilation Status using [ProfileVerifier].
+     * 使用[ProfileVerifier]记录应用程序的基线配置文件编译状态。
      */
     private suspend fun logCompilationStatus() {
         /*
@@ -186,6 +192,7 @@ class MainActivity : ComponentActivity() {
 
 /**
  * Returns `true` if the Android theme should be used, as a function of the [uiState].
+ * 如果要使用Android主题，返回' true '，作为[uiState]的一个函数。
  */
 @Composable
 private fun shouldUseAndroidTheme(

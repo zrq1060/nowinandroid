@@ -32,9 +32,11 @@ import com.google.samples.apps.nowinandroid.ui.NiaAppState
 /**
  * Top-level navigation graph. Navigation is organized as explained at
  * https://d.android.com/jetpack/compose/nav-adaptive
+ * 顶层导航图。导航的组织方式见：https://d.android.com/jetpack/compose/nav-adaptive
  *
  * The navigation graph defined in this file defines the different top level routes. Navigation
  * within each route is handled using state and Back Handlers.
+ * 这个文件中定义的导航图定义了不同的顶层路由。每个路由中的导航都是使用state和Back处理程序处理的。
  */
 @Composable
 fun NiaNavHost(
@@ -50,21 +52,27 @@ fun NiaNavHost(
         modifier = modifier,
     ) {
         // TODO: handle topic clicks from each top level destination
+        // forYou屏，route为：forYouNavigationRoute。
         forYouScreen(onTopicClick = {})
+        // 书签屏（即saved屏），route为：bookmarksRoute。
         bookmarksScreen(
             onTopicClick = navController::navigateToTopic,
             onShowSnackbar = onShowSnackbar,
         )
+        // 搜索屏，route为：searchRoute。
         searchScreen(
             onBackClick = navController::popBackStack,
             onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
             onTopicClick = navController::navigateToTopic,
         )
+        // interests导航，route为：interestsGraphRoutePattern。
         interestsGraph(
             onTopicClick = { topicId ->
+                // 导航到Topic主题屏
                 navController.navigateToTopic(topicId)
             },
             nestedGraphs = {
+                // topic屏
                 topicScreen(
                     onBackClick = navController::popBackStack,
                     onTopicClick = {},

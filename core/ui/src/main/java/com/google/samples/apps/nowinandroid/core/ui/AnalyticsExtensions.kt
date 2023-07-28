@@ -52,6 +52,7 @@ fun AnalyticsHelper.logNewsResourceOpened(newsResourceId: String) {
 
 /**
  * A side-effect which records a screen view event.
+ * 记录屏幕视图事件的副作用。
  */
 @Composable
 fun TrackScreenViewEvent(

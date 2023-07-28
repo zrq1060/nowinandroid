@@ -46,6 +46,7 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 /**
  * An extension on [LazyListScope] defining a feed with news resources.
  * Depending on the [feedState], this might emit no items.
+ * LazyListScope的扩展，定义了一个带有新闻资源的提要。根据feedState的不同，这可能不会产生任何项。
  */
 fun LazyGridScope.newsFeed(
     feedState: NewsFeedUiState,
@@ -57,6 +58,7 @@ fun LazyGridScope.newsFeed(
     when (feedState) {
         NewsFeedUiState.Loading -> Unit
         is NewsFeedUiState.Success -> {
+            // 新闻卡片列表。
             items(
                 items = feedState.feed,
                 key = { it.id },
@@ -69,6 +71,7 @@ fun LazyGridScope.newsFeed(
                 val analyticsHelper = LocalAnalyticsHelper.current
                 val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
 
+                // 新闻卡片item
                 NewsResourceCardExpanded(
                     userNewsResource = userNewsResource,
                     isBookmarked = userNewsResource.isSaved,

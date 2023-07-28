@@ -24,9 +24,12 @@ import com.google.samples.apps.nowinandroid.sync.workers.SyncWorker
 object Sync {
     // This method is initializes sync, the process that keeps the app's data current.
     // It is called from the app module's Application.onCreate() and should be only done once.
+    // 这个方法初始化sync，这个进程保持应用程序的数据是最新的。
+    // 它从应用模块的Application.onCreate()调用，应该只执行一次。
     fun initialize(context: Context) {
         WorkManager.getInstance(context).apply {
             // Run sync on app startup and ensure only one sync worker runs at any time
+            // 在应用启动时运行sync，并确保任何时候只有一个同步工作线程在运行
             enqueueUniqueWork(
                 SyncWorkName,
                 ExistingWorkPolicy.KEEP,
@@ -37,4 +40,5 @@ object Sync {
 }
 
 // This name should not be changed otherwise the app may have concurrent sync requests running
+// 此名称不应更改，否则应用程序可能有并发同步请求正在运行
 internal const val SyncWorkName = "SyncWorkName"

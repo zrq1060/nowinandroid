@@ -95,6 +95,7 @@ fun NiaApp(
         userNewsResourceRepository = userNewsResourceRepository,
     ),
 ) {
+    // 是否展示渐变背景
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.FOR_YOU
     var showSettingsDialog by rememberSaveable {
@@ -103,6 +104,7 @@ fun NiaApp(
 
     NiaBackground {
         NiaGradientBackground(
+            // 背景颜色
             gradientColors = if (shouldShowGradientBackground) {
                 LocalGradientColors.current
             } else {
@@ -114,11 +116,14 @@ fun NiaApp(
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
             // If user is not connected to the internet show a snack bar to inform them.
+            // 如果用户没有连接到互联网，显示一个Snackbar通知他们。
             val notConnectedMessage = stringResource(R.string.not_connected)
+            // 启动效果，无网，展示提示。
             LaunchedEffect(isOffline) {
                 if (isOffline) {
                     snackbarHostState.showSnackbar(
                         message = notConnectedMessage,
+                        // 无限期展示
                         duration = Indefinite,
                     )
                 }
@@ -130,6 +135,7 @@ fun NiaApp(
                 )
             }
 
+            // 未读的目的地
             val unreadDestinations by appState.topLevelDestinationsWithUnreadResources.collectAsStateWithLifecycle()
 
             Scaffold(
@@ -142,9 +148,12 @@ fun NiaApp(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 bottomBar = {
                     if (appState.shouldShowBottomBar) {
+                        // 展示底部bar（底部bar和侧边bar只能二选一）。
                         NiaBottomBar(
+                            // 顶级目的地集合，TopLevelDestination枚举类集合。
                             destinations = appState.topLevelDestinations,
                             destinationsWithUnreadResources = unreadDestinations,
+                            // 跳到目标
                             onNavigateToDestination = appState::navigateToTopLevelDestination,
                             currentDestination = appState.currentDestination,
                             modifier = Modifier.testTag("NiaBottomBar"),
@@ -152,6 +161,7 @@ fun NiaApp(
                     }
                 },
             ) { padding ->
+                // 行，为了兼容横屏UI。
                 Row(
                     Modifier
                         .fillMaxSize()
@@ -164,6 +174,7 @@ fun NiaApp(
                         ),
                 ) {
                     if (appState.shouldShowNavRail) {
+                        // 展示侧边bar（底部bar和侧边bar只能二选一）。
                         NiaNavRail(
                             destinations = appState.topLevelDestinations,
                             destinationsWithUnreadResources = unreadDestinations,
@@ -175,10 +186,13 @@ fun NiaApp(
                         )
                     }
 
+                    // 栏目内容（列），通用（包括横屏和竖屏）。
                     Column(Modifier.fillMaxSize()) {
                         // Show the top app bar on top level destinations.
+                        // 在顶级目的地显示顶级应用程序栏。
                         val destination = appState.currentTopLevelDestination
                         if (destination != null) {
+                            // 顶部标题栏（搜索、标题、设置）
                             NiaTopAppBar(
                                 titleRes = destination.titleTextId,
                                 navigationIcon = NiaIcons.Search,
@@ -197,6 +211,7 @@ fun NiaApp(
                             )
                         }
 
+                        // 顶层导航图。
                         NiaNavHost(appState = appState, onShowSnackbar = { message, action ->
                             snackbarHostState.showSnackbar(
                                 message = message,
@@ -214,6 +229,7 @@ fun NiaApp(
     }
 }
 
+// 侧边bar
 @Composable
 private fun NiaNavRail(
     destinations: List<TopLevelDestination>,
@@ -248,6 +264,7 @@ private fun NiaNavRail(
     }
 }
 
+// 底部bar
 @Composable
 private fun NiaBottomBar(
     destinations: List<TopLevelDestination>,
@@ -295,6 +312,7 @@ private fun Modifier.notificationDot(): Modifier =
                 // This is based on the dimensions of the NavigationBar's "indicator pill";
                 // however, its parameters are private, so we must depend on them implicitly
                 // (NavigationBarTokens.ActiveIndicatorWidth = 64.dp)
+                // 键入应用程序中的顶级目的地。这些目的地中的每个都可以包含一个或多个屏幕(基于窗口大小)。在单个目的地内从一个屏幕导航到下一个屏幕将直接在可组合物中处理。
                 center = center + Offset(
                     64.dp.toPx() * .45f,
                     32.dp.toPx() * -.45f - 6.dp.toPx(),

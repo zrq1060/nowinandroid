@@ -32,8 +32,10 @@ object JankStatsModule {
     fun providesOnFrameListener(): JankStats.OnFrameListener {
         return JankStats.OnFrameListener { frameData ->
             // Make sure to only log janky frames.
+            // 确保只记录不稳定的帧。
             if (frameData.isJank) {
                 // We're currently logging this but would better report it to a backend.
+                // 我们目前正在记录这一点，但最好将其报告到后端。
                 Log.v("NiA Jank", frameData.toString())
             }
         }

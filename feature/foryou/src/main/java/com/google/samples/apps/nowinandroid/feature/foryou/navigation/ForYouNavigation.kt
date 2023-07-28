@@ -30,10 +30,12 @@ const val forYouNavigationRoute = "for_you_route/{$LINKED_NEWS_RESOURCE_ID}"
 private const val DEEP_LINK_URI_PATTERN =
     "https://www.nowinandroid.apps.samples.google.com/foryou/{$LINKED_NEWS_RESOURCE_ID}"
 
+// 导航到ForYou屏
 fun NavController.navigateToForYou(navOptions: NavOptions? = null) {
     this.navigate(forYouNavigationRoute, navOptions)
 }
 
+// ForYou屏的导航配置（参数+UI）
 fun NavGraphBuilder.forYouScreen(onTopicClick: (String) -> Unit) {
     composable(
         route = forYouNavigationRoute,
@@ -44,6 +46,7 @@ fun NavGraphBuilder.forYouScreen(onTopicClick: (String) -> Unit) {
             navArgument(LINKED_NEWS_RESOURCE_ID) { type = NavType.StringType },
         ),
     ) {
+        // ForYou屏-UI
         ForYouRoute(onTopicClick)
     }
 }

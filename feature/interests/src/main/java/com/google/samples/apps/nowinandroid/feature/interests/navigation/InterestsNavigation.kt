@@ -26,10 +26,12 @@ import com.google.samples.apps.nowinandroid.feature.interests.InterestsRoute
 private const val interestsGraphRoutePattern = "interests_graph"
 const val interestsRoute = "interests_route"
 
+// 导航到Interests（兴趣）屏
 fun NavController.navigateToInterestsGraph(navOptions: NavOptions? = null) {
     this.navigate(interestsGraphRoutePattern, navOptions)
 }
 
+// Interests（兴趣）屏的导航配置（参数+UI）
 fun NavGraphBuilder.interestsGraph(
     onTopicClick: (String) -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -39,8 +41,10 @@ fun NavGraphBuilder.interestsGraph(
         startDestination = interestsRoute,
     ) {
         composable(route = interestsRoute) {
+            // Interests屏
             InterestsRoute(onTopicClick)
         }
+        // topic屏
         nestedGraphs()
     }
 }
