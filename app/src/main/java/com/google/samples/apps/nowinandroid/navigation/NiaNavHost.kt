@@ -51,10 +51,7 @@ fun NiaNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        // TODO: handle topic clicks from each top level destination
-        // forYou屏，route为：forYouNavigationRoute。
-        forYouScreen(onTopicClick = {})
-        // 书签屏（即saved屏），route为：bookmarksRoute。
+        forYouScreen(onTopicClick = navController::navigateToTopic)
         bookmarksScreen(
             onTopicClick = navController::navigateToTopic,
             onShowSnackbar = onShowSnackbar,
@@ -67,15 +64,12 @@ fun NiaNavHost(
         )
         // interests导航，route为：interestsGraphRoutePattern。
         interestsGraph(
-            onTopicClick = { topicId ->
-                // 导航到Topic主题屏
-                navController.navigateToTopic(topicId)
-            },
+            onTopicClick = navController::navigateToTopic,
             nestedGraphs = {
                 // topic屏
                 topicScreen(
                     onBackClick = navController::popBackStack,
-                    onTopicClick = {},
+                    onTopicClick = navController::navigateToTopic,
                 )
             },
         )

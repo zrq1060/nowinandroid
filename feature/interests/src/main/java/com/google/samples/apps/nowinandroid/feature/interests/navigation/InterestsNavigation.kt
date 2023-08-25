@@ -23,12 +23,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.google.samples.apps.nowinandroid.feature.interests.InterestsRoute
 
-private const val interestsGraphRoutePattern = "interests_graph"
+private const val INTERESTS_GRAPH_ROUTE_PATTERN = "interests_graph"
 const val interestsRoute = "interests_route"
 
 // 导航到Interests（兴趣）屏
 fun NavController.navigateToInterestsGraph(navOptions: NavOptions? = null) {
-    this.navigate(interestsGraphRoutePattern, navOptions)
+    this.navigate(INTERESTS_GRAPH_ROUTE_PATTERN, navOptions)
 }
 
 // Interests（兴趣）屏的导航配置（参数+UI）
@@ -37,7 +37,7 @@ fun NavGraphBuilder.interestsGraph(
     nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
     navigation(
-        route = interestsGraphRoutePattern,
+        route = INTERESTS_GRAPH_ROUTE_PATTERN,
         startDestination = interestsRoute,
     ) {
         composable(route = interestsRoute) {

@@ -106,7 +106,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.testManifest)
     debugImplementation(project(":ui-test-hilt-manifest"))
 
-    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
@@ -121,13 +120,16 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.coil.kt)
-}
 
-// androidx.test is forcing JUnit, 4.12. This forces it to use 4.13
-configurations.configureEach {
-    resolutionStrategy {
-        force(libs.junit4)
-        // Temporary workaround for https://issuetracker.google.com/174733673
-        force("org.objenesis:objenesis:2.6")
-    }
+    // Core functions
+    testImplementation(project(":core:testing"))
+    testImplementation(project(":core:datastore-test"))
+    testImplementation(project(":core:data-test"))
+    testImplementation(project(":core:network"))
+    testImplementation(libs.androidx.navigation.testing)
+    testImplementation(libs.accompanist.testharness)
+    testImplementation(kotlin("test"))
+    implementation(libs.work.testing)
+    kaptTest(libs.hilt.compiler)
+
 }
