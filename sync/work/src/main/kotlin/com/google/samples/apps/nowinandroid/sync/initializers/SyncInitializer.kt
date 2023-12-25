@@ -31,7 +31,7 @@ object Sync {
             // Run sync on app startup and ensure only one sync worker runs at any time
             // 在应用启动时运行sync，并确保任何时候只有一个同步工作线程在运行
             enqueueUniqueWork(
-                SyncWorkName,
+                SYNC_WORK_NAME,
                 ExistingWorkPolicy.KEEP,
                 SyncWorker.startUpSyncWork(),
             )
@@ -41,4 +41,4 @@ object Sync {
 
 // This name should not be changed otherwise the app may have concurrent sync requests running
 // 此名称不应更改，否则应用程序可能有并发同步请求正在运行
-internal const val SyncWorkName = "SyncWorkName"
+internal const val SYNC_WORK_NAME = "SyncWorkName"

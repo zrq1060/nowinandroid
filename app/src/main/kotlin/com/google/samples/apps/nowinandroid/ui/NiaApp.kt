@@ -98,9 +98,7 @@ fun NiaApp(
     // 是否展示渐变背景
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.FOR_YOU
-    var showSettingsDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
     NiaBackground {
         NiaGradientBackground(
@@ -197,11 +195,11 @@ fun NiaApp(
                                 titleRes = destination.titleTextId,
                                 navigationIcon = NiaIcons.Search,
                                 navigationIconContentDescription = stringResource(
-                                    id = settingsR.string.top_app_bar_navigation_icon_description,
+                                    id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                                 ),
                                 actionIcon = NiaIcons.Settings,
                                 actionIconContentDescription = stringResource(
-                                    id = settingsR.string.top_app_bar_action_icon_description,
+                                    id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
                                 ),
                                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                                     containerColor = Color.Transparent,
