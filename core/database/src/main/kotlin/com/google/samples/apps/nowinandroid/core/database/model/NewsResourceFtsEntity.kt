@@ -22,9 +22,11 @@ import androidx.room.Fts4
 
 /**
  * Fts entity for the news resources. See https://developer.android.com/reference/androidx/room/Fts4.
+ * 新闻资源的Fts实体. See https://developer.android.com/reference/androidx/room/Fts4.
  */
 @Entity(tableName = "newsResourcesFts")
 @Fts4
+// 新闻资源-Fts表（newsResourcesFts）
 data class NewsResourceFtsEntity(
 
     @ColumnInfo(name = "newsResourceId")

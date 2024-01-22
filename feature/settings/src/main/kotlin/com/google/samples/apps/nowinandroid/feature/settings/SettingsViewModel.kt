@@ -33,11 +33,14 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
+// 设置弹框-ViewModel
 class SettingsViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
 ) : ViewModel() {
+    // 设置-UiState
     val settingsUiState: StateFlow<SettingsUiState> =
         userDataRepository.userData
+            // 转SettingsUiState.Success
             .map { userData ->
                 Success(
                     settings = UserEditableSettings(
@@ -53,18 +56,21 @@ class SettingsViewModel @Inject constructor(
                 initialValue = Loading,
             )
 
+    // 更新样式
     fun updateThemeBrand(themeBrand: ThemeBrand) {
         viewModelScope.launch {
             userDataRepository.setThemeBrand(themeBrand)
         }
     }
 
+    // 更新暗模式配置
     fun updateDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
         viewModelScope.launch {
             userDataRepository.setDarkThemeConfig(darkThemeConfig)
         }
     }
 
+    // 更新是否用动态颜色
     fun updateDynamicColorPreference(useDynamicColor: Boolean) {
         viewModelScope.launch {
             userDataRepository.setDynamicColorPreference(useDynamicColor)
@@ -74,6 +80,7 @@ class SettingsViewModel @Inject constructor(
 
 /**
  * Represents the settings which the user can edit within the app.
+ * 表示用户可以在应用程序中编辑的设置。
  */
 data class UserEditableSettings(
     val brand: ThemeBrand,
@@ -81,6 +88,7 @@ data class UserEditableSettings(
     val darkThemeConfig: DarkThemeConfig,
 )
 
+// 设置UiState
 sealed interface SettingsUiState {
     data object Loading : SettingsUiState
     data class Success(val settings: UserEditableSettings) : SettingsUiState

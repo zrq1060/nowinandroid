@@ -47,6 +47,7 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
  * LazyListScope的扩展，定义了一个带有新闻资源的提要。根据feedState的不同，这可能不会产生任何项。
  */
 @OptIn(ExperimentalFoundationApi::class)
+// 新闻摘要-item列表，NewsFeedUiState.Success展示新闻资源列表，处理了点击item打开网页；NewsFeedUiState.Loading什么都不展示。用于交错网格使用。
 fun LazyStaggeredGridScope.newsFeed(
     feedState: NewsFeedUiState,
     onNewsResourcesCheckedChanged: (String, Boolean) -> Unit,
@@ -57,39 +58,56 @@ fun LazyStaggeredGridScope.newsFeed(
     when (feedState) {
         NewsFeedUiState.Loading -> Unit
         is NewsFeedUiState.Success -> {
-            // 新闻卡片列表。
+            // 新闻摘要列表
             items(
                 items = feedState.feed,
                 key = { it.id },
                 contentType = { "newsFeedItem" },
             ) { userNewsResource ->
                 val context = LocalContext.current
+                // 分析帮助类
                 val analyticsHelper = LocalAnalyticsHelper.current
+                // 背景颜色
                 val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
 
-                // 新闻卡片item
+                // 新闻item
                 NewsResourceCardExpanded(
                     userNewsResource = userNewsResource,
                     isBookmarked = userNewsResource.isSaved,
+                    // 新闻Item点击
                     onClick = {
+                        // 通知展开卡片点击
                         onExpandedCardClick()
+                        // 分析帮助类，传递id信息。
                         analyticsHelper.logNewsResourceOpened(
                             newsResourceId = userNewsResource.id,
                         )
+                        // 启动打开网页
                         launchCustomChromeTab(context, Uri.parse(userNewsResource.url), backgroundColor)
 
+                        // 通知新闻资源可见
                         onNewsResourceViewed(userNewsResource.id)
                     },
+                    // 是否已浏览
                     hasBeenViewed = userNewsResource.hasBeenViewed,
                     onToggleBookmark = {
+                        // 切换书签
                         onNewsResourcesCheckedChanged(
                             userNewsResource.id,
                             !userNewsResource.isSaved,
                         )
                     },
+                    // 主题（item最下面水平布局）点击
                     onTopicClick = onTopicClick,
+                    // 修饰：内边距水平为8，宽占满。
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
+                        // animateItemPlacement：
+                        // -这个修饰符使项目在网格中的位置具有动画效果。
+                        // -当您向后滚动时，交错网格可以移动已经可见的项目，以纠正先前项目大小估计中的累积错误。这个修饰符可以使这些动作具有动画效果。
+                        // -除此之外，当你通过LazyStaggeredGridScope.item / LazyStaggeredGridScope.items提供一个键时，这个修饰符将启用项重新排序动画。
+                        // -参数:
+                        // --animationSpec -一个有限的动画，将用于动画项目的放置。
                         .animateItemPlacement(),
                 )
             }
@@ -97,31 +115,39 @@ fun LazyStaggeredGridScope.newsFeed(
     }
 }
 
+// 启动打开网页
 fun launchCustomChromeTab(context: Context, uri: Uri, @ColorInt toolbarColor: Int) {
+    // 设置TabBar颜色
     val customTabBarColor = CustomTabColorSchemeParams.Builder()
         .setToolbarColor(toolbarColor).build()
+    // 设置颜色
     val customTabsIntent = CustomTabsIntent.Builder()
         .setDefaultColorSchemeParams(customTabBarColor)
         .build()
-
+    // 打开网页
     customTabsIntent.launchUrl(context, uri)
 }
 
 /**
  * A sealed hierarchy describing the state of the feed of news resources.
+ * 描述新闻资源提要状态的密封层次结构。
  */
+// 新闻提要-UiState
 sealed interface NewsFeedUiState {
     /**
      * The feed is still loading.
+     * feed仍在加载中。
      */
     data object Loading : NewsFeedUiState
 
     /**
      * The feed is loaded with the given list of news resources.
+     * 提要加载了给定的新闻资源列表。
      */
     data class Success(
         /**
          * The list of news resources contained in this feed.
+         * 此提要中包含的新闻资源列表。
          */
         val feed: List<UserNewsResource>,
     ) : NewsFeedUiState
@@ -129,6 +155,7 @@ sealed interface NewsFeedUiState {
 
 @Preview
 @Composable
+// 加载中，不显示任何布局。
 private fun NewsFeedLoadingPreview() {
     NiaTheme {
         LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Adaptive(300.dp)) {
@@ -142,11 +169,14 @@ private fun NewsFeedLoadingPreview() {
     }
 }
 
+// 显示内容列表，手机设备
 @Preview
+// 显示内容列表，平板设备
 @Preview(device = Devices.TABLET)
 @Composable
 private fun NewsFeedContentPreview(
     @PreviewParameter(UserNewsResourcePreviewParameterProvider::class)
+    // 参数，由UserNewsResourcePreviewParameterProvider提供。
     userNewsResources: List<UserNewsResource>,
 ) {
     NiaTheme {

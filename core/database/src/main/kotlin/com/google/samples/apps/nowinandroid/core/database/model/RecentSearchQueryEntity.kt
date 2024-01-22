@@ -23,10 +23,12 @@ import kotlinx.datetime.Instant
 
 /**
  * Defines an database entity that stored recent search queries.
+ * 定义存储最近搜索查询的数据库实体。
  */
 @Entity(
     tableName = "recentSearchQueries",
 )
+// 最近搜索查询表（recentSearchQueries）
 data class RecentSearchQueryEntity(
     @PrimaryKey
     val query: String,

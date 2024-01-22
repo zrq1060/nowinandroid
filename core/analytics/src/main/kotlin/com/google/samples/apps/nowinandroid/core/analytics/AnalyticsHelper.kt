@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.core.analytics
 /**
  * Interface for logging analytics events. See `FirebaseAnalyticsHelper` and
  * `StubAnalyticsHelper` for implementations.
+ * 用于记录分析事件的接口。参见FirebaseAnalyticsHelper和StubAnalyticsHelper的实现。
  */
 interface AnalyticsHelper {
     fun logEvent(event: AnalyticsEvent)

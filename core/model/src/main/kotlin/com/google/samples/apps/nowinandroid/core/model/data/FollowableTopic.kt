@@ -18,8 +18,10 @@ package com.google.samples.apps.nowinandroid.core.model.data
 
 /**
  * A [topic] with the additional information for whether or not it is followed.
+ * 带有是否被遵循的附加信息的[topic]。
  */
 // TODO consider changing to UserTopic and flattening
+// 带有是否关注的Topic
 data class FollowableTopic(
     val topic: Topic,
     val isFollowed: Boolean,

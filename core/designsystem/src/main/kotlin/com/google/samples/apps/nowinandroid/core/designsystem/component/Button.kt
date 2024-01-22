@@ -38,16 +38,23 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 
 /**
  * Now in Android filled button with generic content slot. Wraps Material 3 [Button].
+ * Now in Android 填充按钮与通用内容槽。Wraps Material 3 [Button]。
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param contentPadding The spacing values to apply internally between the container and the
  * content.
+ *                  在容器和内容之间应用的内部间距值。
  * @param content The button content.
+ *                  按钮内容。
  */
 @Composable
+// 普通按钮（具有填充、无边框），无图标。
 fun NiaButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -69,15 +76,22 @@ fun NiaButton(
 
 /**
  * Now in Android filled button with text and icon content slots.
+ * Now in Android填充按钮与文本和图标内容槽。
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param text The button text label content.
+ *                  按钮文本标签内容。
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
+ *                  按钮引导图标内容。如果没有前导图标，此处传递null。
  */
 @Composable
+// 普通按钮（具有填充、无边框），有前图标。
 fun NiaButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -95,6 +109,7 @@ fun NiaButton(
             ButtonDefaults.ContentPadding
         },
     ) {
+        // 图标+文本按钮
         NiaButtonContent(
             text = text,
             leadingIcon = leadingIcon,
@@ -104,16 +119,23 @@ fun NiaButton(
 
 /**
  * Now in Android outlined button with generic content slot. Wraps Material 3 [OutlinedButton].
+ * Now in Android 概述按钮与通用内容槽。Wraps Material 3 [OutlinedButton]。
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param contentPadding The spacing values to apply internally between the container and the
  * content.
+ *                  在容器和内容之间应用的内部间距值。
  * @param content The button content.
+ *                  按钮内容。
  */
 @Composable
+// Outlined按钮（无填充、有边框），无图标。
 fun NiaOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -145,15 +167,22 @@ fun NiaOutlinedButton(
 
 /**
  * Now in Android outlined button with text and icon content slots.
+ * Now in Android概述按钮与文本和图标内容槽。
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param text The button text label content.
+ *                  按钮文本标签内容。
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
+ *                  按钮引导图标内容。如果没有前导图标，此处传递null。
  */
 @Composable
+// Outlined按钮（无填充、有边框），有前图标。
 fun NiaOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -180,14 +209,20 @@ fun NiaOutlinedButton(
 
 /**
  * Now in Android text button with generic content slot. Wraps Material 3 [TextButton].
+ * Now in Android 文本按钮与通用内容槽。Wraps Material 3 [TextButton].
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param content The button content.
+ *                  按钮内容。
  */
 @Composable
+// 文本按钮（无填充、无边框），无图标。
 fun NiaTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -207,15 +242,22 @@ fun NiaTextButton(
 
 /**
  * Now in Android text button with text and icon content slots.
+ * Now in Android 文本按钮与文本和图标内容槽。
  *
  * @param onClick Will be called when the user clicks the button.
+ *                  当用户单击按钮时调用。
  * @param modifier Modifier to be applied to the button.
+ *                  应用于按钮的修饰符。
  * @param enabled Controls the enabled state of the button. When `false`, this button will not be
  * clickable and will appear disabled to accessibility services.
+ *                  控制按钮的启用状态。当为false时，此按钮将不可点击，并且对可访问性服务显示为禁用。
  * @param text The button text label content.
+ *                  按钮文本标签内容。
  * @param leadingIcon The button leading icon content. Pass `null` here for no leading icon.
+ *                  按钮引导图标内容。如果没有前导图标，此处传递null。
  */
 @Composable
+// 文本按钮（无填充、无边框），有前图标。
 fun NiaTextButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -237,20 +279,26 @@ fun NiaTextButton(
 
 /**
  * Internal Now in Android button content layout for arranging the text label and leading icon.
+ * 内部Now in Android按钮内容布局安排文本标签和领先的图标。
  *
  * @param text The button text label content.
+ *                  按钮文本标签内容。
  * @param leadingIcon The button leading icon content. Default is `null` for no leading icon.Ï
+ *                  按钮引导图标内容。默认为null，没有先导icon.Ï
  */
 @Composable
+// 前图标+文本按钮，内部使用。
 private fun NiaButtonContent(
     text: @Composable () -> Unit,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
+    // 前图标
     if (leadingIcon != null) {
         Box(Modifier.sizeIn(maxHeight = ButtonDefaults.IconSize)) {
             leadingIcon()
         }
     }
+    // 文本
     Box(
         Modifier
             .padding(
@@ -267,6 +315,7 @@ private fun NiaButtonContent(
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），普通按钮-无前图标-可用状态下的效果。
 fun NiaButtonPreview() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
@@ -277,6 +326,7 @@ fun NiaButtonPreview() {
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），Outlined按钮-无前图标-可用状态下的效果。
 fun NiaOutlinedButtonPreview() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
@@ -287,6 +337,7 @@ fun NiaOutlinedButtonPreview() {
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），普通按钮-无前图标-可用状态下的效果。
 fun NiaButtonPreview2() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
@@ -297,6 +348,7 @@ fun NiaButtonPreview2() {
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），普通按钮-有前图标-可用状态下的效果。
 fun NiaButtonLeadingIconPreview() {
     NiaTheme {
         NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
@@ -311,13 +363,16 @@ fun NiaButtonLeadingIconPreview() {
 
 /**
  * Now in Android button default values.
+ * Now in Android 按钮默认值。
  */
 object NiaButtonDefaults {
     // TODO: File bug
     // OutlinedButton border color doesn't respect disabled state by default
+    // OutlinedButton边框颜色默认情况下不尊重禁用状态
     const val DISABLED_OUTLINED_BUTTON_BORDER_ALPHA = 0.12f
 
     // TODO: File bug
     // OutlinedButton default border width isn't exposed via ButtonDefaults
+    // OutlinedButton默认边框宽度不通过ButtonDefaults暴露
     val OutlinedButtonBorderWidth = 1.dp
 }

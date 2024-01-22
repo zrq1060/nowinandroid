@@ -28,6 +28,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，提供各种Dao
 internal object DaosModule {
     @Provides
     fun providesTopicsDao(

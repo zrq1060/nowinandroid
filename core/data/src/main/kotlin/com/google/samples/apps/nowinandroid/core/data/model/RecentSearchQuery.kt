@@ -20,11 +20,15 @@ import com.google.samples.apps.nowinandroid.core.database.model.RecentSearchQuer
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
+// 最近搜索查询的外部Model类，供仓库使用。
 data class RecentSearchQuery(
+    // 查询内容
     val query: String,
+    // 查询时间
     val queriedDate: Instant = Clock.System.now(),
 )
 
+// RecentSearchQuery（最近搜索查询），数据库类->外部类。
 fun RecentSearchQueryEntity.asExternalModel() = RecentSearchQuery(
     query = query,
     queriedDate = queriedDate,

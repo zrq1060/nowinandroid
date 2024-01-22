@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.core.analytics
 
 /**
  * Represents an analytics event.
+ * 表示一个分析事件。
  *
  * @param type - the event type. Wherever possible use one of the standard
  * event `Types`, however, if there is no suitable event type already defined, a custom event can be

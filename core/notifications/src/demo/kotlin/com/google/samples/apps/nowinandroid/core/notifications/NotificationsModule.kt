@@ -23,6 +23,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，demo构建下，通知不处理。
 internal abstract class NotificationsModule {
     @Binds
     abstract fun bindNotifier(

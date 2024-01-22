@@ -19,6 +19,8 @@ package com.google.samples.apps.nowinandroid.sync.workers
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsEvent
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsHelper
 
+// 分析辅助类相关，记录传递AnalyticsEvent。
+
 internal fun AnalyticsHelper.logSyncStarted() =
     logEvent(
         AnalyticsEvent(type = "network_sync_started"),

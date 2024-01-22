@@ -321,8 +321,10 @@ fun NiaCatalog() {
                 item {
                     var selectedTabIndex by rememberSaveable { mutableIntStateOf(0) }
                     val titles = listOf("Topics", "People")
+                    // TabRow
                     NiaTabRow(selectedTabIndex = selectedTabIndex) {
                         titles.forEachIndexed { index, title ->
+                            // Tab
                             NiaTab(
                                 selected = selectedTabIndex == index,
                                 onClick = { selectedTabIndex = index },

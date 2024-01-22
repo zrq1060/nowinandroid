@@ -29,6 +29,7 @@ import javax.inject.Provider
  * [Application] class for NiA
  */
 @HiltAndroidApp
+// 应用的Application，初始化了ImageLoader、SyncWorker、ProfileVerifierLogger。
 class NiaApplication : Application(), ImageLoaderFactory {
     @Inject
     lateinit var imageLoader: Provider<ImageLoader>
@@ -41,6 +42,7 @@ class NiaApplication : Application(), ImageLoaderFactory {
         // Initialize Sync; the system responsible for keeping data in the app up to date.
         // 初始化同步;负责使应用程序中的数据保持最新的系统。
         Sync.initialize(context = this)
+        // 配置文件验证程序记录器（profileInstaller相关）
         profileVerifierLogger()
     }
 

@@ -27,6 +27,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，demo构建下，给SyncManager提供WorkManagerSyncManager，即使用WorkManager同步。给SyncSubscriber提供StubSyncSubscriber，即使用打印日至进行订阅。
 abstract class SyncModule {
     @Binds
     internal abstract fun bindsSyncStatusMonitor(

@@ -37,14 +37,19 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，提供DataStore
 object DataStoreModule {
 
     @Provides
     @Singleton
     internal fun providesUserPreferencesDataStore(
+        // ApplicationContext
         @ApplicationContext context: Context,
+        // Dispatchers.IO线程
         @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
+        // 全局Scope，异常不会影响其它。
         @ApplicationScope scope: CoroutineScope,
+        // UserPreferences的序列化器
         userPreferencesSerializer: UserPreferencesSerializer,
     ): DataStore<UserPreferences> =
         DataStoreFactory.create(
@@ -54,6 +59,7 @@ object DataStoreModule {
                 IntToStringIdsMigration,
             ),
         ) {
+            // 生产文件
             context.dataStoreFile("user_preferences.pb")
         }
 }

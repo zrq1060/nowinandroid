@@ -18,6 +18,7 @@
 
     <!-- Allows us to override night specific attributes in the
          values-night folder. -->
+    <!-- 允许我们在values-night文件夹中重写特定于夜晚的属性 -->
     <style name="NightAdjusted.Theme.Nia" parent="android:Theme.Material.Light.NoActionBar" />
 
     <!-- The final theme we use -->

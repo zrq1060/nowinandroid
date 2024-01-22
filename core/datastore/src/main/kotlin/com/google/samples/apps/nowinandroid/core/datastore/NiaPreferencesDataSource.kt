@@ -26,11 +26,14 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
+// DataStore的封装
 class NiaPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
+    // userPreferences内容变化，则userData变化。
     val userData = userPreferences.data
         .map {
+            // 转UserData
             UserData(
                 bookmarkedNewsResources = it.bookmarkedNewsResourceIdsMap.keys,
                 viewedNewsResources = it.viewedNewsResourceIdsMap.keys,
@@ -59,12 +62,14 @@ class NiaPreferencesDataSource @Inject constructor(
             )
         }
 
+    // 设置关注主题ids
     suspend fun setFollowedTopicIds(topicIds: Set<String>) {
         try {
             userPreferences.updateData {
                 it.copy {
                     followedTopicIds.clear()
                     followedTopicIds.putAll(topicIds.associateWith { true })
+                    // 更新是否隐藏新用户引导流程
                     updateShouldHideOnboardingIfNecessary()
                 }
             }
@@ -73,6 +78,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置某个主题关注
     suspend fun setTopicIdFollowed(topicId: String, followed: Boolean) {
         try {
             userPreferences.updateData {
@@ -82,6 +88,7 @@ class NiaPreferencesDataSource @Inject constructor(
                     } else {
                         followedTopicIds.remove(topicId)
                     }
+                    // 更新是否隐藏新用户引导流程
                     updateShouldHideOnboardingIfNecessary()
                 }
             }
@@ -90,6 +97,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置样式品牌
     suspend fun setThemeBrand(themeBrand: ThemeBrand) {
         userPreferences.updateData {
             it.copy {
@@ -101,12 +109,14 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置动态颜色
     suspend fun setDynamicColorPreference(useDynamicColor: Boolean) {
         userPreferences.updateData {
             it.copy { this.useDynamicColor = useDynamicColor }
         }
     }
 
+    // 设置暗模式配置
     suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
         userPreferences.updateData {
             it.copy {
@@ -120,6 +130,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置新闻资源书签
     suspend fun setNewsResourceBookmarked(newsResourceId: String, bookmarked: Boolean) {
         try {
             userPreferences.updateData {
@@ -136,10 +147,12 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置新闻资源是否浏览（单个）
     suspend fun setNewsResourceViewed(newsResourceId: String, viewed: Boolean) {
         setNewsResourcesViewed(listOf(newsResourceId), viewed)
     }
 
+    // 设置新闻资源是否浏览（多个）
     suspend fun setNewsResourcesViewed(newsResourceIds: List<String>, viewed: Boolean) {
         userPreferences.updateData { prefs ->
             prefs.copy {
@@ -154,6 +167,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 获取改变的列表版本
     suspend fun getChangeListVersions() = userPreferences.data
         .map {
             ChangeListVersions(
@@ -165,10 +179,12 @@ class NiaPreferencesDataSource @Inject constructor(
 
     /**
      * Update the [ChangeListVersions] using [update].
+     * 使用[update]更新[ChangeListVersions]。
      */
     suspend fun updateChangeListVersion(update: ChangeListVersions.() -> ChangeListVersions) {
         try {
             userPreferences.updateData { currentPreferences ->
+                // update供外部调用修改
                 val updatedChangeListVersions = update(
                     ChangeListVersions(
                         topicVersion = currentPreferences.topicChangeListVersion,
@@ -176,6 +192,7 @@ class NiaPreferencesDataSource @Inject constructor(
                     ),
                 )
 
+                // 修改userPreferences的值
                 currentPreferences.copy {
                     topicChangeListVersion = updatedChangeListVersions.topicVersion
                     newsResourceChangeListVersion = updatedChangeListVersions.newsResourceVersion
@@ -186,6 +203,7 @@ class NiaPreferencesDataSource @Inject constructor(
         }
     }
 
+    // 设置是否隐藏新用户引导流程
     suspend fun setShouldHideOnboarding(shouldHideOnboarding: Boolean) {
         userPreferences.updateData {
             it.copy { this.shouldHideOnboarding = shouldHideOnboarding }
@@ -193,6 +211,7 @@ class NiaPreferencesDataSource @Inject constructor(
     }
 }
 
+// 关注的主题、用户都为空，则展示新用户引导流程。
 private fun UserPreferencesKt.Dsl.updateShouldHideOnboardingIfNecessary() {
     if (followedTopicIds.isEmpty() && followedAuthorIds.isEmpty()) {
         shouldHideOnboarding = false

@@ -19,8 +19,12 @@ syntax = "proto3";
 option java_package = "com.google.samples.apps.nowinandroid.core.datastore";
 option java_multiple_files = true;
 
+// 主题品牌
 enum ThemeBrandProto {
+  // 样式-未定义
   THEME_BRAND_UNSPECIFIED = 0;
+  // 样式-默认
   THEME_BRAND_DEFAULT = 1;
+  // 样式-Android
   THEME_BRAND_ANDROID = 2;
 }

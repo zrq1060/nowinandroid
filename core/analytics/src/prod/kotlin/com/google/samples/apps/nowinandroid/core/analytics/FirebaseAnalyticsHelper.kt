@@ -22,7 +22,9 @@ import javax.inject.Inject
 
 /**
  * Implementation of `AnalyticsHelper` which logs events to a Firebase backend.
+ * 实现了“AnalyticsHelper”，它将事件记录到Firebase后端。
  */
+// AnalyticsHelper-Firebase实现
 internal class FirebaseAnalyticsHelper @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
 ) : AnalyticsHelper {

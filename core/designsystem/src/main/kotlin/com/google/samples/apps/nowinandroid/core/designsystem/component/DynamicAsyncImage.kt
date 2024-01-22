@@ -44,24 +44,33 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalTintThe
 
 /**
  * A wrapper around [AsyncImage] which determines the colorFilter based on the theme
+ * 一个围绕[AsyncImage]的包装器，它根据主题确定colorFilter
  */
 @Composable
+// 动态异步图片控件
 fun DynamicAsyncImage(
+    // 图片地址
     imageUrl: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    // 占位符
     placeholder: Painter = painterResource(R.drawable.core_designsystem_ic_placeholder_default),
 ) {
     val iconTint = LocalTintTheme.current.iconTint
+    // 是否是加载中，默认是。
     var isLoading by remember { mutableStateOf(true) }
+    // 是否是错误，默认不是。
     var isError by remember { mutableStateOf(false) }
+    // 图片加载器（coil库提供）
     val imageLoader = rememberAsyncImagePainter(
         model = imageUrl,
         onState = { state ->
+            // 加载状态改变，通知isLoading、isError值修改。
             isLoading = state is Loading
             isError = state is Error
         },
     )
+    // 是否是本地检查
     val isLocalInspection = LocalInspectionMode.current
     Box(
         modifier = modifier,
@@ -69,6 +78,7 @@ fun DynamicAsyncImage(
     ) {
         if (isLoading && !isLocalInspection) {
             // Display a progress bar while loading
+            // 加载时显示进度条
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -76,8 +86,10 @@ fun DynamicAsyncImage(
                 color = MaterialTheme.colorScheme.tertiary,
             )
         }
+        // 图片
         Image(
             contentScale = ContentScale.Crop,
+            // 不是错误就用imageLoader加载，否则用占位符。
             painter = if (isError.not() && !isLocalInspection) imageLoader else placeholder,
             contentDescription = contentDescription,
             colorFilter = if (iconTint != Unspecified) ColorFilter.tint(iconTint) else null,

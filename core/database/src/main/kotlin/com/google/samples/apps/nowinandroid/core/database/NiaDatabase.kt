@@ -33,7 +33,9 @@ import com.google.samples.apps.nowinandroid.core.database.model.TopicEntity
 import com.google.samples.apps.nowinandroid.core.database.model.TopicFtsEntity
 import com.google.samples.apps.nowinandroid.core.database.util.InstantConverter
 
+// 数据库
 @Database(
+    // 所有的表
     entities = [
         NewsResourceEntity::class,
         NewsResourceTopicCrossRef::class,
@@ -42,7 +44,9 @@ import com.google.samples.apps.nowinandroid.core.database.util.InstantConverter
         TopicFtsEntity::class,
         RecentSearchQueryEntity::class,
     ],
+    // 数据库版本
     version = 14,
+    // 自动迁移
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3, spec = DatabaseMigrations.Schema2to3::class),
@@ -60,9 +64,11 @@ import com.google.samples.apps.nowinandroid.core.database.util.InstantConverter
     ],
     exportSchema = true,
 )
+// 类型转换
 @TypeConverters(
     InstantConverter::class,
 )
+// 数据库类，定义各种Dao。
 internal abstract class NiaDatabase : RoomDatabase() {
     abstract fun topicDao(): TopicDao
     abstract fun newsResourceDao(): NewsResourceDao

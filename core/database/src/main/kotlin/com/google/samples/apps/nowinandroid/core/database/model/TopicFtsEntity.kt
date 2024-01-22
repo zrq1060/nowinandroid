@@ -22,9 +22,11 @@ import androidx.room.Fts4
 
 /**
  * Fts entity for the topic. See https://developer.android.com/reference/androidx/room/Fts4.
+ * 主题的Fts实体. See https://developer.android.com/reference/androidx/room/Fts4.
  */
 @Entity(tableName = "topicsFts")
 @Fts4
+// 主题-Fts表（topicsFts）
 data class TopicFtsEntity(
 
     @ColumnInfo(name = "topicId")
@@ -40,6 +42,7 @@ data class TopicFtsEntity(
     val longDescription: String,
 )
 
+// TopicEntity（主题数据库类），数据库类->Fts数据库类。
 fun TopicEntity.asFtsEntity() = TopicFtsEntity(
     topicId = id,
     name = name,

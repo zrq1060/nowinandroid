@@ -52,11 +52,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 @Composable
+// App的状态，用remember记录。
 fun rememberNiaAppState(
+    // window大小
     windowSizeClass: WindowSizeClass,
+    // 网络监控
     networkMonitor: NetworkMonitor,
+    // 用户新闻资源库
     userNewsResourceRepository: UserNewsResourceRepository,
+    // 协程作用域
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    // 导航控制器
     navController: NavHostController = rememberNavController(),
 ): NiaAppState {
     NavigationTrackingSideEffect(navController)
@@ -78,6 +84,7 @@ fun rememberNiaAppState(
 }
 
 @Stable
+// App状态
 class NiaAppState(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
@@ -85,10 +92,12 @@ class NiaAppState(
     networkMonitor: NetworkMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
 ) {
+    // 当前的目的地
     val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
+    // 当前顶级的目的地
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
             FOR_YOU_ROUTE -> FOR_YOU
@@ -97,12 +106,15 @@ class NiaAppState(
             else -> null
         }
 
+    // 是否展示底部Bar
     val shouldShowBottomBar: Boolean
         get() = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
+    // 是否展示侧边bar（底部bar和侧边bar只能二选一）。
     val shouldShowNavRail: Boolean
         get() = !shouldShowBottomBar
 
+    // 是否是离线网络
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)
         .stateIn(
@@ -116,6 +128,7 @@ class NiaAppState(
      * route.
      * 在TopBar, BottomBar和NavRail中使用的顶级目的地地图。key是route。
      */
+    // 所有顶级目的地集合，用于配置顶部导航。
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
 
     /**
@@ -123,10 +136,14 @@ class NiaAppState(
      * 具有未读新闻资源的顶级目的地。
      */
     val topLevelDestinationsWithUnreadResources: StateFlow<Set<TopLevelDestination>> =
+        // 观察所有关注的主题
         userNewsResourceRepository.observeAllForFollowedTopics()
+            // 观察所有书签
             .combine(userNewsResourceRepository.observeAllBookmarked()) { forYouNewsResources, bookmarkedNewsResources ->
                 setOfNotNull(
+                    // FOR_YOU目的地，如果所有forYou新闻有一个是未读的，则返回FOR_YOU，否则为空。为空则不会被加入到setOfNotNull函数的Set里面。
                     FOR_YOU.takeIf { forYouNewsResources.any { !it.hasBeenViewed } },
+                    // 同上
                     BOOKMARKS.takeIf { bookmarkedNewsResources.any { !it.hasBeenViewed } },
                 )
             }.stateIn(
@@ -144,24 +161,28 @@ class NiaAppState(
      * @param topLevelDestination: The destination the app needs to navigate to.
      */
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
+        // Trace.beginSection、代码块、Trace.endSection。
         trace("Navigation: ${topLevelDestination.name}") {
+            // 顶级导航选项
             val topLevelNavOptions = navOptions {
                 // Pop up to the start destination of the graph to
                 // avoid building up a large stack of destinations
                 // on the back stack as users select items
-                // 弹出到图的开始目的地，以避免在用户选择项目时在后堆栈上构建大量目的地堆栈
+                // 弹出到图的开始目的地，以避免在用户选择items时在后堆栈上构建大量目的地堆栈
                 popUpTo(navController.graph.findStartDestination().id) {
                     saveState = true
                 }
                 // Avoid multiple copies of the same destination when
                 // reselecting the same item
-                // 重新选择同一项时，避免同一目标的多个副本
+                // 重新选择同一item时，避免同一目标的多个副本
                 launchSingleTop = true
                 // Restore state when reselecting a previously selected item
+                // 重新选择先前选择的item时，恢复状态
                 restoreState = true
             }
 
             when (topLevelDestination) {
+                // 导航控制-导航到ForYou、Bookmarks（书签、Saved）、Interests（兴趣）屏，由各个feature模块自己负责跳转。
                 FOR_YOU -> navController.navigateToForYou(topLevelNavOptions)
                 BOOKMARKS -> navController.navigateToBookmarks(topLevelNavOptions)
                 INTERESTS -> navController.navigateToInterestsGraph(topLevelNavOptions)
@@ -169,6 +190,7 @@ class NiaAppState(
         }
     }
 
+    // 导航到Search搜索屏
     fun navigateToSearch() = navController.navigateToSearch()
 }
 
@@ -180,6 +202,7 @@ class NiaAppState(
 private fun NavigationTrackingSideEffect(navController: NavHostController) {
     TrackDisposableJank(navController) { metricsHolder ->
         val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            // 导航目的地改变，给metricsHolder设置状态。
             metricsHolder.state?.putState("Navigation", destination.route.toString())
         }
 

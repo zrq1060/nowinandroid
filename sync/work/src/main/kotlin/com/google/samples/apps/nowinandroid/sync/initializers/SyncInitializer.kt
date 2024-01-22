@@ -21,6 +21,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.google.samples.apps.nowinandroid.sync.workers.SyncWorker
 
+// 同步初始化，SyncWorker入队。
 object Sync {
     // This method is initializes sync, the process that keeps the app's data current.
     // It is called from the app module's Application.onCreate() and should be only done once.
@@ -32,7 +33,9 @@ object Sync {
             // 在应用启动时运行sync，并确保任何时候只有一个同步工作线程在运行
             enqueueUniqueWork(
                 SYNC_WORK_NAME,
+                // ExistingWorkPolicy.KEEP：如果存在具有相同唯一名称的挂起(未完成)工作，则不执行任何操作。否则，插入新指定的作品。
                 ExistingWorkPolicy.KEEP,
+                // 开启Work
                 SyncWorker.startUpSyncWork(),
             )
         }

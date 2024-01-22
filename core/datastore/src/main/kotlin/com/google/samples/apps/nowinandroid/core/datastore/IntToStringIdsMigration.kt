@@ -20,7 +20,9 @@ import androidx.datastore.core.DataMigration
 
 /**
  * Migrates saved ids from [Int] to [String] types
+ * 将保存的id从[Int]类型迁移到[String]类型
  */
+// Int转String的迁移
 internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
 
     override suspend fun cleanUp() = Unit
@@ -28,13 +30,15 @@ internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
     override suspend fun migrate(currentData: UserPreferences): UserPreferences =
         currentData.copy {
             // Migrate topic ids
+            // 迁移主题ids
             deprecatedFollowedTopicIds.clear()
             deprecatedFollowedTopicIds.addAll(
                 currentData.deprecatedIntFollowedTopicIdsList.map(Int::toString),
             )
             deprecatedIntFollowedTopicIds.clear()
 
-            // Migrate author ids
+            // Migrate author ids?
+            // 迁移作者ids
             deprecatedFollowedAuthorIds.clear()
             deprecatedFollowedAuthorIds.addAll(
                 currentData.deprecatedIntFollowedAuthorIdsList.map(Int::toString),
@@ -42,6 +46,7 @@ internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
             deprecatedIntFollowedAuthorIds.clear()
 
             // Mark migration as complete
+            // 将迁移标记为完成
             hasDoneIntToStringIdMigration = true
         }
 

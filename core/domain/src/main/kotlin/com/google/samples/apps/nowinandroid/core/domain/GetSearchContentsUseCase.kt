@@ -29,7 +29,9 @@ import javax.inject.Inject
 
 /**
  * A use case which returns the searched contents matched with the search query.
+ * 返回与搜索查询匹配的搜索内容的用例。
  */
+// 获取UserSearchResult（搜索结果）的用例，UserSearchResult包含FollowableTopic（带有是否关注的Topic）列表、UserNewsResource（带有UserData用户信息的NewsResource新闻资源）列表。
 class GetSearchContentsUseCase @Inject constructor(
     private val searchContentsRepository: SearchContentsRepository,
     private val userDataRepository: UserDataRepository,
@@ -44,6 +46,8 @@ class GetSearchContentsUseCase @Inject constructor(
 
 private fun Flow<SearchResult>.mapToUserSearchResult(userDataStream: Flow<UserData>): Flow<UserSearchResult> =
     combine(userDataStream) { searchResult, userData ->
+        // 搜索结果和用户数据，有一个变化就通知。
+        // 转UserSearchResult，其包含FollowableTopic（带有是否关注的Topic）列表、UserNewsResource（带有UserData用户信息的NewsResource新闻资源）列表。
         UserSearchResult(
             topics = searchResult.topics.map { topic ->
                 FollowableTopic(

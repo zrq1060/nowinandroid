@@ -69,6 +69,7 @@ import com.google.samples.apps.nowinandroid.core.ui.userNewsResourceCardItems
 import com.google.samples.apps.nowinandroid.feature.topic.R.string
 
 @Composable
+// Topic（主题）屏-路由，有ViewModel。
 internal fun TopicRoute(
     onBackClick: () -> Unit,
     onTopicClick: (String) -> Unit,
@@ -83,16 +84,22 @@ internal fun TopicRoute(
         topicUiState = topicUiState,
         newsUiState = newsUiState,
         modifier = modifier,
+        // 返回点击
         onBackClick = onBackClick,
+        // 关注点击（标题栏右上角）
         onFollowClick = viewModel::followTopicToggle,
+        // 书签改变（新闻摘要-Item-书签）
         onBookmarkChanged = viewModel::bookmarkNews,
+        // 新闻资源已浏览点击（新闻摘要-Item）
         onNewsResourceViewed = { viewModel.setNewsResourceViewed(it, true) },
+        // 主题点击（新闻摘要-Item-底部主题水平列表）
         onTopicClick = onTopicClick,
     )
 }
 
 @VisibleForTesting
 @Composable
+// Topic（主题）屏-UI，无ViewModel。
 internal fun TopicScreen(
     topicUiState: TopicUiState,
     newsUiState: NewsUiState,
@@ -104,18 +111,24 @@ internal fun TopicScreen(
     modifier: Modifier = Modifier,
 ) {
     val state = rememberLazyListState()
+    // 记录是否滚动中
     TrackScrollJank(scrollableState = state, stateName = "topic:screen")
+    // 容器
     Box(
         modifier = modifier,
     ) {
+        // 列容器
         LazyColumn(
             state = state,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // 头间距
             item {
                 Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
             }
+            // 内容体
             when (topicUiState) {
+                // 加载中，展示Loading。
                 TopicUiState.Loading -> item {
                     NiaLoadingWheel(
                         modifier = modifier,
@@ -123,8 +136,11 @@ internal fun TopicScreen(
                     )
                 }
 
+                // 加载异常。
                 TopicUiState.Error -> TODO()
+                // 加载成功，展示标题栏+内容（主题+新闻列表）
                 is TopicUiState.Success -> {
+                    // 标题栏
                     item {
                         TopicToolbar(
                             onBackClick = onBackClick,
@@ -132,6 +148,7 @@ internal fun TopicScreen(
                             uiState = topicUiState.followableTopic,
                         )
                     }
+                    // 内容（主题+新闻列表）
                     topicBody(
                         name = topicUiState.followableTopic.topic.name,
                         description = topicUiState.followableTopic.topic.longDescription,
@@ -143,6 +160,7 @@ internal fun TopicScreen(
                     )
                 }
             }
+            // 尾间距
             item {
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
             }
@@ -151,6 +169,7 @@ internal fun TopicScreen(
         val scrollbarState = state.scrollbarState(
             itemsAvailable = itemsAvailable,
         )
+        // 可拖动滚动条（右侧）
         state.DraggableScrollbar(
             modifier = Modifier
                 .fillMaxHeight()
@@ -166,6 +185,7 @@ internal fun TopicScreen(
     }
 }
 
+// 获取Item的数量
 private fun topicItemsSize(
     topicUiState: TopicUiState,
     newsUiState: NewsUiState,
@@ -179,6 +199,7 @@ private fun topicItemsSize(
     }
 }
 
+// Topic主题主体内容（头+列表）
 private fun LazyListScope.topicBody(
     name: String,
     description: String,
@@ -189,18 +210,23 @@ private fun LazyListScope.topicBody(
     onTopicClick: (String) -> Unit,
 ) {
     // TODO: Show icon if available
+    // TODO: 如果可用，显示icon
+    // 头，包含Icon、标题、描述。
     item {
         TopicHeader(name, description, imageUrl)
     }
 
+    // 列表
     userNewsResourceCards(news, onBookmarkChanged, onNewsResourceViewed, onTopicClick)
 }
 
 @Composable
+// Topic主题主体内容-头
 private fun TopicHeader(name: String, description: String, imageUrl: String) {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp),
     ) {
+        // 动态图
         DynamicAsyncImage(
             imageUrl = imageUrl,
             contentDescription = null,
@@ -209,7 +235,9 @@ private fun TopicHeader(name: String, description: String, imageUrl: String) {
                 .size(216.dp)
                 .padding(bottom = 12.dp),
         )
+        // 标题，中显示字体。
         Text(name, style = MaterialTheme.typography.displayMedium)
+        // 描述
         if (description.isNotEmpty()) {
             Text(
                 description,
@@ -221,6 +249,8 @@ private fun TopicHeader(name: String, description: String, imageUrl: String) {
 }
 
 // TODO: Could/should this be replaced with [LazyGridScope.newsFeed]?
+// 可以/应该用[LazyGridScope.newsFeed]代替它吗?
+// Topic主题主体内容-列表
 private fun LazyListScope.userNewsResourceCards(
     news: NewsUiState,
     onBookmarkChanged: (String, Boolean) -> Unit,
@@ -228,7 +258,9 @@ private fun LazyListScope.userNewsResourceCards(
     onTopicClick: (String) -> Unit,
 ) {
     when (news) {
+        // 成功，显示新闻摘要列表内容。
         is NewsUiState.Success -> {
+            // 显示新闻摘要列表
             userNewsResourceCardItems(
                 items = news.news,
                 onToggleBookmark = { onBookmarkChanged(it.id, !it.isSaved) },
@@ -238,10 +270,12 @@ private fun LazyListScope.userNewsResourceCards(
             )
         }
 
+        // 加载中，显示Loading。
         is NewsUiState.Loading -> item {
             NiaLoadingWheel(contentDesc = "Loading news") // TODO
         }
 
+        // 其它，显示Error提示。
         else -> item {
             Text("Error") // TODO
         }
@@ -250,6 +284,7 @@ private fun LazyListScope.userNewsResourceCards(
 
 @Preview
 @Composable
+// 预览-Topic主题主体内容（头+列表），显示只有头无新闻列表。
 private fun TopicBodyPreview() {
     NiaTheme {
         LazyColumn {
@@ -267,12 +302,14 @@ private fun TopicBodyPreview() {
 }
 
 @Composable
+// 主题-标题栏
 private fun TopicToolbar(
     uiState: FollowableTopic,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onFollowClick: (Boolean) -> Unit = {},
 ) {
+    // 行容器
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -280,6 +317,7 @@ private fun TopicToolbar(
             .fillMaxWidth()
             .padding(bottom = 32.dp),
     ) {
+        // 返回按钮，点击通知返回。
         IconButton(onClick = { onBackClick() }) {
             Icon(
                 imageVector = NiaIcons.ArrowBack,
@@ -289,6 +327,7 @@ private fun TopicToolbar(
             )
         }
         val selected = uiState.isFollowed
+        // 主题是否关注的按钮
         NiaFilterChip(
             selected = selected,
             onSelectedChange = onFollowClick,
@@ -305,6 +344,8 @@ private fun TopicToolbar(
 
 @DevicePreviews
 @Composable
+// 主题（Topic）屏-填充
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，展示主题+新闻列表（3条数据）。
 fun TopicScreenPopulated(
     @PreviewParameter(UserNewsResourcePreviewParameterProvider::class)
     userNewsResources: List<UserNewsResource>,
@@ -326,6 +367,8 @@ fun TopicScreenPopulated(
 
 @DevicePreviews
 @Composable
+// 主题（Topic）屏-加载中
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，加载中。
 fun TopicScreenLoading() {
     NiaTheme {
         NiaBackground {

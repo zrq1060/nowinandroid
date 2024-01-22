@@ -22,6 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import com.google.samples.apps.niacatalog.ui.NiaCatalog
 
+// 展示页
 class NiaCatalogActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

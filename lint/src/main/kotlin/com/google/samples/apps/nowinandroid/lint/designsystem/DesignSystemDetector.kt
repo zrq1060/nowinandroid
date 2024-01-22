@@ -31,6 +31,7 @@ import org.jetbrains.uast.UQualifiedReferenceExpression
 /**
  * A detector that checks for incorrect usages of Compose Material APIs over equivalents in
  * the Now in Android design system module.
+ * 一个检测器，检查不正确的用法撰写材料api在Now in Android设计系统模块的等等物。
  */
 class DesignSystemDetector : Detector(), Detector.UastScanner {
 

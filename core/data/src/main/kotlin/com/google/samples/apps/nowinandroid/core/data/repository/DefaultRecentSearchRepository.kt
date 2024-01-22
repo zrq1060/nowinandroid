@@ -25,10 +25,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import javax.inject.Inject
 
+// 最近搜索结果的仓库（RecentSearchRepository）-默认实现。使用数据库实现。
 internal class DefaultRecentSearchRepository @Inject constructor(
     private val recentSearchQueryDao: RecentSearchQueryDao,
 ) : RecentSearchRepository {
     override suspend fun insertOrReplaceRecentSearch(searchQuery: String) {
+        // 更新插入一条RecentSearchQueryEntity
         recentSearchQueryDao.insertOrReplaceRecentSearchQuery(
             RecentSearchQueryEntity(
                 query = searchQuery,
@@ -38,9 +40,11 @@ internal class DefaultRecentSearchRepository @Inject constructor(
     }
 
     override fun getRecentSearchQueries(limit: Int): Flow<List<RecentSearchQuery>> =
+        // 获取最近搜索查询limit数量个，会转换为Repository层使用的Model。
         recentSearchQueryDao.getRecentSearchQueryEntities(limit).map { searchQueries ->
             searchQueries.map { it.asExternalModel() }
         }
 
+    // 清空最近搜索
     override suspend fun clearRecentSearches() = recentSearchQueryDao.clearRecentSearchQueries()
 }

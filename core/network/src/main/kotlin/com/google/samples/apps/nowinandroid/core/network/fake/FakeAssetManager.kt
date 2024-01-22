@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.core.network.fake
 
 import java.io.InputStream
 
+// 假的Asset访问管理者
 fun interface FakeAssetManager {
     fun open(fileName: String): InputStream
 }

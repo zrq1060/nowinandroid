@@ -18,7 +18,10 @@ package com.google.samples.apps.nowinandroid.sync.status
 
 /**
  * Subscribes to backend requested synchronization
+ * 订阅后端请求的同步
  */
+// 同步订阅者
 interface SyncSubscriber {
+    // 订阅
     suspend fun subscribe()
 }

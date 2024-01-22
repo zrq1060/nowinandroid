@@ -23,6 +23,7 @@ import com.google.samples.apps.nowinandroid.core.datastore.NiaPreferencesDataSou
 /**
  * Test synchronizer that delegates to [NiaPreferencesDataSource]
  */
+// Synchronizer-测试实现。用的是DataSource中保存的。
 class TestSynchronizer(
     private val niaPreferences: NiaPreferencesDataSource,
 ) : Synchronizer {

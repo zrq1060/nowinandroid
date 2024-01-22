@@ -18,7 +18,9 @@ package com.google.samples.apps.nowinandroid.core.datastore
 
 /**
  * Class summarizing the local version of each model for sync
+ * 类总结每个模型的本地版本以进行同步
  */
+// 改变列表版本，存在了本地。
 data class ChangeListVersions(
     val topicVersion: Int = -1,
     val newsResourceVersion: Int = -1,

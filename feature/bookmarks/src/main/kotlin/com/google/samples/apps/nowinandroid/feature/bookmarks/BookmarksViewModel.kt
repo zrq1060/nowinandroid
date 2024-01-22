@@ -36,17 +36,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+// ForYou（为你）屏-ViewModel
 class BookmarksViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository,
     userNewsResourceRepository: UserNewsResourceRepository,
 ) : ViewModel() {
 
+    // 是否展示撤销书签提示
     var shouldDisplayUndoBookmark by mutableStateOf(false)
+    // 最后一个移除的书签Id
     private var lastRemovedBookmarkId: String? = null
 
+    // 新闻提要列表-UiState
     val feedUiState: StateFlow<NewsFeedUiState> =
+        // 获取所有-已经加入书签的-新闻摘要列表
         userNewsResourceRepository.observeAllBookmarked()
+            // List<UserNewsResource>列表转一个NewsFeedUiState.Success
             .map<List<UserNewsResource>, NewsFeedUiState>(NewsFeedUiState::Success)
+            // 开始为加载中
             .onStart { emit(Loading) }
             .stateIn(
                 scope = viewModelScope,
@@ -54,29 +61,38 @@ class BookmarksViewModel @Inject constructor(
                 initialValue = Loading,
             )
 
+    // 移除保存的新闻资源
     fun removeFromSavedResources(newsResourceId: String) {
         viewModelScope.launch {
+            // 展示撤销提示
             shouldDisplayUndoBookmark = true
+            // 记录最后移除的Id，好方便撤回移除。
             lastRemovedBookmarkId = newsResourceId
+            // 移除操作（底层DataStore）
             userDataRepository.updateNewsResourceBookmark(newsResourceId, false)
         }
     }
 
+    // 设置新闻资源是否已浏览
     fun setNewsResourceViewed(newsResourceId: String, viewed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setNewsResourceViewed(newsResourceId, viewed)
         }
     }
 
+    // 撤销书签移除
     fun undoBookmarkRemoval() {
         viewModelScope.launch {
             lastRemovedBookmarkId?.let {
+                // 恢复移除
                 userDataRepository.updateNewsResourceBookmark(it, true)
             }
         }
+        // 清除撤销状态，防止再次展示是否撤销提示。
         clearUndoState()
     }
 
+    // 清除撤销状态，防止再次展示是否撤销提示。
     fun clearUndoState() {
         shouldDisplayUndoBookmark = false
         lastRemovedBookmarkId = null

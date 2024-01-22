@@ -33,12 +33,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import javax.inject.Inject
 
+// 连接管理器网络监，NetworkMonitor（网络监控）的实现类。
 internal class ConnectivityManagerNetworkMonitor @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : NetworkMonitor {
     override val isOnline: Flow<Boolean> = callbackFlow {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
         if (connectivityManager == null) {
+            // 没获取到，直接发生false，代表失败。
             channel.trySend(false)
             channel.close()
             return@callbackFlow
@@ -47,6 +49,7 @@ internal class ConnectivityManagerNetworkMonitor @Inject constructor(
         /**
          * The callback's methods are invoked on changes to *any* network matching the [NetworkRequest],
          * not just the active network. So we can simply track the presence (or absence) of such [Network].
+         * 回调的方法会在任何与[NetworkRequest]匹配的网络发生变化时调用，而不仅仅是活动网络。因此，我们可以简单地跟踪这种[Network]的存在(或不存在)。
          */
         val callback = object : NetworkCallback() {
 
@@ -66,10 +69,12 @@ internal class ConnectivityManagerNetworkMonitor @Inject constructor(
         val request = Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
+        // 注册以接收关于满足给定NetworkRequest的所有网络的通知
         connectivityManager.registerNetworkCallback(request, callback)
 
         /**
          * Sends the latest connectivity status to the underlying channel.
+         * 将最新的连接状态发送到底层通道。
          */
         channel.trySend(connectivityManager.isCurrentlyConnected())
 
@@ -80,8 +85,10 @@ internal class ConnectivityManagerNetworkMonitor @Inject constructor(
         .conflate()
 
     @Suppress("DEPRECATION")
+    // 目前网络是否是连接的
     private fun ConnectivityManager.isCurrentlyConnected() = when {
         VERSION.SDK_INT >= VERSION_CODES.M ->
+            // SDK-23（6.0）及以上，用activeNetwork。
             activeNetwork
                 ?.let(::getNetworkCapabilities)
                 ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)

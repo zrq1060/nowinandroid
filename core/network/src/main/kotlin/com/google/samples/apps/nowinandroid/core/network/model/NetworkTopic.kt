@@ -21,8 +21,10 @@ import kotlinx.serialization.Serializable
 
 /**
  * Network representation of [Topic]
+ * [Topic]的网络表示
  */
 @Serializable
+// Topic主题的-网络层表示
 data class NetworkTopic(
     val id: String,
     val name: String = "",

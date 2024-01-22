@@ -15,7 +15,7 @@
  */
 
 syntax = "proto3";
-
+// 导入其它依赖proto
 import "com/google/samples/apps/nowinandroid/data/dark_theme_config.proto";
 import "com/google/samples/apps/nowinandroid/data/theme_brand.proto";
 
@@ -23,30 +23,50 @@ option java_package = "com.google.samples.apps.nowinandroid.core.datastore";
 option java_multiple_files = true;
 
 message UserPreferences {
+    // 保留2号，has_run_first_time_sync已经删除，删除的要保留。
     reserved 2;
+    // List<Integer>，已弃用int关注的主题ids，DeprecatedIntFollowedTopicIds。
     repeated int32 deprecated_int_followed_topic_ids = 1;
+    // int，主题变更列表的版本
     int32 topicChangeListVersion = 3;
+    // int，作者变更列表的版本
     int32 authorChangeListVersion = 4;
+    // int，新闻资源变更列表的版本
     int32 newsResourceChangeListVersion = 6;
+    // List<Integer>，已弃用int关注的作者ids，DeprecatedIntFollowedAuthorIds。
     repeated int32 deprecated_int_followed_author_ids = 7;
+    // boolean，是否完成了int到string id的迁移，HasDoneIntToStringIdMigration。
     bool has_done_int_to_string_id_migration = 8;
+    // List<String>，已弃用的关注主题ids，DeprecatedFollowedTopicIds。
     repeated string deprecated_followed_topic_ids = 9;
+    // List<String>，已弃用的关注作者ids，DeprecatedFollowedAuthorIds。
     repeated string deprecated_followed_author_ids = 10;
+    // List<String>，已弃用的书签新闻资源ids，DeprecatedBookmarkedNewsResourceIds。
     repeated string deprecated_bookmarked_news_resource_ids = 11;
+    // boolean，是否完成了list到map的迁移，HasDoneListToMapMigration。
     bool has_done_list_to_map_migration = 12;
 
     // Each map is used to store a set of string IDs. The bool has no meaning, but proto3 doesn't
     // have a Set type so this is the closest we can get to a Set.
+    // 每个map用于存储一组字符串id。bool没有任何意义，但是proto3没有Set类型，所以这是我们能得到的最接近Set的类型。
+    // Map<String, Boolean>，关注主题ids，FollowedTopicIds。
     map<string, bool> followed_topic_ids = 13;
+    // Map<String, Boolean>，关注作者ids，FollowedAuthorIds。
     map<string, bool> followed_author_ids = 14;
+    // Map<String, Boolean>，书签新闻资源ids，BookmarkedNewsResourceIds。
     map<string, bool> bookmarked_news_resource_ids = 15;
+    // Map<String, Boolean>，显示的新闻资源ids，ViewedNewsResourceIds。
     map<string, bool> viewed_news_resource_ids = 20;
 
+    // ThemeBrand
     ThemeBrandProto theme_brand = 16;
+    // DarkThemeConfig
     DarkThemeConfigProto dark_theme_config = 17;
 
+    // boolean，是否隐藏新用户引导流程，ShouldHideOnboarding。
     bool should_hide_onboarding = 18;
 
+    // boolean，是否用动态颜色，UseDynamicColor。
     bool use_dynamic_color = 19;
 
     // NEXT AVAILABLE ID: 21

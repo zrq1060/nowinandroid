@@ -25,6 +25,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，demo构建下，给NiaNetworkDataSource提供FakeNiaNetworkDataSource，即使用本地的json。
 internal interface FlavoredNetworkModule {
 
     @Binds

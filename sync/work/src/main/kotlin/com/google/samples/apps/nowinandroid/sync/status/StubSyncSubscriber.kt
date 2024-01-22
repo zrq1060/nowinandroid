@@ -23,7 +23,9 @@ private const val TAG = "StubSyncSubscriber"
 
 /**
  * Stub implementation of [SyncSubscriber]
+ * SyncSubscriber的存根实现
  */
+// SyncSubscriber的存根实现，打印。
 internal class StubSyncSubscriber @Inject constructor() : SyncSubscriber {
     override suspend fun subscribe() {
         Log.d(TAG, "Subscribing to sync")

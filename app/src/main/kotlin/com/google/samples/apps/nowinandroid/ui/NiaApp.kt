@@ -85,19 +85,25 @@ import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
     ExperimentalComposeUiApi::class,
 )
 @Composable
+// AppUI，包括背景、无网络提示、设置Dialog、一级导航（水平+垂直）、标题栏、顶层导航图。
 fun NiaApp(
+    // window大小
     windowSizeClass: WindowSizeClass,
+    // 网络监控
     networkMonitor: NetworkMonitor,
+    // 用户新闻资源库
     userNewsResourceRepository: UserNewsResourceRepository,
+    // app状态
     appState: NiaAppState = rememberNiaAppState(
         networkMonitor = networkMonitor,
         windowSizeClass = windowSizeClass,
         userNewsResourceRepository = userNewsResourceRepository,
     ),
 ) {
-    // 是否展示渐变背景
+    // 是否展示渐变背景（只有ForYou（为你）屏展示）
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.FOR_YOU
+    // 是否展示设置Dialog（默认不展示）
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
     NiaBackground {
@@ -109,8 +115,11 @@ fun NiaApp(
                 GradientColors()
             },
         ) {
+            // SnackbarHost的状态，它控制队列和在SnackbarHost中显示的当前Snackbar。
+            // 此状态通常被记住并用于向Scaffold提供SnackbarHost。
             val snackbarHostState = remember { SnackbarHostState() }
 
+            // 是否是离线网络
             val isOffline by appState.isOffline.collectAsStateWithLifecycle()
 
             // If user is not connected to the internet show a snack bar to inform them.
@@ -128,12 +137,14 @@ fun NiaApp(
             }
 
             if (showSettingsDialog) {
+                // 展示设置Dialog
                 SettingsDialog(
+                    // 销毁请求，即不展示请求，设置showSettingsDialog = false。
                     onDismiss = { showSettingsDialog = false },
                 )
             }
 
-            // 未读的目的地
+            // 所有未读的目的地
             val unreadDestinations by appState.topLevelDestinationsWithUnreadResources.collectAsStateWithLifecycle()
 
             Scaffold(
@@ -148,10 +159,11 @@ fun NiaApp(
                     if (appState.shouldShowBottomBar) {
                         // 展示底部bar（底部bar和侧边bar只能二选一）。
                         NiaBottomBar(
-                            // 顶级目的地集合，TopLevelDestination枚举类集合。
+                            // 所有顶级目的地，TopLevelDestination枚举类集合。
                             destinations = appState.topLevelDestinations,
+                            // 所有未读的目的地
                             destinationsWithUnreadResources = unreadDestinations,
-                            // 跳到目标
+                            // 切换item跳到目的地
                             onNavigateToDestination = appState::navigateToTopLevelDestination,
                             currentDestination = appState.currentDestination,
                             modifier = Modifier.testTag("NiaBottomBar"),
@@ -173,6 +185,7 @@ fun NiaApp(
                 ) {
                     if (appState.shouldShowNavRail) {
                         // 展示侧边bar（底部bar和侧边bar只能二选一）。
+                        // 参数同NiaBottomBar。
                         NiaNavRail(
                             destinations = appState.topLevelDestinations,
                             destinationsWithUnreadResources = unreadDestinations,
@@ -192,25 +205,33 @@ fun NiaApp(
                         if (destination != null) {
                             // 顶部标题栏（搜索、标题、设置）
                             NiaTopAppBar(
+                                // 标题
                                 titleRes = destination.titleTextId,
+                                // 搜索
                                 navigationIcon = NiaIcons.Search,
                                 navigationIconContentDescription = stringResource(
                                     id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                                 ),
+                                // 设置
                                 actionIcon = NiaIcons.Settings,
                                 actionIconContentDescription = stringResource(
                                     id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
                                 ),
+                                // 颜色
                                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                                     containerColor = Color.Transparent,
                                 ),
+                                // 设置点击
                                 onActionClick = { showSettingsDialog = true },
+                                // 搜索点击
                                 onNavigationClick = { appState.navigateToSearch() },
                             )
                         }
 
-                        // 顶层导航图。
+                        // 顶层导航图，默认ForYou（为你）屏。
                         NiaNavHost(appState = appState, onShowSnackbar = { message, action ->
+                            // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
+                            // ActionPerformed：在超时之前，单击了Snackbar上的操作。
                             snackbarHostState.showSnackbar(
                                 message = message,
                                 actionLabel = action,
@@ -221,6 +242,7 @@ fun NiaApp(
 
                     // TODO: We may want to add padding or spacer when the snackbar is shown so that
                     //  content doesn't display behind it.
+                    // 我们可能想要在显示snackbar时添加填充或间隔，这样内容就不会显示在它后面。
                 }
             }
         }
@@ -228,6 +250,7 @@ fun NiaApp(
 }
 
 // 侧边bar
+// 参数同NiaBottomBar。
 @Composable
 private fun NiaNavRail(
     destinations: List<TopLevelDestination>,
@@ -275,35 +298,48 @@ private fun NiaBottomBar(
         modifier = modifier,
     ) {
         destinations.forEach { destination ->
+            // 设置当前的Item
+            // 是否有未读
             val hasUnread = destinationsWithUnreadResources.contains(destination)
+            // 是否选中
             val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
             NiaNavigationBarItem(
                 selected = selected,
+                // 点击导航
                 onClick = { onNavigateToDestination(destination) },
+                // 未选中的Icon
                 icon = {
                     Icon(
                         imageVector = destination.unselectedIcon,
                         contentDescription = null,
                     )
                 },
+                // 选中的Icon
                 selectedIcon = {
                     Icon(
                         imageVector = destination.selectedIcon,
                         contentDescription = null,
                     )
                 },
+                // 标签
                 label = { Text(stringResource(destination.iconTextId)) },
+                // 是否有未读消息
                 modifier = if (hasUnread) Modifier.notificationDot() else Modifier,
             )
         }
     }
 }
 
+// 通知点
 private fun Modifier.notificationDot(): Modifier =
     composed {
+        // 三级颜色
         val tertiaryColor = MaterialTheme.colorScheme.tertiary
         drawWithContent {
+            // 内容在下，点在上。
+            // 画内容
             drawContent()
+            // 画圆
             drawCircle(
                 tertiaryColor,
                 radius = 5.dp.toPx(),
@@ -319,6 +355,7 @@ private fun Modifier.notificationDot(): Modifier =
         }
     }
 
+// 是否顶层目的地在层次结构中
 private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
     this?.hierarchy?.any {
         it.route?.contains(destination.name, true) ?: false

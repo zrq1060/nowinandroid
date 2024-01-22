@@ -21,12 +21,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
+// 通用的结果类，用于ViewModel层，用于将普通结果包装成此Result结果，方便ViewModel使用。
 sealed interface Result<out T> {
     data class Success<T>(val data: T) : Result<T>
     data class Error(val exception: Throwable) : Result<Nothing>
     data object Loading : Result<Nothing>
 }
 
+// 转为Result类，包含了：开始为Loading、异常为Error、成功为Success。
 fun <T> Flow<T>.asResult(): Flow<Result<T>> = map<T, Result<T>> { Result.Success(it) }
     .onStart { emit(Result.Loading) }
     .catch { emit(Result.Error(it)) }

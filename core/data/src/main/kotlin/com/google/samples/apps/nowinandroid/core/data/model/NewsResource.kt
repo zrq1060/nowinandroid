@@ -22,6 +22,7 @@ import com.google.samples.apps.nowinandroid.core.database.model.TopicEntity
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkNewsResource
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkNewsResourceExpanded
 
+// NewsResource（新闻资源），网络类->数据库类。
 fun NetworkNewsResource.asEntity() = NewsResourceEntity(
     id = id,
     title = title,
@@ -32,6 +33,7 @@ fun NetworkNewsResource.asEntity() = NewsResourceEntity(
     type = type,
 )
 
+// NewsResourceExpanded（新闻资源展开），网络类->数据库类。
 fun NetworkNewsResourceExpanded.asEntity() = NewsResourceEntity(
     id = id,
     title = title,
@@ -45,9 +47,12 @@ fun NetworkNewsResourceExpanded.asEntity() = NewsResourceEntity(
 /**
  * A shell [TopicEntity] to fulfill the foreign key constraint when inserting
  * a [NewsResourceEntity] into the DB
+ * 一个shell [TopicEntity]，用于在向数据库插入[NewsResourceEntity]时满足外键约束
  */
+// NetworkNewsResource（网络新闻资源），网络类->数据库类。
 fun NetworkNewsResource.topicEntityShells() =
     topics.map { topicId ->
+        // TopicId转TopicEntity
         TopicEntity(
             id = topicId,
             name = "",
@@ -58,6 +63,7 @@ fun NetworkNewsResource.topicEntityShells() =
         )
     }
 
+// NetworkNewsResource（网络新闻资源），网络类->数据库类。
 fun NetworkNewsResource.topicCrossReferences(): List<NewsResourceTopicCrossRef> =
     topics.map { topicId ->
         NewsResourceTopicCrossRef(

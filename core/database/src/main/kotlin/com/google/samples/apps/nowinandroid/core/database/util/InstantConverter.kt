@@ -19,12 +19,15 @@ package com.google.samples.apps.nowinandroid.core.database.util
 import androidx.room.TypeConverter
 import kotlinx.datetime.Instant
 
+// 时间转换
 internal class InstantConverter {
     @TypeConverter
+    // 数据库的类型转换，把Long（毫秒）类型转为Instant。
     fun longToInstant(value: Long?): Instant? =
         value?.let(Instant::fromEpochMilliseconds)
 
     @TypeConverter
+    // 数据库的类型转换，把Instant类型转为Long（毫秒）。
     fun instantToLong(instant: Instant?): Long? =
         instant?.toEpochMilliseconds()
 }

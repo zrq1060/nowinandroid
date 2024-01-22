@@ -22,7 +22,9 @@ import javax.inject.Inject
 
 /**
  * A use case which returns total count of *Fts tables
+ * 返回*Fts表总数的用例
  */
+// 获取搜索内容的数量的用例
 class GetSearchContentsCountUseCase @Inject constructor(
     private val searchContentsRepository: SearchContentsRepository,
 ) {

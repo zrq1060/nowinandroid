@@ -32,16 +32,21 @@ import javax.inject.Inject
 
 /**
  * [NiaNetworkDataSource] implementation that provides static news resources to aid development
+ * [NiaNetworkDataSource]实现，提供静态新闻资源以帮助开发。
  */
+// NiaNetworkDataSource的-假的实现，内部数据是使用本地json文件模拟的。
 class FakeNiaNetworkDataSource @Inject constructor(
+    // IO线程
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val networkJson: Json,
+    // assets访问本地assets下json文件
     private val assets: FakeAssetManager = JvmUnitTestFakeAssetManager,
 ) : NiaNetworkDataSource {
 
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
         withContext(ioDispatcher) {
+            // 访问本地assets下topics.json文件，并使用Json进行解析。
             assets.open(TOPICS_ASSET).use(networkJson::decodeFromStream)
         }
 
@@ -66,6 +71,7 @@ class FakeNiaNetworkDataSource @Inject constructor(
 /**
  * Converts a list of [T] to change list of all the items in it where [idGetter] defines the
  * [NetworkChangeList.id]
+ * 将[T]的列表转换为其中所有项的更改列表，其中[idGetter]定义了[NetworkChangeList.id]
  */
 private fun <T> List<T>.mapToChangeList(
     idGetter: (T) -> String,

@@ -36,8 +36,11 @@ import kotlin.io.path.Path
 
 /**
  * A detector that checks for common patterns in naming the test methods:
+ * 在命名测试方法时检查常见模式的检测器:
  * - [detectPrefix] removes unnecessary "test" prefix in all unit test.
+ *                  删除所有单元测试中不必要的“test”前缀。
  * - [detectFormat] Checks the `given_when_then` format of Android instrumented tests (backticks are not supported).
+ *                  检查Android仪器测试的given_when_then格式(不支持反号)。
  */
 class TestMethodNameDetector : Detector(), SourceCodeScanner {
 

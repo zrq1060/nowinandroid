@@ -24,7 +24,9 @@ import javax.inject.Inject
 
 /**
  * Fake implementation of the [SearchContentsRepository]
+ * SearchContentsRepository的假实现
  */
+// 搜索内容的仓库（SearchContentsRepository）-假的实现。填充无操作、搜索返回空列表、获取数量返回1。
 class FakeSearchContentsRepository @Inject constructor() : SearchContentsRepository {
 
     override suspend fun populateFtsData() = Unit

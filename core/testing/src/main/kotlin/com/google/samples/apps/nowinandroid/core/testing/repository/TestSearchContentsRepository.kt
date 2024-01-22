@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 
+// 搜索内容的仓库（SearchContentsRepository）-测试的实现。List集合实现。
 class TestSearchContentsRepository : SearchContentsRepository {
 
     private val cachedTopics: MutableList<Topic> = mutableListOf()

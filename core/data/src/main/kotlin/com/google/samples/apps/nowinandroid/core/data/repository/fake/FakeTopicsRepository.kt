@@ -35,7 +35,11 @@ import javax.inject.Inject
  *
  * This allows us to run the app with fake data, without needing an internet connection or working
  * backend.
+ * TopicsRepository的伪实现，从JSON String中检索主题，并使用本地数据存储实例保存和检索跟随的主题id。
+ *
+ * 这允许我们使用假数据运行应用程序，而不需要互联网连接或工作后端。
  */
+// 主题的仓库（TopicsRepository）-假的实现。使用FakeNiaNetworkDataSource（底层是本地json文件）实现。同步操作无实现。
 class FakeTopicsRepository @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val datasource: FakeNiaNetworkDataSource,

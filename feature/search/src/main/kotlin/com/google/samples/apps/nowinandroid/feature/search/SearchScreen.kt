@@ -99,14 +99,22 @@ import com.google.samples.apps.nowinandroid.feature.interests.InterestsViewModel
 import com.google.samples.apps.nowinandroid.feature.search.R as searchR
 
 @Composable
+// Search（搜索）屏-路由，有ViewModel。
 internal fun SearchRoute(
     modifier: Modifier = Modifier,
+    // 返回点击
     onBackClick: () -> Unit,
+    // Interests（兴趣）点击，在空的搜索结果上展示此按钮。
     onInterestsClick: () -> Unit,
+    // 主题点击，在有数据的搜索结果上展示。
     onTopicClick: (String) -> Unit,
+    // 书签的ViewModel，用于设置新闻资源是否已浏览，底层userDataRepository实现。
     bookmarksViewModel: BookmarksViewModel = hiltViewModel(),
+    // 兴趣的ViewModel，用于设置-关注/取消关注-主题，底层userDataRepository实现。
     interestsViewModel: InterestsViewModel = hiltViewModel(),
+    // 搜索的ViewModel，此页面的。
     searchViewModel: SearchViewModel = hiltViewModel(),
+    // 为你的ViewModel，用于更新新闻资源是否已保存（加入书签），底层userDataRepository实现。
     forYouViewModel: ForYouViewModel = hiltViewModel(),
 ) {
     val recentSearchQueriesUiState by searchViewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
@@ -114,22 +122,35 @@ internal fun SearchRoute(
     val searchQuery by searchViewModel.searchQuery.collectAsStateWithLifecycle()
     SearchScreen(
         modifier = modifier,
+        // 返回点击
         onBackClick = onBackClick,
+        // 清除最近搜索列表
         onClearRecentSearches = searchViewModel::clearRecentSearches,
+        // 关注/取消关注按钮点击，设置-关注/取消关注-主题，在SearchResultUiState.Success状态下并且有数据的Topics列表下展示。
         onFollowButtonClick = interestsViewModel::followTopic,
+        // 主题点击，在SearchResultUiState.Success状态下并且无数据下展示。
         onInterestsClick = onInterestsClick,
+        // 搜索查询改变。
         onSearchQueryChanged = searchViewModel::onSearchQueryChanged,
+        // 搜索触发的
         onSearchTriggered = searchViewModel::onSearchTriggered,
+        // 主题点击
         onTopicClick = onTopicClick,
+        // 新闻资源关注改变
         onNewsResourcesCheckedChanged = forYouViewModel::updateNewsResourceSaved,
+        // 新闻资源已浏览
         onNewsResourceViewed = { bookmarksViewModel.setNewsResourceViewed(it, true) },
+        // 最近搜索查询列表的UiState
         recentSearchesUiState = recentSearchQueriesUiState,
+        // 查询内容
         searchQuery = searchQuery,
+        // 搜索结果的UiState
         searchResultUiState = searchResultUiState,
     )
 }
 
 @Composable
+// Search（搜索）屏-UI，无ViewModel。
 internal fun SearchScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -145,9 +166,13 @@ internal fun SearchScreen(
     recentSearchesUiState: RecentSearchQueriesUiState = RecentSearchQueriesUiState.Loading,
     searchResultUiState: SearchResultUiState = SearchResultUiState.Loading,
 ) {
+    // 记录事件
     TrackScreenViewEvent(screenName = "Search")
+    // 列容器
     Column(modifier = modifier) {
+        // 间隔
         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        // 搜索标题栏
         SearchToolbar(
             onBackClick = onBackClick,
             onSearchQueryChanged = onSearchQueryChanged,
@@ -155,31 +180,44 @@ internal fun SearchScreen(
             searchQuery = searchQuery,
         )
         when (searchResultUiState) {
+            // 搜索结果为加载中、加载失败，不展示。
             SearchResultUiState.Loading,
             SearchResultUiState.LoadFailed,
             -> Unit
 
+            // 搜索结果为没准备好，展示等待提示。
             SearchResultUiState.SearchNotReady -> SearchNotReadyBody()
+            // 搜索结果为空查询（长度不够），只展示最近搜索查询列表。
             SearchResultUiState.EmptyQuery,
             -> {
                 if (recentSearchesUiState is RecentSearchQueriesUiState.Success) {
+                    // 最近搜索查询为成功，则展示此最近搜索查询列表。
                     RecentSearchesBody(
+                        // 清除最近搜索列表
                         onClearRecentSearches = onClearRecentSearches,
+                        // 最近搜索点击
                         onRecentSearchClicked = {
+                            // 通知搜索查询改变
                             onSearchQueryChanged(it)
+                            // 通知搜索触发的
                             onSearchTriggered(it)
                         },
+                        // 最近搜索查询列表
                         recentSearchQueries = recentSearchesUiState.recentQueries.map { it.query },
                     )
                 }
             }
 
+            // 搜索结果为成功，判断是否为空，空展示无发现提示+最近搜索查询列表，非空展示Topics+Updates。
             is SearchResultUiState.Success -> {
                 if (searchResultUiState.isEmpty()) {
+                    // 搜索结果为空，展示提示无发现布局+最近搜索查询列表。
+                    // -无发现提示布局
                     EmptySearchResultBody(
                         onInterestsClick = onInterestsClick,
                         searchQuery = searchQuery,
                     )
+                    // -最近搜索查询列表
                     if (recentSearchesUiState is RecentSearchQueriesUiState.Success) {
                         RecentSearchesBody(
                             onClearRecentSearches = onClearRecentSearches,
@@ -191,6 +229,7 @@ internal fun SearchScreen(
                         )
                     }
                 } else {
+                    // 搜索结果不为空，展示搜索结果（Topics+Updates）。
                     SearchResultBody(
                         topics = searchResultUiState.topics,
                         onFollowButtonClick = onFollowButtonClick,
@@ -204,24 +243,29 @@ internal fun SearchScreen(
                 }
             }
         }
+        // 间隔-item一项，解决无网络Snackbar的展示。
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
 }
 
 @Composable
+// 搜索结果为空，无发现提示布局。
 fun EmptySearchResultBody(
     onInterestsClick: () -> Unit,
     searchQuery: String,
 ) {
+    // 列容器
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(horizontal = 48.dp),
     ) {
+        // 提示无发现
         val message = stringResource(id = searchR.string.feature_search_result_not_found, searchQuery)
         val start = message.indexOf(searchQuery)
         Text(
             text = AnnotatedString(
                 text = message,
+                // Span样式，查询内容的开始位置到结束位置字体加粗。
                 spanStyles = listOf(
                     AnnotatedString.Range(
                         SpanStyle(fontWeight = FontWeight.Bold),
@@ -234,10 +278,14 @@ fun EmptySearchResultBody(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 24.dp),
         )
+        // 提示尝试搜索其它或者到Interests来浏览主题
         val interests = stringResource(id = searchR.string.feature_search_interests)
         val tryAnotherSearchString = buildAnnotatedString {
+            // 【Try another search or explorer 】
             append(stringResource(id = searchR.string.feature_search_try_another_search))
+            // 加空格，上面的内容内带不生效。
             append(" ")
+            // 样式，加粗+下划线。
             withStyle(
                 style = SpanStyle(
                     textDecoration = TextDecoration.Underline,
@@ -247,11 +295,16 @@ fun EmptySearchResultBody(
                 pushStringAnnotation(tag = interests, annotation = interests)
                 append(interests)
             }
+            // 加空格，下面的内容内带不生效。
             append(" ")
+            // 【 to browse topics】
             append(stringResource(id = searchR.string.feature_search_to_browse_topics))
         }
+        // -可点击的文本
         ClickableText(
+            // 组合AnnotatedString文本
             text = tryAnotherSearchString,
+            // 样式，大body字体，居中。
             style = MaterialTheme.typography.bodyLarge.merge(
                 TextStyle(
                     color = MaterialTheme.colorScheme.secondary,
@@ -262,19 +315,24 @@ fun EmptySearchResultBody(
                 .padding(start = 36.dp, end = 36.dp, bottom = 24.dp)
                 .clickable {},
         ) { offset ->
+            // 当用户单击文本时执行的回调。这个回调用被点击的字符的偏移量来调用。
             tryAnotherSearchString.getStringAnnotations(start = offset, end = offset)
                 .firstOrNull()
+                // 通知主题点击
                 ?.let { onInterestsClick() }
         }
     }
 }
 
 @Composable
+// 搜索结果为没准备好，展示等待提示。
 private fun SearchNotReadyBody() {
+    // 列容器
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(horizontal = 48.dp),
     ) {
+        // 等待提示
         Text(
             text = stringResource(id = searchR.string.feature_search_not_ready),
             style = MaterialTheme.typography.bodyLarge,
@@ -285,6 +343,7 @@ private fun SearchNotReadyBody() {
 }
 
 @Composable
+// 搜索结果不为空，展示搜索结果（Topics+Updates）。
 private fun SearchResultBody(
     topics: List<FollowableTopic>,
     newsResources: List<UserNewsResource>,
@@ -300,6 +359,7 @@ private fun SearchResultBody(
         modifier = Modifier
             .fillMaxSize(),
     ) {
+        // 垂直流式容器
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(300.dp),
             contentPadding = PaddingValues(16.dp),
@@ -310,12 +370,15 @@ private fun SearchResultBody(
                 .testTag("search:newsResources"),
             state = state,
         ) {
+            // Topics
             if (topics.isNotEmpty()) {
+                // Topics-标题，全行。
                 item(
                     span = StaggeredGridItemSpan.FullLine,
                 ) {
                     Text(
                         text = buildAnnotatedString {
+                            // 字体加粗
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                 append(stringResource(id = searchR.string.feature_search_topics))
                             }
@@ -323,13 +386,16 @@ private fun SearchResultBody(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
+                // Topics-列表内容，全行。
                 topics.forEach { followableTopic ->
                     val topicId = followableTopic.topic.id
                     item(
                         // Append a prefix to distinguish a key for news resources
+                        // 附加前缀以区分新闻资源的关键字
                         key = "topic-$topicId",
                         span = StaggeredGridItemSpan.FullLine,
                     ) {
+                        // Item布局
                         InterestsItem(
                             name = followableTopic.topic.name,
                             following = followableTopic.isFollowed,
@@ -337,7 +403,9 @@ private fun SearchResultBody(
                             topicImageUrl = followableTopic.topic.imageUrl,
                             onClick = {
                                 // Pass the current search query to ViewModel to save it as recent searches
+                                // 将当前搜索查询传递给ViewModel以将其保存为最近的搜索
                                 onSearchTriggered(searchQuery)
+                                // 通知主题点击
                                 onTopicClick(topicId)
                             },
                             onFollowButtonClick = { onFollowButtonClick(topicId, it) },
@@ -346,12 +414,15 @@ private fun SearchResultBody(
                 }
             }
 
+            // Updates
             if (newsResources.isNotEmpty()) {
+                // Updates-标题，全行。
                 item(
                     span = StaggeredGridItemSpan.FullLine,
                 ) {
                     Text(
                         text = buildAnnotatedString {
+                            // 字体加粗
                             withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                 append(stringResource(id = searchR.string.feature_search_updates))
                             }
@@ -360,12 +431,15 @@ private fun SearchResultBody(
                     )
                 }
 
+                // Updates-列表内容，非全行。
                 newsFeed(
+                    // 直接成功的状态
                     feedState = Success(feed = newsResources),
                     onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
                     onNewsResourceViewed = onNewsResourceViewed,
                     onTopicClick = onTopicClick,
                     onExpandedCardClick = {
+                        // 卡片点击，通知搜索
                         onSearchTriggered(searchQuery)
                     },
                 )
@@ -375,6 +449,7 @@ private fun SearchResultBody(
         val scrollbarState = state.scrollbarState(
             itemsAvailable = itemsAvailable,
         )
+        // 可拖动滚动条（右侧）
         state.DraggableScrollbar(
             modifier = Modifier
                 .fillMaxHeight()
@@ -391,28 +466,35 @@ private fun SearchResultBody(
 }
 
 @Composable
+// 最近搜索查询列表
 private fun RecentSearchesBody(
     onClearRecentSearches: () -> Unit,
     onRecentSearchClicked: (String) -> Unit,
     recentSearchQueries: List<String>,
 ) {
+    // 列容器
     Column {
+        // Recent searches+右侧删除按钮，行容器，水平两端对其。
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
+            // Recent searches-标题
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        // 字体加粗
                         append(stringResource(id = searchR.string.feature_search_recent_searches))
                     }
                 },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
+            // Recent searches-右侧删除按钮
             if (recentSearchQueries.isNotEmpty()) {
                 IconButton(
                     onClick = {
+                        // 点击清空最近搜索
                         onClearRecentSearches()
                     },
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -427,6 +509,7 @@ private fun RecentSearchesBody(
                 }
             }
         }
+        // Recent searches-列表内容
         LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
             items(recentSearchQueries) { recentSearch ->
                 Text(
@@ -434,6 +517,7 @@ private fun RecentSearchesBody(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
+                        // Item点击，通知最近搜索点击。
                         .clickable { onRecentSearchClicked(recentSearch) }
                         .fillMaxWidth(),
                 )
@@ -443,6 +527,7 @@ private fun RecentSearchesBody(
 }
 
 @Composable
+// 搜索标题栏
 private fun SearchToolbar(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
@@ -450,10 +535,12 @@ private fun SearchToolbar(
     searchQuery: String = "",
     onSearchTriggered: (String) -> Unit,
 ) {
+    // 行容器
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.fillMaxWidth(),
     ) {
+        // 左边返回按钮，点击通知onBackClick。
         IconButton(onClick = { onBackClick() }) {
             Icon(
                 imageVector = NiaIcons.ArrowBack,
@@ -462,6 +549,7 @@ private fun SearchToolbar(
                 ),
             )
         }
+        // 搜索文本框
         SearchTextField(
             onSearchQueryChanged = onSearchQueryChanged,
             onSearchTriggered = onSearchTriggered,
@@ -472,25 +560,32 @@ private fun SearchToolbar(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
+// 搜索文本框
 private fun SearchTextField(
     onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
     onSearchTriggered: (String) -> Unit,
 ) {
+    // 焦点请求者
     val focusRequester = remember { FocusRequester() }
+    // 键盘控制者
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    // 明确触发搜索，通知隐藏键盘，通知搜索触发。
     val onSearchExplicitlyTriggered = {
         keyboardController?.hide()
         onSearchTriggered(searchQuery)
     }
 
+    // 文本框
     TextField(
+        // 颜色，指示器颜色为透明。
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
         ),
+        // 头Icon
         leadingIcon = {
             Icon(
                 imageVector = NiaIcons.Search,
@@ -500,10 +595,12 @@ private fun SearchTextField(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         },
+        // 尾Icon，有搜索内容才展示，点击清除查询。
         trailingIcon = {
             if (searchQuery.isNotEmpty()) {
                 IconButton(
                     onClick = {
+                        // 点击，清除查询。
                         onSearchQueryChanged("")
                     },
                 ) {
@@ -517,9 +614,11 @@ private fun SearchTextField(
                 }
             }
         },
+        // 值改变，如果里面没有换行，则通知搜索查询改变。
         onValueChange = {
             if ("\n" !in it) onSearchQueryChanged(it)
         },
+        // 修饰：最大宽、内边距、焦点请求者、点击回车事件（兼容外设键盘）则通知明确触发搜索。
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -533,19 +632,26 @@ private fun SearchTextField(
                 }
             }
             .testTag("searchTextField"),
+        // shape：圆角矩形
         shape = RoundedCornerShape(32.dp),
+        // 值
         value = searchQuery,
+        // 键盘选项：搜索键盘
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Search,
         ),
+        // 键盘点击，点击搜索按钮，通知明确触发搜索。
         keyboardActions = KeyboardActions(
             onSearch = {
                 onSearchExplicitlyTriggered()
             },
         ),
+        // 最大行为1
         maxLines = 1,
+        // 单行
         singleLine = true,
     )
+    // 请求焦点
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -553,6 +659,7 @@ private fun SearchTextField(
 
 @Preview
 @Composable
+// 预览-搜索标题栏
 private fun SearchToolbarPreview() {
     NiaTheme {
         SearchToolbar(
@@ -565,6 +672,7 @@ private fun SearchToolbarPreview() {
 
 @Preview
 @Composable
+// 预览-搜索结果为空，展示无发现提示布局。
 private fun EmptySearchResultColumnPreview() {
     NiaTheme {
         EmptySearchResultBody(
@@ -576,6 +684,7 @@ private fun EmptySearchResultColumnPreview() {
 
 @Preview
 @Composable
+// 预览-最近搜索查询列表，3条数据。
 private fun RecentSearchesBodyPreview() {
     NiaTheme {
         RecentSearchesBody(
@@ -588,6 +697,7 @@ private fun RecentSearchesBodyPreview() {
 
 @Preview
 @Composable
+// 预览-搜索结果为没准备好，展示等待提示。
 private fun SearchNotReadyBodyPreview() {
     NiaTheme {
         SearchNotReadyBody()
@@ -596,6 +706,8 @@ private fun SearchNotReadyBodyPreview() {
 
 @DevicePreviews
 @Composable
+// Search（搜索）屏-UI预览
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，展示成功的Search（搜索）屏（Topics、Updates都是3条数据）。
 private fun SearchScreenPreview(
     @PreviewParameter(SearchUiStatePreviewParameterProvider::class)
     searchResultUiState: SearchResultUiState,

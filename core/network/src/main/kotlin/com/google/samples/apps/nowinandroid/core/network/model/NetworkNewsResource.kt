@@ -22,8 +22,10 @@ import kotlinx.serialization.Serializable
 
 /**
  * Network representation of [NewsResource] when fetched from /newsresources
+ * 从/newsresources获取[NewsResource]时的网络表示
  */
 @Serializable
+// NewsResource新闻资源的-网络层表示
 data class NetworkNewsResource(
     val id: String,
     val title: String,
@@ -37,8 +39,10 @@ data class NetworkNewsResource(
 
 /**
  * Network representation of [NewsResource] when fetched from /newsresources/{id}
+ * 从/newsresources/{id}获取[NewsResource]时的网络表示
  */
 @Serializable
+// NewsResourceExpanded新闻资源展开的-网络层表示
 data class NetworkNewsResourceExpanded(
     val id: String,
     val title: String,

@@ -25,6 +25,7 @@ import javax.inject.Inject
 private const val SYNC_TOPIC_SENDER = "/topics/sync"
 
 @AndroidEntryPoint
+// 同步通知服务
 internal class SyncNotificationsService : FirebaseMessagingService() {
 
     @Inject

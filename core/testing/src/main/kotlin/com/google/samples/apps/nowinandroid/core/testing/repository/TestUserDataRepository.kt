@@ -34,7 +34,7 @@ val emptyUserData = UserData(
     useDynamicColor = false,
     shouldHideOnboarding = false,
 )
-
+// 用户数据的仓库（UserDataRepository）-测试的实现。Flow实现。
 class TestUserDataRepository : UserDataRepository {
     /**
      * The backing hot flow for the list of followed topic ids for testing.

@@ -20,31 +20,38 @@ import com.google.samples.apps.nowinandroid.core.model.data.FollowableTopic
 
 /**
  * A sealed hierarchy describing the onboarding state for the for you screen.
+ * 描述for you屏幕的用户引导的密封层次结构。
  */
+// 用户引导-UiState
 sealed interface OnboardingUiState {
     /**
      * The onboarding state is loading.
+     * 用户引导状态加载中。
      */
     data object Loading : OnboardingUiState
 
     /**
      * The onboarding state was unable to load.
+     * 用户引导状态无法加载。
      */
     data object LoadFailed : OnboardingUiState
 
     /**
      * There is no onboarding state.
+     * 没有用户引导状态。
      */
     data object NotShown : OnboardingUiState
 
     /**
      * There is a onboarding state, with the given lists of topics.
+     * 有一个用户引导状态，带有给定的主题列表。
      */
     data class Shown(
         val topics: List<FollowableTopic>,
     ) : OnboardingUiState {
         /**
          * True if the onboarding can be dismissed.
+         * 如果可以取消用户引导，则为True。
          */
         val isDismissable: Boolean get() = topics.any { it.isFollowed }
     }

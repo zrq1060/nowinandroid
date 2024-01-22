@@ -38,6 +38,7 @@ import dagger.hilt.testing.TestInstallIn
     components = [SingletonComponent::class],
     replaces = [DataModule::class],
 )
+// 单例，测试（test和androidTest）构建下，替换DataModule，即全部使用此提供的假的仓库类。
 interface TestDataModule {
     @Binds
     fun bindsTopicRepository(

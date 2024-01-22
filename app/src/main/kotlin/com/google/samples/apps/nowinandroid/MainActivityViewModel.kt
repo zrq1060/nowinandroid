@@ -30,14 +30,17 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
+// 首页-ViewModel
 class MainActivityViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
 ) : ViewModel() {
+    // UI状态，只有加载中，和成功。默认为加载中，
     val uiState: StateFlow<MainActivityUiState> = userDataRepository.userData.map {
         Success(it)
     }.stateIn(
         scope = viewModelScope,
         initialValue = Loading,
+        // 共享在第一个订阅者出现时启动，在最后一个订阅者消失时5s后立即停止，并永久保留重播缓存(默认情况下)。
         started = SharingStarted.WhileSubscribed(5_000),
     )
 }

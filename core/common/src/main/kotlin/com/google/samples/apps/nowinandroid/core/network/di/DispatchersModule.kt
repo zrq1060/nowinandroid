@@ -28,12 +28,15 @@ import kotlinx.coroutines.Dispatchers
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，提供Dispatcher(IO)、Dispatcher(Default)的CoroutineDispatcher。
 object DispatchersModule {
     @Provides
     @Dispatcher(IO)
+    // 提供IO的Dispatcher，使用Dispatchers.IO。
     fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Dispatcher(Default)
+    // 提供Default的Dispatcher，使用Dispatchers.Default。
     fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
 }

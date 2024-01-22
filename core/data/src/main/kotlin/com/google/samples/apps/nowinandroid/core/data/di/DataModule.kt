@@ -35,6 +35,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，用于提供各种仓库类、网络监控。
 abstract class DataModule {
 
     @Binds

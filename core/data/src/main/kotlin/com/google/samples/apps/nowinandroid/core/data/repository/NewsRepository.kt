@@ -22,25 +22,33 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Encapsulation class for query parameters for [NewsResource]
+ * [NewsResource]查询参数的封装类
  */
+// NewsResource查询参数的封装类
 data class NewsResourceQuery(
     /**
      * Topic ids to filter for. Null means any topic id will match.
+     * 要筛选的主题id。Null表示任何主题id都匹配。
      */
     val filterTopicIds: Set<String>? = null,
     /**
      * News ids to filter for. Null means any news id will match.
+     * 要筛选的新闻id。Null表示任何新闻id都匹配。
      */
     val filterNewsIds: Set<String>? = null,
 )
 
 /**
  * Data layer implementation for [NewsResource]
+ * [NewsResource]的数据层实现
  */
+// NewsResource的仓库，包含：获取新闻资源列表（可进行过滤筛选）。
 interface NewsRepository : Syncable {
     /**
      * Returns available news resources that match the specified [query].
+     * 返回与指定[query]匹配的可用新闻资源。
      */
+    // 获取新闻资源列表，可进行过滤筛选。
     fun getNewsResources(
         query: NewsResourceQuery = NewsResourceQuery(
             filterTopicIds = null,

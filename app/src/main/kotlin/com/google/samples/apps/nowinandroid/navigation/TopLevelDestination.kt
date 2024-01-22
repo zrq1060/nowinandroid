@@ -30,6 +30,7 @@ import com.google.samples.apps.nowinandroid.feature.search.R as searchR
  * 键入应用程序中的顶级目的地。这些目的地中的每个都可以包含一个或多个屏幕(基于窗口大小)。
  * 在单个目的地内从一个屏幕导航到下一个屏幕将直接在可组合物中处理。
  */
+// 定义了顶级目的地，首页是遍历的这个。
 enum class TopLevelDestination(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,

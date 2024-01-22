@@ -23,11 +23,14 @@ import com.google.samples.apps.nowinandroid.core.model.data.Topic
 
 /**
  * Defines a topic a user may follow.
+ * 定义用户可以关注的主题。
  * It has a many to many relationship with [NewsResourceEntity]
+ * 它与[NewsResourceEntity]有多对多的关系
  */
 @Entity(
     tableName = "topics",
 )
+// 主题表（topics）
 data class TopicEntity(
     @PrimaryKey
     val id: String,
@@ -41,6 +44,7 @@ data class TopicEntity(
     val imageUrl: String,
 )
 
+// TopicEntity（主题数据库类），数据库类->外部类。
 fun TopicEntity.asExternalModel() = Topic(
     id = id,
     name = name,

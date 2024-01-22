@@ -20,6 +20,8 @@ import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsEvent
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsEvent.Param
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsHelper
 
+// 分析辅助类相关，记录传递AnalyticsEvent。
+
 internal fun AnalyticsHelper.logNewsResourceBookmarkToggled(newsResourceId: String, isBookmarked: Boolean) {
     val eventType = if (isBookmarked) "news_resource_saved" else "news_resource_unsaved"
     val paramKey = if (isBookmarked) "saved_news_resource_id" else "unsaved_news_resource_id"

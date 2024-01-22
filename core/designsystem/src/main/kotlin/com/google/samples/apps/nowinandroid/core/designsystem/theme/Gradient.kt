@@ -22,12 +22,17 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * A class to model gradient color values for Now in Android.
+ * 一个为Now in Android建模渐变颜色值的类
  *
  * @param top The top gradient color to be rendered.
+ *             要渲染的顶部渐变颜色
  * @param bottom The bottom gradient color to be rendered.
+ *              要渲染的底部渐变颜色
  * @param container The container gradient color over which the gradient will be rendered.
+ *              将在其上渲染渐变的容器渐变颜色
  */
 @Immutable
+// 不可变类，渐变颜色。
 data class GradientColors(
     val top: Color = Color.Unspecified,
     val bottom: Color = Color.Unspecified,
@@ -36,5 +41,6 @@ data class GradientColors(
 
 /**
  * A composition local for [GradientColors].
+ * [GradientColors]的局部组合。
  */
 val LocalGradientColors = staticCompositionLocalOf { GradientColors() }

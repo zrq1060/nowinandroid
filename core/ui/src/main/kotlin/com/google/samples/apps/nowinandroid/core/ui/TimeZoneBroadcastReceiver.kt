@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 
+// 时区广播接受者，用于监听市区变化。
 class TimeZoneBroadcastReceiver(
     val onTimeZoneChanged: () -> Unit,
 ) : BroadcastReceiver() {
@@ -28,10 +29,12 @@ class TimeZoneBroadcastReceiver(
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
+            // 接受到，通知时区改变。
             onTimeZoneChanged()
         }
     }
 
+    // 注册广播，时区改变就通知。
     fun register(context: Context) {
         if (!registered) {
             val filter = IntentFilter()
@@ -41,6 +44,7 @@ class TimeZoneBroadcastReceiver(
         }
     }
 
+    // 反注册广播
     fun unregister(context: Context) {
         if (registered) {
             context.unregisterReceiver(this)

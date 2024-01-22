@@ -33,11 +33,13 @@ private val URL_CHARACTER_ENCODING = UTF_8.name()
 @VisibleForTesting
 internal const val TOPIC_ID_ARG = "topicId"
 
+// Topic（主题）参数，topicId为savedStateHandle[TOPIC_ID_ARG]的解码值。
 internal class TopicArgs(val topicId: String) {
     constructor(savedStateHandle: SavedStateHandle) :
         this(URLDecoder.decode(checkNotNull(savedStateHandle[TOPIC_ID_ARG]), URL_CHARACTER_ENCODING))
 }
 
+// 导航控制-导航到Topic（主题）屏
 fun NavController.navigateToTopic(topicId: String) {
     val encodedId = URLEncoder.encode(topicId, URL_CHARACTER_ENCODING)
     navigate("topic_route/$encodedId") {
@@ -45,16 +47,19 @@ fun NavController.navigateToTopic(topicId: String) {
     }
 }
 
+// 导航图构建-Topic（主题）屏（参数+UI）
 fun NavGraphBuilder.topicScreen(
     onBackClick: () -> Unit,
     onTopicClick: (String) -> Unit,
 ) {
     composable(
         route = "topic_route/{$TOPIC_ID_ARG}",
+        // 参数，topicId String类型。
         arguments = listOf(
             navArgument(TOPIC_ID_ARG) { type = NavType.StringType },
         ),
     ) {
+        // Topic（主题）屏-Route（ViewModel+UI）
         TopicRoute(onBackClick = onBackClick, onTopicClick = onTopicClick)
     }
 }

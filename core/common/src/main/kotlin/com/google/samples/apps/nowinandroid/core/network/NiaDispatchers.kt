@@ -21,6 +21,7 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
 
 @Qualifier
 @Retention(RUNTIME)
+// 线程调度程序（Dispatcher）的限定符，用于标记使用哪个线程调度程序。
 annotation class Dispatcher(val niaDispatcher: NiaDispatchers)
 
 enum class NiaDispatchers {

@@ -78,10 +78,12 @@ import java.util.Locale
 
 /**
  * [NewsResource] card used on the following screens: For You, Saved
+ * [NewsResource]卡在以下屏幕上使用：For You（为您），Saved（已保存）
  */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// 新闻资源的卡片UI，包含了：网络图片加载、书签切换等。
 fun NewsResourceCardExpanded(
     userNewsResource: UserNewsResource,
     isBookmarked: Boolean,
@@ -91,50 +93,73 @@ fun NewsResourceCardExpanded(
     onTopicClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // 点击卡片的提示
     val clickActionLabel = stringResource(R.string.core_ui_card_tap_action)
     Card(
+        // 点击
         onClick = onClick,
+        // 卡片背景为圆角
         shape = RoundedCornerShape(16.dp),
+        // 颜色，默认为surface
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         // Use custom label for accessibility services to communicate button's action to user.
         // Pass null for action to only override the label and not the actual action.
+        // 使用可访问性服务的自定义标签向用户传达按钮的操作。
+        // 传递null表示操作只覆盖标签而不覆盖实际操作。
+        // semantics：语义
         modifier = modifier.semantics {
             onClick(label = clickActionLabel, action = null)
         },
     ) {
         Column {
+            // 标题图片
             if (!userNewsResource.headerImageUrl.isNullOrEmpty()) {
                 Row {
                     NewsResourceHeaderImage(userNewsResource.headerImageUrl)
                 }
             }
+            // 图片下面内容，设置统一padding。
             Box(
                 modifier = Modifier.padding(16.dp),
             ) {
                 Column {
+                    // 间隔
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 新闻标题+书签按钮
                     Row {
+                        // 新闻标题
                         NewsResourceTitle(
                             userNewsResource.title,
                             modifier = Modifier.fillMaxWidth((.8f)),
                         )
+                        // 间隔
                         Spacer(modifier = Modifier.weight(1f))
+                        // 书签按钮
                         BookmarkButton(isBookmarked, onToggleBookmark)
                     }
+                    // 间隔
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 未读通知点+时间+类型
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (!hasBeenViewed) {
+                            // 未读，展示通知点。
                             NotificationDot(
+                                // 三级颜色
                                 color = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(8.dp),
                             )
                             Spacer(modifier = Modifier.size(6.dp))
                         }
+                        // 展示新闻资源其他数据（时间+类型）
                         NewsResourceMetaData(userNewsResource.publishDate, userNewsResource.type)
                     }
+                    // 间隔
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 短描述
                     NewsResourceShortDescription(userNewsResource.content)
+                    // 间隔
                     Spacer(modifier = Modifier.height(12.dp))
+                    // 新闻资源主题列表（横向）
                     NewsResourceTopics(
                         topics = userNewsResource.followableTopics,
                         onTopicClick = onTopicClick,
@@ -146,14 +171,19 @@ fun NewsResourceCardExpanded(
 }
 
 @Composable
+// 标题图片
 fun NewsResourceHeaderImage(
     headerImageUrl: String?,
 ) {
+    // 是否加载中，默认是。
     var isLoading by remember { mutableStateOf(true) }
+    // 是否错误，默认不是。
     var isError by remember { mutableStateOf(false) }
+    //  图片加载，coil库提供，
     val imageLoader = rememberAsyncImagePainter(
         model = headerImageUrl,
         onState = { state ->
+            // 图片加载状态改变，修改上面的两种状态。
             isLoading = state is AsyncImagePainter.State.Loading
             isError = state is AsyncImagePainter.State.Error
         },
@@ -167,10 +197,12 @@ fun NewsResourceHeaderImage(
     ) {
         if (isLoading) {
             // Display a progress bar while loading
+            // 加载时显示进度条
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .size(80.dp),
+                // 颜色3级
                 color = MaterialTheme.colorScheme.tertiary,
             )
         }
@@ -181,26 +213,33 @@ fun NewsResourceHeaderImage(
                 .height(180.dp),
             contentScale = ContentScale.Crop,
             painter = if (isError.not() && !isLocalInspection) {
+                // 不是错误，也不是本地的检查，则用coil库提供imageLoader处理，imageLoader是AsyncImagePainter。
                 imageLoader
             } else {
+                // 其它，显示默认的。
                 painterResource(drawable.core_designsystem_ic_placeholder_default)
             },
             // TODO b/226661685: Investigate using alt text of  image to populate content description
+            // 研究使用图像的所有文本来填充内容描述
             // decorative image,
+            // 装饰图片
             contentDescription = null,
         )
     }
 }
 
 @Composable
+// 新闻标题
 fun NewsResourceTitle(
     newsResourceTitle: String,
     modifier: Modifier = Modifier,
 ) {
+    // 用小标题排版
     Text(newsResourceTitle, style = MaterialTheme.typography.headlineSmall, modifier = modifier)
 }
 
 @Composable
+// 书签按钮
 fun BookmarkButton(
     isBookmarked: Boolean,
     onClick: () -> Unit,
@@ -210,12 +249,14 @@ fun BookmarkButton(
         checked = isBookmarked,
         onCheckedChange = { onClick() },
         modifier = modifier,
+        // 普通icon
         icon = {
             Icon(
                 imageVector = NiaIcons.BookmarkBorder,
                 contentDescription = stringResource(R.string.core_ui_bookmark),
             )
         },
+        // 选中的icon
         checkedIcon = {
             Icon(
                 imageVector = NiaIcons.Bookmark,
@@ -226,17 +267,22 @@ fun BookmarkButton(
 }
 
 @Composable
+// 通知点
 fun NotificationDot(
     color: Color,
     modifier: Modifier = Modifier,
 ) {
     val description = stringResource(R.string.core_ui_unread_resource_dot_content_description)
+    // 自定义绘制点
     Canvas(
         modifier = modifier
+            // 语义
             .semantics { contentDescription = description },
         onDraw = {
             drawCircle(
                 color,
+                // size：提供当前绘图环境的尺寸，minDimension：宽度和高度的大小中较小者
+                // 半径为当前size的最小尺寸/2
                 radius = size.minDimension / 2,
             )
         },
@@ -244,22 +290,30 @@ fun NotificationDot(
 }
 
 @Composable
+// 时间格式化
 fun dateFormatted(publishDate: Instant): String {
     var zoneId by remember { mutableStateOf(ZoneId.systemDefault()) }
 
     val context = LocalContext.current
 
+    // DisposableEffect：是一个用于处理资源管理和清理的 Compose 函数
     DisposableEffect(context) {
+        // 执行副作用操作
         val receiver = TimeZoneBroadcastReceiver(
+            // 时区改变，更改zoneId。
             onTimeZoneChanged = { zoneId = ZoneId.systemDefault() },
         )
+        // -注册广播
         receiver.register(context)
         onDispose {
+            // 在组件被丢弃时执行清理操作
+            // -反注册
             receiver.unregister(context)
         }
     }
 
     return DateTimeFormatter
+        // 中等文本样式，带有一些细节。例如，格式可能是'Jan 12, 1952'。
         .ofLocalizedDate(FormatStyle.MEDIUM)
         .withLocale(Locale.getDefault())
         .withZone(zoneId)
@@ -267,15 +321,19 @@ fun dateFormatted(publishDate: Instant): String {
 }
 
 @Composable
+// 展示新闻资源其他数据（时间+类型）
 fun NewsResourceMetaData(
     publishDate: Instant,
     resourceType: String,
 ) {
+    // 时间
     val formattedDate = dateFormatted(publishDate)
     Text(
         if (resourceType.isNotBlank()) {
+            // 类型不为空，展示时间+类型。
             stringResource(R.string.core_ui_card_meta_data_text, formattedDate, resourceType)
         } else {
+            // 类型不为空，只展示时间。
             formattedDate
         },
         style = MaterialTheme.typography.labelSmall,
@@ -283,13 +341,16 @@ fun NewsResourceMetaData(
 }
 
 @Composable
+// 短描述
 fun NewsResourceShortDescription(
     newsResourceShortDescription: String,
 ) {
+    // 大内容体排版
     Text(newsResourceShortDescription, style = MaterialTheme.typography.bodyLarge)
 }
 
 @Composable
+// 新闻资源主题列表（横向）
 fun NewsResourceTopics(
     topics: List<FollowableTopic>,
     onTopicClick: (String) -> Unit,
@@ -297,7 +358,9 @@ fun NewsResourceTopics(
 ) {
     Row(
         // causes narrow chips
+        // 横向可滚动，并记录滚动状态。
         modifier = modifier.horizontalScroll(rememberScrollState()),
+        // 水平排列，间隔为4。
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         for (followableTopic in topics) {
@@ -305,6 +368,7 @@ fun NewsResourceTopics(
                 followed = followableTopic.isFollowed,
                 onClick = { onTopicClick(followableTopic.topic.id) },
                 text = {
+                    // 内容描述
                     val contentDescription = if (followableTopic.isFollowed) {
                         stringResource(
                             R.string.core_ui_topic_chip_content_description_when_followed,
@@ -316,6 +380,7 @@ fun NewsResourceTopics(
                             followableTopic.topic.name,
                         )
                     }
+                    // 文本内容
                     Text(
                         text = followableTopic.topic.name.uppercase(Locale.getDefault()),
                         modifier = Modifier.semantics {
@@ -330,6 +395,7 @@ fun NewsResourceTopics(
 
 @Preview("Bookmark Button")
 @Composable
+// 书签（未选中）预览
 private fun BookmarkButtonPreview() {
     NiaTheme {
         Surface {
@@ -340,6 +406,7 @@ private fun BookmarkButtonPreview() {
 
 @Preview("Bookmark Button Bookmarked")
 @Composable
+// 书签（选中）预览
 private fun BookmarkButtonBookmarkedPreview() {
     NiaTheme {
         Surface {
@@ -350,6 +417,7 @@ private fun BookmarkButtonBookmarkedPreview() {
 
 @Preview("NewsResourceCardExpanded")
 @Composable
+// 新闻资源预览
 private fun ExpandedNewsResourcePreview(
     @PreviewParameter(UserNewsResourcePreviewParameterProvider::class)
     userNewsResources: List<UserNewsResource>,

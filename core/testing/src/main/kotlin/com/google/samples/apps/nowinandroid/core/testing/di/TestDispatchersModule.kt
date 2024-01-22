@@ -32,6 +32,7 @@ import kotlinx.coroutines.test.TestDispatcher
     components = [SingletonComponent::class],
     replaces = [DispatchersModule::class],
 )
+// 单例，测试（test和androidTest）构建下，替换DispatchersModule，即全部使用TestDispatcher。
 internal object TestDispatchersModule {
     @Provides
     @Dispatcher(IO)

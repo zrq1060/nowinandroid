@@ -27,6 +27,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，提供数据库。
 internal object DatabaseModule {
     @Provides
     @Singleton

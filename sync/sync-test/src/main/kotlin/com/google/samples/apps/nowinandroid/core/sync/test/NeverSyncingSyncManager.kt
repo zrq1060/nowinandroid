@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
+// SyncManager（测试同步管理者）的实现，从不同步。
 internal class NeverSyncingSyncManager @Inject constructor() : SyncManager {
     override val isSyncing: Flow<Boolean> = flowOf(false)
     override fun requestSync() = Unit

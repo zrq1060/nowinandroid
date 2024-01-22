@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
+// 网络监控（NetworkMonitor）-总是在线的实现
 class AlwaysOnlineNetworkMonitor @Inject constructor() : NetworkMonitor {
     override val isOnline: Flow<Boolean> = flowOf(true)
 }

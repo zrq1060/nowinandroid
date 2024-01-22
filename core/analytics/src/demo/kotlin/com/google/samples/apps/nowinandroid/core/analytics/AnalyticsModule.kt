@@ -23,7 +23,9 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，demo构建下，给AnalyticsHelper提供StubAnalyticsHelper，即打日至分析。
 internal abstract class AnalyticsModule {
     @Binds
+    // 提供一个只打印log的AnalyticsHelper
     abstract fun bindsAnalyticsHelper(analyticsHelperImpl: StubAnalyticsHelper): AnalyticsHelper
 }

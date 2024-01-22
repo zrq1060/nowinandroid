@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 
+// 主题的仓库（TopicsRepository）-测试的实现。使用Flow实现。同步操作无实现。
 class TestTopicsRepository : TopicsRepository {
     /**
      * The backing hot flow for the list of topics ids for testing.

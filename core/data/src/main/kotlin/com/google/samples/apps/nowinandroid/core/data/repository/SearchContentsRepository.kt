@@ -21,18 +21,25 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Data layer interface for the search feature.
+ * 用于搜索功能的数据层接口。
  */
+// 搜索内容的仓库，包含为：搜索内容填充fts表、搜索查询并返回其总体（Topics+NewsResources）结果、获取搜索内容的数量。
 interface SearchContentsRepository {
 
     /**
      * Populate the fts tables for the search contents.
+     * 为搜索内容-填充fts表。
      */
+    // 搜索内容填充fts表
     suspend fun populateFtsData()
 
     /**
      * Query the contents matched with the [searchQuery] and returns it as a [Flow] of [SearchResult]
+     * 查询与[searchQuery]匹配的内容，并将其作为[SearchResult]的[Flow]返回
      */
+    // 搜索查询并返回其总体（Topics+NewsResources）结果
     fun searchContents(searchQuery: String): Flow<SearchResult>
 
+    // 获取搜索内容的数量
     fun getSearchContentsCount(): Flow<Int>
 }

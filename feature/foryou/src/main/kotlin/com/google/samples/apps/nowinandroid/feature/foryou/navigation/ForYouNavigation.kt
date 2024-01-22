@@ -26,14 +26,16 @@ import androidx.navigation.navDeepLink
 import com.google.samples.apps.nowinandroid.feature.foryou.ForYouRoute
 
 const val LINKED_NEWS_RESOURCE_ID = "linkedNewsResourceId"
+// ForYou（为你）屏的Route，可传递深度链接新闻资源Id参数。
 const val FOR_YOU_ROUTE = "for_you_route/{$LINKED_NEWS_RESOURCE_ID}"
+// 深度链接地址模板
 private const val DEEP_LINK_URI_PATTERN =
     "https://www.nowinandroid.apps.samples.google.com/foryou/{$LINKED_NEWS_RESOURCE_ID}"
 
-// 导航到ForYou屏
+// 导航控制-导航到ForYou（为你）屏
 fun NavController.navigateToForYou(navOptions: NavOptions) = navigate(FOR_YOU_ROUTE, navOptions)
 
-// ForYou屏的导航配置（参数+UI）
+// 导航图构建-ForYou（为你）屏（参数+UI）
 fun NavGraphBuilder.forYouScreen(onTopicClick: (String) -> Unit) {
     composable(
         route = FOR_YOU_ROUTE,
@@ -44,7 +46,7 @@ fun NavGraphBuilder.forYouScreen(onTopicClick: (String) -> Unit) {
             navArgument(LINKED_NEWS_RESOURCE_ID) { type = NavType.StringType },
         ),
     ) {
-        // ForYou屏-UI
+        // ForYou（为你）屏-Route（ViewModel+UI）
         ForYouRoute(onTopicClick)
     }
 }

@@ -22,13 +22,16 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * A class to model background color and tonal elevation values for Now in Android.
+ * 为Now in Android建模背景颜色和色调海拔值的类
  */
 @Immutable
+// 不可变类，Tint样式。
 data class TintTheme(
     val iconTint: Color = Color.Unspecified,
 )
 
 /**
  * A composition local for [TintTheme].
+ * [TintTheme]的局部组合。
  */
 val LocalTintTheme = staticCompositionLocalOf { TintTheme() }

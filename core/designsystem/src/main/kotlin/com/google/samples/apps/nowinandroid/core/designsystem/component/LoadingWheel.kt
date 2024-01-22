@@ -51,20 +51,30 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import kotlinx.coroutines.launch
 
 @Composable
+// 加载Loading
 fun NiaLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
+    // 无限过渡
     val infiniteTransition = rememberInfiniteTransition(label = "wheel transition")
 
     // Specifies the float animation for slowly drawing out the lines on entering
+    // 指定在输入时缓慢绘制线条的浮动动画
+    // 开始值，检查为0，其它为1。
     val startValue = if (LocalInspectionMode.current) 0F else 1F
+    // float动画值集合，12条数据，默认值为1。
     val floatAnimValues = (0 until NUM_OF_LINES).map { remember { Animatable(startValue) } }
+    // 启动效应
     LaunchedEffect(floatAnimValues) {
+        // 遍历12次动画
         (0 until NUM_OF_LINES).map { index ->
+            // 启动协程
             launch {
+                // 执行一次动画，1->0，持续时间0.1s，延迟时间为 0.04s * index。
                 floatAnimValues[index].animateTo(
                     targetValue = 0F,
+                    // 动画规格，补间动画，持续时间0.1s，延迟时间为 40 * index。
                     animationSpec = tween(
                         durationMillis = 100,
                         easing = FastOutSlowInEasing,
@@ -76,9 +86,12 @@ fun NiaLoadingWheel(
     }
 
     // Specifies the rotation animation of the entire Canvas composable
+    // 指定整个可组合画布的旋转动画
+    // 旋转动画，目标360度，无限重复，12s一圈。
     val rotationAnim by infiniteTransition.animateFloat(
         initialValue = 0F,
         targetValue = 360F,
+        // 动画规格，无限重复，补间动画，12s一圈。
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = ROTATION_TIME, easing = LinearEasing),
         ),
@@ -86,20 +99,30 @@ fun NiaLoadingWheel(
     )
 
     // Specifies the color animation for the base-to-progress line color change
+    // 指定从基线到进度线颜色变化的颜色动画
+    // 基线的颜色，目标颜色。
     val baseLineColor = MaterialTheme.colorScheme.onBackground
+    // 进度线的颜色，变化颜色。
     val progressLineColor = MaterialTheme.colorScheme.inversePrimary
 
+    // 颜色动画值集合，12条数据，目标baseLineColor。
     val colorAnimValues = (0 until NUM_OF_LINES).map { index ->
+        // 执行一个动画
         infiniteTransition.animateColor(
             initialValue = baseLineColor,
             targetValue = baseLineColor,
+            // 动画规格，无限重复，关键帧动画，持续时间为6s。
             animationSpec = infiniteRepeatable(
                 animation = keyframes {
                     durationMillis = ROTATION_TIME / 2
+                    // KeyframeEntity，在0.5s时，颜色为progressLineColor，线性宽松。
                     progressLineColor at ROTATION_TIME / NUM_OF_LINES / 2 with LinearEasing
+                    // KeyframeEntity，在1s时，颜色为baseLineColor，线性宽松。
                     baseLineColor at ROTATION_TIME / NUM_OF_LINES with LinearEasing
                 },
+                // 重复模式：重新启动
                 repeatMode = RepeatMode.Restart,
+                // 初始起始偏移量，为 0.5s * index。
                 initialStartOffset = StartOffset(ROTATION_TIME / NUM_OF_LINES / 2 * index),
             ),
             label = "wheel color animation",
@@ -107,23 +130,35 @@ fun NiaLoadingWheel(
     }
 
     // Draws out the LoadingWheel Canvas composable and sets the animations
+    // 绘制可组合的LoadingWheel画布并设置动画
     Canvas(
         modifier = modifier
             .size(48.dp)
             .padding(8.dp)
+            // 图形层，旋转Z轴，实现轮子转动。
             .graphicsLayer { rotationZ = rotationAnim }
             .semantics { contentDescription = contentDesc }
             .testTag("loadingWheel"),
     ) {
+        // 画12条线
         repeat(NUM_OF_LINES) { index ->
+            // 每一条线，旋转 index * 30 度。
             rotate(degrees = index * 30f) {
+                // 画一条线
                 drawLine(
+                    // 线颜色
                     color = colorAnimValues[index].value,
                     // Animates the initially drawn 1 pixel alpha from 0 to 1
+                    // 将最初绘制的1像素alpha从0动画到1
+                    // 线透明度，默认floatAnimValues值为1，为全部透明，到floatAnimValues延迟时间后值修改，即为全不透明。
                     alpha = if (floatAnimValues[index].value < 1f) 1f else 0f,
+                    // 线宽度
                     strokeWidth = 4F,
+                    // 线圆角
                     cap = StrokeCap.Round,
+                    // 开始位置，x为中心点，y为正上方半径的一半。
                     start = Offset(size.width / 2, size.height / 4),
+                    // 结束位置，x为中心点，y为正上方半径的一半*floatAnimValues值。
                     end = Offset(size.width / 2, floatAnimValues[index].value * size.height / 4),
                 )
             }
@@ -132,6 +167,7 @@ fun NiaLoadingWheel(
 }
 
 @Composable
+// 覆盖加载Loading，大小为60dp。
 fun NiaOverlayLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
@@ -151,6 +187,7 @@ fun NiaOverlayLoadingWheel(
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），NiaLoadingWheel的效果。
 fun NiaLoadingWheelPreview() {
     NiaTheme {
         Surface {
@@ -161,6 +198,7 @@ fun NiaLoadingWheelPreview() {
 
 @ThemePreviews
 @Composable
+// ThemePreview两个样式（亮和暗），NiaOverlayLoadingWheel的效果。
 fun NiaOverlayLoadingWheelPreview() {
     NiaTheme {
         Surface {

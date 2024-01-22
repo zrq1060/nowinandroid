@@ -41,18 +41,22 @@ import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollba
 import com.google.samples.apps.nowinandroid.core.model.data.FollowableTopic
 
 @Composable
+// Interests（兴趣）Tab内容
 fun TopicsTabContent(
     topics: List<FollowableTopic>,
     onTopicClick: (String) -> Unit,
     onFollowButtonClick: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    // 是否设置底部的间距
     withBottomSpacer: Boolean = true,
 ) {
+    // Box容器
     Box(
         modifier = modifier
             .fillMaxWidth(),
     ) {
         val scrollableState = rememberLazyListState()
+        // 列布局
         LazyColumn(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
@@ -60,9 +64,11 @@ fun TopicsTabContent(
             contentPadding = PaddingValues(vertical = 16.dp),
             state = scrollableState,
         ) {
+            // 遍历添加Item
             topics.forEach { followableTopic ->
                 val topicId = followableTopic.topic.id
                 item(key = topicId) {
+                    // Item布局
                     InterestsItem(
                         name = followableTopic.topic.name,
                         following = followableTopic.isFollowed,
@@ -75,6 +81,7 @@ fun TopicsTabContent(
             }
 
             if (withBottomSpacer) {
+                // 间隔-item一项，解决无网络Snackbar的展示。
                 item {
                     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
                 }
@@ -83,6 +90,7 @@ fun TopicsTabContent(
         val scrollbarState = scrollableState.scrollbarState(
             itemsAvailable = topics.size,
         )
+        // 可拖动滚动条（右侧）
         scrollableState.DraggableScrollbar(
             modifier = Modifier
                 .fillMaxHeight()

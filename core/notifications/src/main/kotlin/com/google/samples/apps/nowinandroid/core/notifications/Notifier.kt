@@ -20,7 +20,9 @@ import com.google.samples.apps.nowinandroid.core.model.data.NewsResource
 
 /**
  * Interface for creating notifications in the app
+ * 在应用程序中用于创建通知的接口
  */
+// 通知的接口-用于创建发送通知。
 interface Notifier {
     fun postNewsNotifications(newsResources: List<NewsResource>)
 }

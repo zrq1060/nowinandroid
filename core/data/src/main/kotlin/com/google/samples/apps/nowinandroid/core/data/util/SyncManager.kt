@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Reports on if synchronization is in progress
+ * 报告同步是否正在进行中
  */
+// 同步的管理者，用于请求同步和判断是在同步中。
 interface SyncManager {
     val isSyncing: Flow<Boolean>
     fun requestSync()

@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+// 搜索内容的仓库（SearchContentsRepository）-默认实现。使用数据库实现。
 internal class DefaultSearchContentsRepository @Inject constructor(
     private val newsResourceDao: NewsResourceDao,
     private val newsResourceFtsDao: NewsResourceFtsDao,
@@ -45,8 +46,11 @@ internal class DefaultSearchContentsRepository @Inject constructor(
 ) : SearchContentsRepository {
 
     override suspend fun populateFtsData() {
+        // 为搜索内容-填充fts表（newsResourcesFts、topicsFts），
         withContext(ioDispatcher) {
+            // 填充newsResourcesFts表，从newsResourceDao中获取。
             newsResourceFtsDao.insertAll(
+                // 获取全部新闻资源，并且不进行过过滤，并把此列表转为此FtsEntity的列表。
                 newsResourceDao.getNewsResources(
                     useFilterTopicIds = false,
                     useFilterNewsIds = false,
@@ -54,6 +58,7 @@ internal class DefaultSearchContentsRepository @Inject constructor(
                     .first()
                     .map(PopulatedNewsResource::asFtsEntity),
             )
+            // 填充topicsFts表，从topicDao中获取，并把此列表转为此FtsEntity的列表。
             topicFtsDao.insertAll(topicDao.getOneOffTopicEntities().map { it.asFtsEntity() })
         }
     }
@@ -61,19 +66,29 @@ internal class DefaultSearchContentsRepository @Inject constructor(
     override fun searchContents(searchQuery: String): Flow<SearchResult> {
         // Surround the query by asterisks to match the query when it's in the middle of
         // a word
+        // 当查询位于单词中间时，用星号包围查询以匹配查询
+
+        // 搜索内容，搜索两个表，然后把结果组合后返回。
+        // -获取到匹配的Ids
         val newsResourceIds = newsResourceFtsDao.searchAllNewsResources("*$searchQuery*")
         val topicIds = topicFtsDao.searchAllTopics("*$searchQuery*")
 
+        // -通过Ids获取到指定的对象（PopulatedNewsResource、TopicEntity）列表
         val newsResourcesFlow = newsResourceIds
+            // 把最新的转为set集合
             .mapLatest { it.toSet() }
+            // 去重复
             .distinctUntilChanged()
+            // 把最新的转为PopulatedNewsResource列表
             .flatMapLatest {
+                // 获取此Ids列表的填充的新闻资源（PopulatedNewsResource）列表
                 newsResourceDao.getNewsResources(useFilterNewsIds = true, filterNewsIds = it)
             }
         val topicsFlow = topicIds
             .mapLatest { it.toSet() }
             .distinctUntilChanged()
             .flatMapLatest(topicDao::getTopicEntities)
+        // -组合newsResourcesFlow、topicsFlow，把结果转为SearchResult，有一个变的结果就变。
         return combine(newsResourcesFlow, topicsFlow) { newsResources, topics ->
             SearchResult(
                 topics = topics.map { it.asExternalModel() },
@@ -83,6 +98,7 @@ internal class DefaultSearchContentsRepository @Inject constructor(
     }
 
     override fun getSearchContentsCount(): Flow<Int> =
+        // 获取搜索内容的数量，是在两个表内搜索，所以数量为两个表的数量和。
         combine(
             newsResourceFtsDao.getCount(),
             topicFtsDao.getCount(),

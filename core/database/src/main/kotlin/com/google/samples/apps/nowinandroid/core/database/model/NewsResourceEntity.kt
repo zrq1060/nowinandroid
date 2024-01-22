@@ -24,10 +24,12 @@ import kotlinx.datetime.Instant
 
 /**
  * Defines an NiA news resource.
+ * 定义NiA新闻资源。
  */
 @Entity(
     tableName = "news_resources",
 )
+// 新闻资源表（news_resources）
 data class NewsResourceEntity(
     @PrimaryKey
     val id: String,
@@ -41,6 +43,7 @@ data class NewsResourceEntity(
     val type: String,
 )
 
+// NewsResourceEntity（新闻资源数据库类），数据库类->外部类。
 fun NewsResourceEntity.asExternalModel() = NewsResource(
     id = id,
     title = title,

@@ -20,9 +20,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 /**
  * Global key used to obtain access to the AnalyticsHelper through a CompositionLocal.
+ * 全局键，用于通过CompositionLocal获取对AnalyticsHelper的访问。
  */
 val LocalAnalyticsHelper = staticCompositionLocalOf<AnalyticsHelper> {
     // Provide a default AnalyticsHelper which does nothing. This is so that tests and previews
     // do not have to provide one. For real app builds provide a different implementation.
+    // 提供一个默认的什么都不做的AnalyticsHelper。这样测试和预览就不必提供一个。对于真正的应用构建提供不同的实现。
     NoOpAnalyticsHelper()
 }

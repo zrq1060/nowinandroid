@@ -25,6 +25,7 @@ private const val TAG = "StubAnalyticsHelper"
 /**
  * An implementation of AnalyticsHelper just writes the events to logcat. Used in builds where no
  * analytics events should be sent to a backend.
+ * 只是将事件写入logcat的AnalyticsHelper的实现。用于不应将任何分析事件发送到后端的构建中。
  */
 @Singleton
 internal class StubAnalyticsHelper @Inject constructor() : AnalyticsHelper {

@@ -35,27 +35,33 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，网络层提供：Json、FakeAssetManager、OkHttpClient、ImageLoader。
 internal object NetworkModule {
 
     @Provides
     @Singleton
+    // 单例，提供Json
     fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
     }
 
     @Provides
     @Singleton
+    // 单例，提供FakeAssetManager
     fun providesFakeAssetManager(
         @ApplicationContext context: Context,
+        // FakeAssetManager能创建，应该是匿名内部类导致。
     ): FakeAssetManager = FakeAssetManager(context.assets::open)
 
     @Provides
     @Singleton
+    // 单例，提供OkHttpClient
     fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
         .addInterceptor(
             HttpLoggingInterceptor()
                 .apply {
                     if (BuildConfig.DEBUG) {
+                        // debug模式下，打印日志。
                         setLevel(HttpLoggingInterceptor.Level.BODY)
                     }
                 },
@@ -66,24 +72,31 @@ internal object NetworkModule {
      * Since we're displaying SVGs in the app, Coil needs an ImageLoader which supports this
      * format. During Coil's initialization it will call `applicationContext.newImageLoader()` to
      * obtain an ImageLoader.
+     * 因为我们要在应用中显示svg，所以Coil需要一个支持这种格式的ImageLoader。
+     * 在Coil的初始化过程中，它将调用applicationContext.newImageLoader()来获取一个ImageLoader。
      *
      * @see <a href="https://github.com/coil-kt/coil/blob/main/coil-singleton/src/main/java/coil/Coil.kt">Coil</a>
      */
     @Provides
     @Singleton
+    // 单例，提供ImageLoader（coil库）
     fun imageLoader(
         okHttpCallFactory: Call.Factory,
         @ApplicationContext application: Context,
     ): ImageLoader = ImageLoader.Builder(application)
+        // 使用okHttp调用加载
         .callFactory(okHttpCallFactory)
         .components {
+            // 支持Svg
             add(SvgDecoder.Factory())
         }
         // Assume most content images are versioned urls
         // but some problematic images are fetching each time
+        // 假设大多数内容图像都是版本化的url，但每次都抓取一些有问题的图像。
         .respectCacheHeaders(false)
         .apply {
             if (BuildConfig.DEBUG) {
+                // debug模式下，打印日志。
                 logger(DebugLogger())
             }
         }

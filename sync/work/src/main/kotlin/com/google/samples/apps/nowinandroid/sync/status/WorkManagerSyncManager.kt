@@ -32,10 +32,13 @@ import javax.inject.Inject
 
 /**
  * [SyncManager] backed by [WorkInfo] from [WorkManager]
+ * [SyncManager]由[WorkManager]的[WorkInfo]支持
  */
+// SyncManager的WorkManager实现
 internal class WorkManagerSyncManager @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : SyncManager {
+    // 是否同步中
     override val isSyncing: Flow<Boolean> =
         WorkManager.getInstance(context).getWorkInfosForUniqueWorkFlow(SYNC_WORK_NAME)
             .map(List<WorkInfo>::anyRunning)
@@ -44,6 +47,8 @@ internal class WorkManagerSyncManager @Inject constructor(
     override fun requestSync() {
         val workManager = WorkManager.getInstance(context)
         // Run sync on app startup and ensure only one sync worker runs at any time
+        // 在应用启动时运行sync，并确保任何时候只有一个同步工作线程在运行
+        // 同SyncInitializer实现
         workManager.enqueueUniqueWork(
             SYNC_WORK_NAME,
             ExistingWorkPolicy.KEEP,

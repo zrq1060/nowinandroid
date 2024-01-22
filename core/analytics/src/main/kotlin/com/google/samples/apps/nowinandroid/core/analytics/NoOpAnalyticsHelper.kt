@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.core.analytics
 
 /**
  * Implementation of AnalyticsHelper which does nothing. Useful for tests and previews.
+ * AnalyticsHelper的实现，它什么都不做。用于测试和预览。
  */
 class NoOpAnalyticsHelper : AnalyticsHelper {
     override fun logEvent(event: AnalyticsEvent) = Unit

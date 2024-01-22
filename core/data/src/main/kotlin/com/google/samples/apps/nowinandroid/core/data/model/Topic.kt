@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.core.data.model
 import com.google.samples.apps.nowinandroid.core.database.model.TopicEntity
 import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
 
+// Topic（主题），网络类->数据库类。
 fun NetworkTopic.asEntity() = TopicEntity(
     id = id,
     name = name,

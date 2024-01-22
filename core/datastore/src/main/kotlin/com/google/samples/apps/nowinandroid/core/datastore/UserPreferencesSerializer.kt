@@ -25,13 +25,16 @@ import javax.inject.Inject
 
 /**
  * An [androidx.datastore.core.Serializer] for the [UserPreferences] proto.
+ * [UserPreferences]原型的[androidx.datastore.core.Serializer]。
  */
+// UserPreferences的序列化器
 class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferences> {
     override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): UserPreferences =
         try {
             // readFrom is already called on the data store background thread
+            // readFrom已经在数据存储后台线程上被调用
             UserPreferences.parseFrom(input)
         } catch (exception: InvalidProtocolBufferException) {
             throw CorruptionException("Cannot read proto.", exception)
@@ -39,6 +42,7 @@ class UserPreferencesSerializer @Inject constructor() : Serializer<UserPreferenc
 
     override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
         // writeTo is already called on the data store background thread
+        // 已经在数据存储后台线程上调用了writeTo
         t.writeTo(output)
     }
 }

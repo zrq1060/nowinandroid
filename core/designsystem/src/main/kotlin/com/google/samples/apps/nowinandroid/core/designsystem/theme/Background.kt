@@ -23,14 +23,19 @@ import androidx.compose.ui.unit.Dp
 
 /**
  * A class to model background color and tonal elevation values for Now in Android.
+ * 为Now in Android建模背景颜色和色调海拔的类
  */
 @Immutable
+// 不可变类，背景样式。
 data class BackgroundTheme(
+    // 背景颜色，为未定义（透明色）。
     val color: Color = Color.Unspecified,
+    // 背景色调海拔，为未定义。
     val tonalElevation: Dp = Dp.Unspecified,
 )
 
 /**
  * A composition local for [BackgroundTheme].
+ * [BackgroundTheme]的局部组合。
  */
 val LocalBackgroundTheme = staticCompositionLocalOf { BackgroundTheme() }

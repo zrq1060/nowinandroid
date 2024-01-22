@@ -22,7 +22,9 @@ import com.google.samples.apps.nowinandroid.core.network.model.NetworkTopic
 
 /**
  * Interface representing network calls to the NIA backend
+ * 表示对NIA后端的网络调用的接口
  */
+// 网络数据源，里面返回的bean都是用的网络层的。
 interface NiaNetworkDataSource {
     suspend fun getTopics(ids: List<String>? = null): List<NetworkTopic>
 

@@ -19,30 +19,36 @@ package com.google.samples.apps.nowinandroid.feature.interests.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
 import com.google.samples.apps.nowinandroid.feature.interests.InterestsRoute
 
 private const val INTERESTS_GRAPH_ROUTE_PATTERN = "interests_graph"
+// Interests（兴趣）屏的Route
 const val INTERESTS_ROUTE = "interests_route"
 
-// 导航到Interests（兴趣）屏
+// 导航控制-导航到Interests（兴趣）图
 fun NavController.navigateToInterestsGraph(navOptions: NavOptions) = navigate(INTERESTS_GRAPH_ROUTE_PATTERN, navOptions)
 
-// Interests（兴趣）屏的导航配置（参数+UI）
+// 导航图构建-Interests（兴趣）图（参数+UI）
 fun NavGraphBuilder.interestsGraph(
     onTopicClick: (String) -> Unit,
     nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
+    // 嵌套导航图，开始目的地为Interests（兴趣）屏。
     navigation(
         route = INTERESTS_GRAPH_ROUTE_PATTERN,
         startDestination = INTERESTS_ROUTE,
     ) {
+        // Interests（兴趣）屏
         composable(route = INTERESTS_ROUTE) {
-            // Interests屏
+            // Interests（兴趣）屏-Route（ViewModel+UI）
             InterestsRoute(onTopicClick)
         }
-        // topic屏
+        // 嵌套图
         nestedGraphs()
     }
 }

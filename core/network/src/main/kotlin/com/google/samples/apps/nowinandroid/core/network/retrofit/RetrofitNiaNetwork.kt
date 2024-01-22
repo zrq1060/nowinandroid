@@ -34,7 +34,9 @@ import javax.inject.Singleton
 
 /**
  * Retrofit API declaration for NIA Network API
+ * NIA 网络 API 的 Retrofit API 声明。
  */
+// 网络API声明
 private interface RetrofitNiaNetworkApi {
     @GET(value = "topics")
     suspend fun getTopics(
@@ -57,10 +59,12 @@ private interface RetrofitNiaNetworkApi {
     ): List<NetworkChangeList>
 }
 
+// 网络Base地址，在secrets.defaults.properties中定义。
 private const val NIA_BASE_URL = BuildConfig.BACKEND_URL
 
 /**
  * Wrapper for data provided from the [NIA_BASE_URL]
+ * 从[NIA_BASE_URL]提供的数据的包装器
  */
 @Serializable
 private data class NetworkResponse<T>(
@@ -69,13 +73,16 @@ private data class NetworkResponse<T>(
 
 /**
  * [Retrofit] backed [NiaNetworkDataSource]
+ * [NiaNetworkDataSource]的[Retrofit]支持
  */
 @Singleton
+// Retrofit实现的网络数据源
 internal class RetrofitNiaNetwork @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: Call.Factory,
 ) : NiaNetworkDataSource {
 
+    // 创建Api
     private val networkApi = Retrofit.Builder()
         .baseUrl(NIA_BASE_URL)
         .callFactory(okhttpCallFactory)

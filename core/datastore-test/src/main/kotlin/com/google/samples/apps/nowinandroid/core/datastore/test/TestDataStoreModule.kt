@@ -35,6 +35,7 @@ import javax.inject.Singleton
     components = [SingletonComponent::class],
     replaces = [DataStoreModule::class],
 )
+// 单例，测试（test和androidTest）构建下，替换DataStoreModule，即全部使用测试的DataStore。
 internal object TestDataStoreModule {
 
     @Provides

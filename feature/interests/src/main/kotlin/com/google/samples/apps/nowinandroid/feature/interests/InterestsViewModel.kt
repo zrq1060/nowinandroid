@@ -31,12 +31,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+// Interests（兴趣）屏-ViewModel
 class InterestsViewModel @Inject constructor(
     val userDataRepository: UserDataRepository,
+    // 获取带有是否关注的FollowableTopic列表的用例
     getFollowableTopics: GetFollowableTopicsUseCase,
 ) : ViewModel() {
 
+    // Interests（兴趣）屏-UiState，默认加载中状态。
     val uiState: StateFlow<InterestsUiState> =
+        // 获取FollowableTopic（带有是否关注的）列表，并按照名称排序，并把List<FollowableTopic>列表转为InterestsUiState.Interests。
         getFollowableTopics(sortBy = TopicSortField.NAME).map(
             InterestsUiState::Interests,
         ).stateIn(
@@ -45,6 +49,7 @@ class InterestsViewModel @Inject constructor(
             initialValue = InterestsUiState.Loading,
         )
 
+    // 设置-关注/取消关注-主题
     fun followTopic(followedTopicId: String, followed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setTopicIdFollowed(followedTopicId, followed)
@@ -52,12 +57,16 @@ class InterestsViewModel @Inject constructor(
     }
 }
 
+// Interests（兴趣）屏-UiState
 sealed interface InterestsUiState {
+    // 加载中
     data object Loading : InterestsUiState
 
+    // 成功-有数据
     data class Interests(
         val topics: List<FollowableTopic>,
     ) : InterestsUiState
 
+    // 成功-无数据
     data object Empty : InterestsUiState
 }

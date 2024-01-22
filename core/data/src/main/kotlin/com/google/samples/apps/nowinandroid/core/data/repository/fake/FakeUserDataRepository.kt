@@ -29,7 +29,11 @@ import javax.inject.Inject
  *
  * This allows us to run the app with fake data, without needing an internet connection or working
  * backend.
+ * UserDataRepository的假实现，返回硬编码的用户数据。
+ *
+ * 这允许我们使用假数据运行应用程序，而不需要互联网连接或工作后端。
  */
+// 用户数据的仓库（UserDataRepository）-假的实现。使用DataSource实现。
 class FakeUserDataRepository @Inject constructor(
     private val niaPreferencesDataSource: NiaPreferencesDataSource,
 ) : UserDataRepository {

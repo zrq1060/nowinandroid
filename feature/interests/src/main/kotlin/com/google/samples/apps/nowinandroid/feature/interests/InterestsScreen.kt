@@ -35,6 +35,7 @@ import com.google.samples.apps.nowinandroid.core.ui.FollowableTopicPreviewParame
 import com.google.samples.apps.nowinandroid.core.ui.TrackScreenViewEvent
 
 @Composable
+// Interests（兴趣）屏-路由，有ViewModel。
 internal fun InterestsRoute(
     onTopicClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -51,29 +52,34 @@ internal fun InterestsRoute(
 }
 
 @Composable
+// Interests（兴趣）屏-UI，无ViewModel。
 internal fun InterestsScreen(
     uiState: InterestsUiState,
     followTopic: (String, Boolean) -> Unit,
     onTopicClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // 列容器
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         when (uiState) {
             InterestsUiState.Loading ->
+                // 加载中，展示Loading。
                 NiaLoadingWheel(
                     modifier = modifier,
                     contentDesc = stringResource(id = R.string.feature_interests_loading),
                 )
             is InterestsUiState.Interests ->
+                // 成功-有数据，显示列表。
                 TopicsTabContent(
                     topics = uiState.topics,
                     onTopicClick = onTopicClick,
                     onFollowButtonClick = followTopic,
                     modifier = modifier,
                 )
+            // 成功-无数据，显示空布局。
             is InterestsUiState.Empty -> InterestsEmptyScreen()
         }
     }
@@ -81,12 +87,15 @@ internal fun InterestsScreen(
 }
 
 @Composable
+// Interests（兴趣）屏-空布局
 private fun InterestsEmptyScreen() {
     Text(text = stringResource(id = R.string.feature_interests_empty_header))
 }
 
 @DevicePreviews
 @Composable
+// Interests（兴趣）屏-填充（主题列表）的布局
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，展示主题列表（3条数据）。
 fun InterestsScreenPopulated(
     @PreviewParameter(FollowableTopicPreviewParameterProvider::class)
     followableTopics: List<FollowableTopic>,
@@ -106,6 +115,8 @@ fun InterestsScreenPopulated(
 
 @DevicePreviews
 @Composable
+// Interests（兴趣）屏-加载中的布局
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，展示加载中。
 fun InterestsScreenLoading() {
     NiaTheme {
         NiaBackground {
@@ -120,6 +131,8 @@ fun InterestsScreenLoading() {
 
 @DevicePreviews
 @Composable
+// Interests（兴趣）屏-空的布局
+// 在手机-竖屏、手机-横屏、折叠屏、平板上，展示空。
 fun InterestsScreenEmpty() {
     NiaTheme {
         NiaBackground {

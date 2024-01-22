@@ -56,6 +56,7 @@ private const val TAG = "MainActivity"
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
+// 首页
 class MainActivity : ComponentActivity() {
 
     /**
@@ -63,23 +64,29 @@ class MainActivity : ComponentActivity() {
      * 惰性注入[JankStats]，用于在整个应用程序中跟踪jank。
      */
     @Inject
+    // 该类用于积累和报告有关应用程序中UI“jank”(运行时性能问题)的信息。
     lateinit var lazyStats: dagger.Lazy<JankStats>
 
     @Inject
+    // 网络监控，用于监听无网络。
     lateinit var networkMonitor: NetworkMonitor
 
     @Inject
+    // 分析辅助类，用于处理事件（如：打印日至等）。
     lateinit var analyticsHelper: AnalyticsHelper
 
     @Inject
+    // 用户新闻资源库
     lateinit var userNewsResourceRepository: UserNewsResourceRepository
 
     val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // splash初始化
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        // 当前页面的UI状态，默认为加载中。
         var uiState: MainActivityUiState by mutableStateOf(Loading)
 
         // Update the uiState
@@ -106,15 +113,20 @@ class MainActivity : ComponentActivity() {
         // Turn off the decor fitting system windows, which allows us to handle insets,
         // including IME animations, and go edge-to-edge
         // This also sets up the initial system bar style based on the platform theme
+        // 关闭装饰配件系统窗口，它允许我们处理插页，包括IME动画，并边缘到边缘
+        // 根据平台主题设置初始的系统栏样式
         enableEdgeToEdge()
 
         setContent {
+            // 是否是暗主题
             val darkTheme = shouldUseDarkTheme(uiState)
 
             // Update the edge to edge configuration to match the theme
             // This is the same parameters as the default enableEdgeToEdge call, but we manually
             // resolve whether or not to show dark theme using uiState, since it can be different
             // than the configuration's dark theme value based on the user preference.
+            // 更新边缘到边缘的配置以匹配主题
+            // 这是与默认的enableEdgeToEdge调用相同的参数，但是我们使用uiState手动解决是否显示暗主题，因为它可以与基于用户首选项的配置的暗主题值不同。
             DisposableEffect(darkTheme) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(
@@ -129,15 +141,24 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
+            // 提供本地Provider供使用
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
+                // 自己APP的样式
                 NiaTheme(
+                    // 暗模式
                     darkTheme = darkTheme,
+                    // android样式
                     androidTheme = shouldUseAndroidTheme(uiState),
+                    // 禁用动态样式
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
+                    // 自己APP样式下的内容
                     NiaApp(
+                        // 网络监控
                         networkMonitor = networkMonitor,
+                        // window大小
                         windowSizeClass = calculateWindowSizeClass(this),
+                        // 用户新闻资源库
                         userNewsResourceRepository = userNewsResourceRepository,
                     )
                 }
@@ -161,6 +182,7 @@ class MainActivity : ComponentActivity() {
  * 如果要使用Android主题，返回' true '，作为[uiState]的一个函数。
  */
 @Composable
+// 是否用android样式，加载中状态不用，成功状态用用户自己设置的。
 private fun shouldUseAndroidTheme(
     uiState: MainActivityUiState,
 ): Boolean = when (uiState) {
@@ -173,8 +195,10 @@ private fun shouldUseAndroidTheme(
 
 /**
  * Returns `true` if the dynamic color is disabled, as a function of the [uiState].
+ * 如果动态颜色被禁用，返回true，作为[uiState]的一个函数。
  */
 @Composable
+// 是否禁用动态模式，加载中状态不禁用，成功状态用用户自己设置的。
 private fun shouldDisableDynamicTheming(
     uiState: MainActivityUiState,
 ): Boolean = when (uiState) {
@@ -185,8 +209,10 @@ private fun shouldDisableDynamicTheming(
 /**
  * Returns `true` if dark theme should be used, as a function of the [uiState] and the
  * current system context.
+ * 如果应该使用dark主题，作为[uiState]和当前系统上下文的函数，则返回true。
  */
 @Composable
+// 是否用暗模式，加载中状态用系统动态默认的，成功状态用用户自己设置的。
 private fun shouldUseDarkTheme(
     uiState: MainActivityUiState,
 ): Boolean = when (uiState) {
@@ -200,12 +226,14 @@ private fun shouldUseDarkTheme(
 
 /**
  * The default light scrim, as defined by androidx and the platform:
+ * 由androidx和平台定义的默认 light scrim：
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=35-38;drc=27e7d52e8604a080133e8b842db10c89b4482598
  */
 private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
 
 /**
  * The default dark scrim, as defined by androidx and the platform:
+ * 由androidx和平台定义的默认 dark scrim：
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
  */
 private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)

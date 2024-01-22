@@ -38,7 +38,11 @@ import javax.inject.Inject
  *
  * This allows us to run the app with fake data, without needing an internet connection or working
  * backend.
+ * 从JSON字符串中检索新闻资源的NewsRepository的假实现。
+ *
+ * 这允许我们使用假数据运行应用程序，而不需要互联网连接或工作后端。
  */
+// 新闻的仓库（NewsRepository）-假的实现。使用FakeNiaNetworkDataSource（底层是本地json文件）实现。
 class FakeNewsRepository @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val datasource: FakeNiaNetworkDataSource,
@@ -55,6 +59,8 @@ class FakeNewsRepository @Inject constructor(
                         // Filter out any news resources which don't match the current query.
                         // If no query parameters (filterTopicIds or filterNewsIds) are specified
                         // then the news resource is returned.
+                        // 过滤掉与当前查询不匹配的任何新闻资源。
+                        // 如果没有指定查询参数(filterTopicIds或filterNewsIds)，则返回新闻资源。
                         listOfNotNull(
                             true,
                             query.filterNewsIds?.contains(networkNewsResource.id),

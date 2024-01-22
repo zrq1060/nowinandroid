@@ -24,15 +24,20 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * DAO for [RecentSearchQueryEntity] access
+ * 用于[RecentSearchQueryEntity]访问的DAO
  */
 @Dao
+// 最近搜索查询表（recentSearchQueries）的操作。包含：获取最近搜索的查询、更新插入最近搜索查询、清除最近搜索查询。
 interface RecentSearchQueryDao {
     @Query(value = "SELECT * FROM recentSearchQueries ORDER BY queriedDate DESC LIMIT :limit")
+    // 获取最近搜索的查询，并按照时间排序，并获取指定limit的数量个。
     fun getRecentSearchQueryEntities(limit: Int): Flow<List<RecentSearchQueryEntity>>
 
     @Upsert
+    // 更新插入（有冲突则替换）最近搜索查询（RecentSearchQueryEntity）
     suspend fun insertOrReplaceRecentSearchQuery(recentSearchQuery: RecentSearchQueryEntity)
 
     @Query(value = "DELETE FROM recentSearchQueries")
+    // 清除最近搜索查询，即清除表所有数据。
     suspend fun clearRecentSearchQueries()
 }

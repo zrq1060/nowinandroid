@@ -62,31 +62,43 @@ import kotlinx.coroutines.delay
 
 /**
  * The time period for showing the scrollbar thumb after interacting with it, before it fades away
+ * 在与滚动条交互之后，在它消失之前显示滚动条拇指的时间段
  */
 private const val SCROLLBAR_INACTIVE_TO_DORMANT_TIME_IN_MS = 2_000L
 
 /**
  * A [Scrollbar] that allows for fast scrolling of content by dragging its thumb.
  * Its thumb disappears when the scrolling container is dormant.
+ * 一个滚动条，允许通过拖动其拇指快速滚动内容。当滚动容器处于休眠状态时，它的拇指就会消失。
  * @param modifier a [Modifier] for the [Scrollbar]
+ *              滚动条的修饰符
  * @param state the driving state for the [Scrollbar]
+ *              滚动条的滑动状态
  * @param orientation the orientation of the scrollbar
+ *              滚动条的方向
  * @param onThumbMoved the fast scroll implementation
+ *              快速滚动的实现
  */
 @Composable
+// 可拖动的Scrollbar
 fun ScrollableState.DraggableScrollbar(
     modifier: Modifier = Modifier,
     state: ScrollbarState,
     orientation: Orientation,
     onThumbMoved: (Float) -> Unit,
 ) {
+    // 可变交互源
+    // 返回一个新的MutableInteractionSource，它可以被提升并提供给组件，允许监听这些组件内部的交互更改。
+    // 在提供给组件之前应该记住这一点，这样它就可以跨组合维护其状态。
     val interactionSource = remember { MutableInteractionSource() }
+    // interactionSource——允许观察滚动条的状态
     Scrollbar(
         modifier = modifier,
         orientation = orientation,
         interactionSource = interactionSource,
         state = state,
         thumb = {
+            // 可拖动的Scrollbar拇指
             DraggableScrollbarThumb(
                 interactionSource = interactionSource,
                 orientation = orientation,
@@ -98,12 +110,18 @@ fun ScrollableState.DraggableScrollbar(
 
 /**
  * A simple [Scrollbar].
+ * 简单的Scrollbar
  * Its thumb disappears when the scrolling container is dormant.
+ * 一个滚动条，允许通过拖动其拇指快速滚动内容。当滚动容器处于休眠状态时，它的拇指就会消失。
  * @param modifier a [Modifier] for the [Scrollbar]
+ *              滚动条的修饰符
  * @param state the driving state for the [Scrollbar]
+ *              滚动条的滑动状态
  * @param orientation the orientation of the scrollbar
+ *              滚动条的方向
  */
 @Composable
+// 装饰的Scrollbar
 fun ScrollableState.DecorativeScrollbar(
     modifier: Modifier = Modifier,
     state: ScrollbarState,
@@ -116,6 +134,7 @@ fun ScrollableState.DecorativeScrollbar(
         interactionSource = interactionSource,
         state = state,
         thumb = {
+            // 装饰的Scrollbar拇指
             DecorativeScrollbarThumb(
                 interactionSource = interactionSource,
                 orientation = orientation,
@@ -126,6 +145,7 @@ fun ScrollableState.DecorativeScrollbar(
 
 /**
  * A scrollbar thumb that is intended to also be a touch target for fast scrolling.
+ * 一个滚动条拇指，它也是快速滚动的触摸目标。
  */
 @Composable
 private fun ScrollableState.DraggableScrollbarThumb(

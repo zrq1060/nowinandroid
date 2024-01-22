@@ -23,8 +23,16 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Now in Android typography.
+ * Now in Android 排版
  */
+// 排版
 internal val NiaTypography = Typography(
+    // 排版，共如下15个。
+    // - displayLarge、displayMedium、displaySmall
+    // - headlineLarge、headlineMedium、headlineSmall
+    // - titleLarge、titleMedium、titleSmall
+    // - bodyLarge、bodyMedium、bodySmall
+    // - labelLarge、labelMedium、labelSmall
     displayLarge = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 57.sp,

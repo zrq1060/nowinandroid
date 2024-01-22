@@ -48,8 +48,10 @@ private const val FOR_YOU_PATH = "foryou"
 
 /**
  * Implementation of [Notifier] that displays notifications in the system tray.
+ * 在系统托盘中显示通知的[Notifier]的实现。
  */
 @Singleton
+// Notifier的实现-使用系统的通知。
 internal class SystemTrayNotifier @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : Notifier {
@@ -58,24 +60,36 @@ internal class SystemTrayNotifier @Inject constructor(
         newsResources: List<NewsResource>,
     ) = with(context) {
         if (checkSelfPermission(this, permission.POST_NOTIFICATIONS) != PERMISSION_GRANTED) {
+            // 通知权限没授予，直接返回。
             return
         }
 
+        // 截取5个
         val truncatedNewsResources = newsResources.take(MAX_NUM_NOTIFICATIONS)
 
+        // 新闻列表的所有通知
         val newsNotifications = truncatedNewsResources.map { newsResource ->
+            // 创建新闻通知
             createNewsNotification {
+                // 图标
                 setSmallIcon(
                     com.google.samples.apps.nowinandroid.core.common.R.drawable.core_common_ic_nia_notification,
                 )
+                    // 标题
                     .setContentTitle(newsResource.title)
+                    // 内容
                     .setContentText(newsResource.content)
+                    // PendingIntent
                     .setContentIntent(newsPendingIntent(newsResource))
+                    // 组
                     .setGroup(NEWS_NOTIFICATION_GROUP)
+                    // 单击通知时自动取消通知
                     .setAutoCancel(true)
             }
         }
+        // 总结的通知，用于通知组的通知。
         val summaryNotification = createNewsNotification {
+            // 标题，XXX news updates。
             val title = getString(
                 R.string.core_notifications_news_notification_group_summary,
                 truncatedNewsResources.size,
@@ -86,74 +100,100 @@ internal class SystemTrayNotifier @Inject constructor(
                     com.google.samples.apps.nowinandroid.core.common.R.drawable.core_common_ic_nia_notification,
                 )
                 // Build summary info into InboxStyle template.
+                // 在InboxStyle模板中构建摘要信息。
+                // 设置此通知的样式，标题（XXX news updates）+子内容（一行标题）列表。
                 .setStyle(newsNotificationStyle(truncatedNewsResources, title))
                 .setGroup(NEWS_NOTIFICATION_GROUP)
+                // !!!将此通知设置为通知组的组摘要
                 .setGroupSummary(true)
                 .setAutoCancel(true)
                 .build()
         }
 
         // Send the notifications
+        // 发送通知
         val notificationManager = NotificationManagerCompat.from(this)
+        // -发送新闻的所有通知
         newsNotifications.forEachIndexed { index, notification ->
             notificationManager.notify(
                 truncatedNewsResources[index].id.hashCode(),
                 notification,
             )
         }
+        // -发送总结的通知
+        // 说明：两个通知类型（newsNotifications、summaryNotification），通过相同的组Group进行关联，一个为组摘要，一个为组内容。
         notificationManager.notify(NEWS_NOTIFICATION_SUMMARY_ID, summaryNotification)
     }
 
     /**
      * Creates an inbox style summary notification for news updates
+     * 为新闻更新创建收件箱样式的摘要通知
      */
     private fun newsNotificationStyle(
         newsResources: List<NewsResource>,
         title: String,
     ): InboxStyle = newsResources
+        // fold，初始化为InboxStyle，每个新闻增加一行，内容为标题。
         .fold(InboxStyle()) { inboxStyle, newsResource -> inboxStyle.addLine(newsResource.title) }
+        // 大内容标题
         .setBigContentTitle(title)
+        // 摘要文本
         .setSummaryText(title)
 }
 
 /**
  * Creates a notification for configured for news updates
+ * 创建为新闻更新配置的通知
  */
 private fun Context.createNewsNotification(
     block: NotificationCompat.Builder.() -> Unit,
 ): Notification {
+    // 确保通知通道（名为：News updates）存在
     ensureNotificationChannelExists()
+    // 创建
     return NotificationCompat.Builder(
         this,
         NEWS_NOTIFICATION_CHANNEL_ID,
     )
+        // 优先级
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        // 供外部修改使用
         .apply(block)
+        // 构建
         .build()
 }
 
 /**
  * Ensures that a notification channel is present if applicable
+ * 如果适用，确保存在通知通道
  */
 private fun Context.ensureNotificationChannelExists() {
+    // android 8.0以前直接返回
     if (VERSION.SDK_INT < VERSION_CODES.O) return
 
     val channel = NotificationChannel(
         NEWS_NOTIFICATION_CHANNEL_ID,
+        // title
         getString(R.string.core_notifications_news_notification_channel_name),
+        // 重要性
         NotificationManager.IMPORTANCE_DEFAULT,
     ).apply {
+        // 描述
         description = getString(R.string.core_notifications_news_notification_channel_description)
     }
     // Register the channel with the system
+    // 向系统注册通道
     NotificationManagerCompat.from(this).createNotificationChannel(channel)
 }
 
 private fun Context.newsPendingIntent(
     newsResource: NewsResource,
 ): PendingIntent? = PendingIntent.getActivity(
+    // Context
     this,
+    // requestCode
     NEWS_NOTIFICATION_REQUEST_CODE,
+    // Intent
     Intent().apply {
         action = Intent.ACTION_VIEW
         data = newsResource.newsDeepLinkUri()
@@ -162,7 +202,9 @@ private fun Context.newsPendingIntent(
             TARGET_ACTIVITY_NAME,
         )
     },
+    // flags
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
 )
 
+// 深层链接
 private fun NewsResource.newsDeepLinkUri() = "$DEEP_LINK_SCHEME_AND_HOST/$FOR_YOU_PATH/$id".toUri()

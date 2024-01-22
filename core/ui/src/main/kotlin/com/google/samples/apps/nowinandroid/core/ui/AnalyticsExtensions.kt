@@ -27,6 +27,7 @@ import com.google.samples.apps.nowinandroid.core.analytics.LocalAnalyticsHelper
 
 /**
  * Classes and functions associated with analytics events for the UI.
+ * 与UI的分析事件相关联的类和函数。
  */
 fun AnalyticsHelper.logScreenView(screenName: String) {
     logEvent(

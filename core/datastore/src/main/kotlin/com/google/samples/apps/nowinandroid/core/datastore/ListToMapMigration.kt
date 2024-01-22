@@ -20,7 +20,9 @@ import androidx.datastore.core.DataMigration
 
 /**
  * Migrates from using lists to maps for user data.
+ * 将用户数据从使用list迁移到使用maps。
  */
+// List转Map的迁移
 internal object ListToMapMigration : DataMigration<UserPreferences> {
 
     override suspend fun cleanUp() = Unit
@@ -30,6 +32,7 @@ internal object ListToMapMigration : DataMigration<UserPreferences> {
             // Migrate topic id lists
             followedTopicIds.clear()
             followedTopicIds.putAll(
+                // list转map，value为true。
                 currentData.deprecatedFollowedTopicIdsList.associateWith { true },
             )
             deprecatedFollowedTopicIds.clear()
@@ -37,6 +40,7 @@ internal object ListToMapMigration : DataMigration<UserPreferences> {
             // Migrate author ids
             followedAuthorIds.clear()
             followedAuthorIds.putAll(
+                // list转map，value为true。
                 currentData.deprecatedFollowedAuthorIdsList.associateWith { true },
             )
             deprecatedFollowedAuthorIds.clear()
@@ -44,11 +48,13 @@ internal object ListToMapMigration : DataMigration<UserPreferences> {
             // Migrate bookmarks
             bookmarkedNewsResourceIds.clear()
             bookmarkedNewsResourceIds.putAll(
+                // list转map，value为true。
                 currentData.deprecatedBookmarkedNewsResourceIdsList.associateWith { true },
             )
             deprecatedBookmarkedNewsResourceIds.clear()
 
             // Mark migration as complete
+            // 将迁移标记为完成
             hasDoneListToMapMigration = true
         }
 

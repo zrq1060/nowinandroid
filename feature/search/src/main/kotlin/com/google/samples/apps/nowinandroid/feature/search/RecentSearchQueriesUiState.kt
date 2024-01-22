@@ -18,6 +18,7 @@ package com.google.samples.apps.nowinandroid.feature.search
 
 import com.google.samples.apps.nowinandroid.core.data.model.RecentSearchQuery
 
+// 最近搜索查询列表的UiState
 sealed interface RecentSearchQueriesUiState {
     data object Loading : RecentSearchQueriesUiState
 

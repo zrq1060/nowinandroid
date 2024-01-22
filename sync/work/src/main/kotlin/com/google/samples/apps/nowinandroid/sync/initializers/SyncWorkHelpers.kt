@@ -32,6 +32,7 @@ private const val SYNC_NOTIFICATION_ID = 0
 private const val SYNC_NOTIFICATION_CHANNEL_ID = "SyncNotificationChannel"
 
 // All sync work needs an internet connectionS
+// 所有同步工作都需要互联网连接
 val SyncConstraints
     get() = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -40,6 +41,7 @@ val SyncConstraints
 /**
  * Foreground information for sync on lower API levels when sync workers are being
  * run with a foreground service
+ * 当同步工作程序与前台服务一起运行时，用于在较低API级别上同步的前台信息
  */
 fun Context.syncForegroundInfo() = ForegroundInfo(
     SYNC_NOTIFICATION_ID,
@@ -49,9 +51,11 @@ fun Context.syncForegroundInfo() = ForegroundInfo(
 /**
  * Notification displayed on lower API levels when sync workers are being
  * run with a foreground service
+ * 当同步工作程序与前台服务一起运行时，在较低API级别显示通知
  */
 private fun Context.syncWorkNotification(): Notification {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // SDK-26(android-8.0)及以上，创建通知渠道。
         val channel = NotificationChannel(
             SYNC_NOTIFICATION_CHANNEL_ID,
             getString(R.string.sync_work_notification_channel_name),
@@ -60,6 +64,7 @@ private fun Context.syncWorkNotification(): Notification {
             description = getString(R.string.sync_work_notification_channel_description)
         }
         // Register the channel with the system
+        // 向系统注册通道
         val notificationManager: NotificationManager? =
             getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 

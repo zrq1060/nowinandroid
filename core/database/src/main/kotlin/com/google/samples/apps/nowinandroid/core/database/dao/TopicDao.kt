@@ -26,8 +26,10 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * DAO for [TopicEntity] access
+ * 用于[TopicEntity]访问的DAO
  */
 @Dao
+// 主题表（topics）的操作。包含：获取指定topicId或者指定topicIds的主题（异步）、获取全部的主题（同步、异步）、插入或忽略（如果存在则忽略）指定topicEntities、更新插入（如果存在则替换）指定topicEntities、删除指定ids的主题。
 interface TopicDao {
     @Query(
         value = """
@@ -35,12 +37,15 @@ interface TopicDao {
         WHERE id = :topicId
     """,
     )
+    // 获取指定topicId的TopicEntity（异步）
     fun getTopicEntity(topicId: String): Flow<TopicEntity>
 
     @Query(value = "SELECT * FROM topics")
+    // 获取所有的TopicEntity（异步）
     fun getTopicEntities(): Flow<List<TopicEntity>>
 
     @Query(value = "SELECT * FROM topics")
+    // 获取所有的TopicEntity（同步，只获取一次）
     suspend fun getOneOffTopicEntities(): List<TopicEntity>
 
     @Query(
@@ -49,22 +54,28 @@ interface TopicDao {
         WHERE id IN (:ids)
     """,
     )
+    // 获取指定ids的所有TopicEntity（异步）
     fun getTopicEntities(ids: Set<String>): Flow<List<TopicEntity>>
 
     /**
      * Inserts [topicEntities] into the db if they don't exist, and ignores those that do
+     * 如果[topicEntities]不存在，则插入到数据库中，并忽略存在的
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    // 插入或忽略（如果存在则忽略）指定topicEntities的TopicEntity
     suspend fun insertOrIgnoreTopics(topicEntities: List<TopicEntity>): List<Long>
 
     /**
      * Inserts or updates [entities] in the db under the specified primary keys
+     * 在指定的主键下插入或更新数据库中的[entities]
      */
     @Upsert
+    // 更新插入（如果存在则替换）指定entities的TopicEntity
     suspend fun upsertTopics(entities: List<TopicEntity>)
 
     /**
      * Deletes rows in the db matching the specified [ids]
+     * 删除数据库中与指定[ids]匹配的行。
      */
     @Query(
         value = """
@@ -72,5 +83,6 @@ interface TopicDao {
             WHERE id in (:ids)
         """,
     )
+    // 删除指定ids的TopicEntity
     suspend fun deleteTopics(ids: List<String>)
 }

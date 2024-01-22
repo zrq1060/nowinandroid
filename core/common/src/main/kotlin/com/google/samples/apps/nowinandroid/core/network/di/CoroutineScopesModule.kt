@@ -30,15 +30,19 @@ import javax.inject.Singleton
 
 @Retention(AnnotationRetention.RUNTIME)
 @Qualifier
+// 全局协程作用域的限定符，用于标记使用全局协程作用域。
 annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，提供ApplicationScope。
 internal object CoroutineScopesModule {
     @Provides
     @Singleton
     @ApplicationScope
+    // 提供全局协程作用域（ApplicationScope），单例。
     fun providesCoroutineScope(
         @Dispatcher(Default) dispatcher: CoroutineDispatcher,
+        // 使用Dispatchers.Default+SupervisorJob，异常不会传播。
     ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
 }

@@ -20,7 +20,9 @@ import kotlinx.datetime.Instant
 
 /**
  * External data layer representation of a fully populated NiA news resource
+ * 一个完全填充的NiA新闻资源的外部数据层表示
  */
+// 新闻资源（外部数据层使用）
 data class NewsResource(
     val id: String,
     val title: String,

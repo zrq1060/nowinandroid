@@ -29,10 +29,14 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 /**
  * Extension function for displaying a [List] of [NewsResourceCardExpanded] backed by a list of
  * [UserNewsResource]s.
+ * 用于显示由[UserNewsResource]列表支持的[NewsResourceCardExpanded]列表的扩展函数。
  *
  * [onToggleBookmark] defines the action invoked when a user wishes to bookmark an item
  * When a news resource card is tapped it will open the news resource URL in a Chrome Custom Tab.
+ * [onToggleBookmark]定义了当用户希望收藏一个项目时调用的动作。
+ * 当一个新闻资源卡被点击时，它将在Chrome自定义选项卡中打开新闻资源URL。
  */
+// 新闻资源的卡片列表，展示新闻资源列表，处理了点击item打开网页。用于水平或者垂直列表使用。
 fun LazyListScope.userNewsResourceCardItems(
     items: List<UserNewsResource>,
     onToggleBookmark: (item: UserNewsResource) -> Unit,
@@ -43,21 +47,30 @@ fun LazyListScope.userNewsResourceCardItems(
     items = items,
     key = { it.id },
     itemContent = { userNewsResource ->
+        // 资源地址
         val resourceUrl = Uri.parse(userNewsResource.url)
+        // 背景颜色
         val backgroundColor = MaterialTheme.colorScheme.background.toArgb()
+        // 上下文
         val context = LocalContext.current
+        // 分析辅助
         val analyticsHelper = LocalAnalyticsHelper.current
 
+        // 新闻资源卡片
         NewsResourceCardExpanded(
             userNewsResource = userNewsResource,
             isBookmarked = userNewsResource.isSaved,
             hasBeenViewed = userNewsResource.hasBeenViewed,
             onToggleBookmark = { onToggleBookmark(userNewsResource) },
             onClick = {
+                // 点击
+                // 分析提交资源id
                 analyticsHelper.logNewsResourceOpened(
                     newsResourceId = userNewsResource.id,
                 )
+                // 启动打开网页
                 launchCustomChromeTab(context, resourceUrl, backgroundColor)
+                // 通知新闻资源可见
                 onNewsResourceViewed(userNewsResource.id)
             },
             onTopicClick = onTopicClick,

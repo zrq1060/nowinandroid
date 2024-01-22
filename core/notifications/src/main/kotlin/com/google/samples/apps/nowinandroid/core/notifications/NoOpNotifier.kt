@@ -21,7 +21,9 @@ import javax.inject.Inject
 
 /**
  * Implementation of [Notifier] which does nothing. Useful for tests and previews.
+ * 不做任何事情的[Notifier]的实现。用于测试和预览。
  */
+// Notifier的实现-不实现任何的通知。
 internal class NoOpNotifier @Inject constructor() : Notifier {
     override fun postNewsNotifications(newsResources: List<NewsResource>) = Unit
 }

@@ -27,7 +27,11 @@ import androidx.room.migration.AutoMigrationSpec
  * using the following naming convention `SchemaXtoY` where X is the schema version you're migrating
  * from and Y is the schema version you're migrating to. The class should implement
  * `AutoMigrationSpec`.
+ * 自动模式迁移有时需要额外的指令来执行迁移，例如，在重命名列时。
+ * 这些额外的指令是通过使用以下命名约定SchemaXtoY创建一个类放在这里的，其中X是要迁移的模式版本，Y是要迁移到的模式版本。
+ * 该类应该实现AutoMigrationSpec。
  */
+// 数据库的迁移操作
 internal object DatabaseMigrations {
 
     @RenameColumn(
@@ -35,6 +39,7 @@ internal object DatabaseMigrations {
         fromColumnName = "description",
         toColumnName = "shortDescription",
     )
+    // 版本2->3，重命名topics表的description为shortDescription。
     class Schema2to3 : AutoMigrationSpec
 
     @DeleteColumn(
@@ -49,6 +54,7 @@ internal object DatabaseMigrations {
             tableName = "episodes",
         ),
     )
+    // 版本10->11，删除news_resources表的episode_id、删除episodes_authors表和episodes表。
     class Schema10to11 : AutoMigrationSpec
 
     @DeleteTable.Entries(
@@ -59,5 +65,6 @@ internal object DatabaseMigrations {
             tableName = "authors",
         ),
     )
+    // 版本11->12，删除news_resources_authors表和authors表。
     class Schema11to12 : AutoMigrationSpec
 }

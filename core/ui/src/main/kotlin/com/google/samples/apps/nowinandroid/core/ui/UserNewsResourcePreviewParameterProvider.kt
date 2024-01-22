@@ -34,12 +34,14 @@ import kotlinx.datetime.toInstant
 /**
  * This [PreviewParameterProvider](https://developer.android.com/reference/kotlin/androidx/compose/ui/tooling/preview/PreviewParameterProvider)
  * provides list of [UserNewsResource] for Composable previews.
+ * 这个PreviewParameterProvider为可组合预览提供了UserNewsResource的列表。
  */
+// 提供预览时的List<UserNewsResource>数据
 class UserNewsResourcePreviewParameterProvider : PreviewParameterProvider<List<UserNewsResource>> {
 
     override val values: Sequence<List<UserNewsResource>> = sequenceOf(newsResources)
 }
-
+// 提供预览时需要的数据
 object PreviewParameterData {
 
     private val userData: UserData = UserData(

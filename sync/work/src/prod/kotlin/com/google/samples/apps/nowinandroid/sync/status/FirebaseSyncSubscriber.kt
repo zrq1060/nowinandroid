@@ -23,7 +23,9 @@ import javax.inject.Inject
 
 /**
  * Implementation of [SyncSubscriber] that subscribes to the FCM [SYNC_TOPIC]
+ * 订阅FCM [SYNC_TOPIC]的[SyncSubscriber]的实现
  */
+// SyncSubscriber的Firebase实现
 internal class FirebaseSyncSubscriber @Inject constructor(
     private val firebaseMessaging: FirebaseMessaging,
 ) : SyncSubscriber {

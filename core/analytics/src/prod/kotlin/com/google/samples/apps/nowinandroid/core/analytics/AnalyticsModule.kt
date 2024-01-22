@@ -28,8 +28,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，prod构建下，给AnalyticsHelper提供FirebaseAnalyticsHelper，即使用Firebase分析。
 internal abstract class AnalyticsModule {
     @Binds
+    // 提供一个Firebase分析的AnalyticsHelper
     abstract fun bindsAnalyticsHelper(analyticsHelperImpl: FirebaseAnalyticsHelper): AnalyticsHelper
 
     companion object {

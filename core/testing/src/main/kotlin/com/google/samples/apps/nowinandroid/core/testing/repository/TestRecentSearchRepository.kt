@@ -21,6 +21,7 @@ import com.google.samples.apps.nowinandroid.core.data.repository.RecentSearchRep
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+// 最近搜索结果的仓库（RecentSearchRepository）-测试的实现。List集合实现。
 class TestRecentSearchRepository : RecentSearchRepository {
 
     private val cachedRecentSearches: MutableList<RecentSearchQuery> = mutableListOf()

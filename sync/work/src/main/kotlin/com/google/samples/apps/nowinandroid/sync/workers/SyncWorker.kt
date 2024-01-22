@@ -46,8 +46,11 @@ import kotlinx.coroutines.withContext
 /**
  * Syncs the data layer by delegating to the appropriate repository instances with
  * sync functionality.
+ * 通过将同步功能委托给适当的存储库实例来同步数据层。
  */
 @HiltWorker
+// 数据库和网络同步的CoroutineWorker
+// Synchronizer-Worker实现。getChangeListVersions、updateChangeListVersions用的是DataSource中保存的。
 internal class SyncWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
@@ -65,22 +68,30 @@ internal class SyncWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result = withContext(ioDispatcher) {
         traceAsync("Sync", 0) {
+            // 分析辅助-记录同步开始
             analyticsHelper.logSyncStarted()
 
+            // 同步订阅者订阅
             syncSubscriber.subscribe()
 
             // First sync the repositories in parallel
+            // 首先并行同步存储库
             val syncedSuccessfully = awaitAll(
+                // 仓库的同步，因为此类继承了Synchronizer，所以可以调用sync方法。
                 async { topicRepository.sync() },
                 async { newsRepository.sync() },
+                // List<Boolean>，全部都为true则代表同步成功。
             ).all { it }
 
+            // 分析辅助-记录同步结束
             analyticsHelper.logSyncFinished(syncedSuccessfully)
 
             if (syncedSuccessfully) {
+                // 成功，搜索内容仓库填充Fts数据。
                 searchContentsRepository.populateFtsData()
                 Result.success()
             } else {
+                // 失败
                 Result.retry()
             }
         }
@@ -96,10 +107,15 @@ internal class SyncWorker @AssistedInject constructor(
     companion object {
         /**
          * Expedited one time work to sync data on app startup
+         * 加急了一次工作同步数据上的应用程序启动
          */
         fun startUpSyncWork() = OneTimeWorkRequestBuilder<DelegatingWorker>()
+            // 设置加急
+            // RUN_AS_NON_EXPEDITED_WORK_REQUEST：当应用程序没有任何加急工作配额时，加急工作请求将回退到常规工作请求。
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            // 设置约束
             .setConstraints(SyncConstraints)
+            // 设置输入数据，用于DelegatingWorker创建SyncWorker。
             .setInputData(SyncWorker::class.delegatedData())
             .build()
     }

@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.model.data
 
+// 暗主题配置
 enum class DarkThemeConfig {
     FOLLOW_SYSTEM,
     LIGHT,

@@ -40,30 +40,46 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroid.feature.interests.R.string
 
 @Composable
+// Interests（兴趣）Item布局
 fun InterestsItem(
     name: String,
+    // 是否关注
     following: Boolean,
     topicImageUrl: String,
+    // item点击通知
     onClick: () -> Unit,
+    // 关注/取消关注按钮点击通知
     onFollowButtonClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    // Icon的修饰符
     iconModifier: Modifier = Modifier,
     description: String = "",
 ) {
     ListItem(
+        // 居前内容，居左，如icon。
         leadingContent = {
             InterestsIcon(topicImageUrl, iconModifier.size(64.dp))
         },
+        // 标题内容，居中。
         headlineContent = {
             Text(text = name)
         },
+        // 上划线内容，居上。
+//        overlineContent = {
+//            Text(text = "上方内容")
+//        },
+        // 次要内容，居下。
         supportingContent = {
             Text(text = description)
         },
+        // 尾随内容，居右，如text, icon, switch or checkbox。
         trailingContent = {
+            // 切换按钮
             NiaIconToggleButton(
                 checked = following,
+                // 改变通知
                 onCheckedChange = onFollowButtonClick,
+                // 普通Icon
                 icon = {
                     Icon(
                         imageVector = NiaIcons.Add,
@@ -72,6 +88,7 @@ fun InterestsItem(
                         ),
                     )
                 },
+                // 选中的Icon
                 checkedIcon = {
                     Icon(
                         imageVector = NiaIcons.Check,
@@ -85,6 +102,7 @@ fun InterestsItem(
         colors = ListItemDefaults.colors(
             containerColor = Color.Transparent,
         ),
+        // 修饰：可点击
         modifier = modifier
             .semantics(mergeDescendants = true) { /* no-op */ }
             .clickable(enabled = true, onClick = onClick),
@@ -92,8 +110,10 @@ fun InterestsItem(
 }
 
 @Composable
+// Interests（兴趣）Item布局-兴趣Icon
 private fun InterestsIcon(topicImageUrl: String, modifier: Modifier = Modifier) {
     if (topicImageUrl.isEmpty()) {
+        // 地址为空，显示默认图。
         Icon(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -103,6 +123,7 @@ private fun InterestsIcon(topicImageUrl: String, modifier: Modifier = Modifier) 
             contentDescription = null,
         )
     } else {
+        // 地址不为空，显示加载动态图。
         DynamicAsyncImage(
             imageUrl = topicImageUrl,
             contentDescription = null,
@@ -113,6 +134,7 @@ private fun InterestsIcon(topicImageUrl: String, modifier: Modifier = Modifier) 
 
 @Preview
 @Composable
+// 兴趣卡片预览-未关注
 private fun InterestsCardPreview() {
     NiaTheme {
         Surface {
@@ -130,6 +152,7 @@ private fun InterestsCardPreview() {
 
 @Preview
 @Composable
+// 兴趣卡片预览-长名字
 private fun InterestsCardLongNamePreview() {
     NiaTheme {
         Surface {
@@ -147,6 +170,7 @@ private fun InterestsCardLongNamePreview() {
 
 @Preview
 @Composable
+// 兴趣卡片预览-长描述
 private fun InterestsCardLongDescriptionPreview() {
     NiaTheme {
         Surface {
@@ -165,6 +189,7 @@ private fun InterestsCardLongDescriptionPreview() {
 
 @Preview
 @Composable
+// 兴趣卡片预览-空描述
 private fun InterestsCardWithEmptyDescriptionPreview() {
     NiaTheme {
         Surface {

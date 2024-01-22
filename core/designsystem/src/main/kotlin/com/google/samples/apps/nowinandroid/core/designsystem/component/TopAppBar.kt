@@ -37,19 +37,30 @@ import com.google.samples.apps.nowinandroid.core.designsystem.icon.NiaIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+// 顶部AppBar
 fun NiaTopAppBar(
+    // 标题
     @StringRes titleRes: Int,
+    // 导航图标，即左边搜索图标。
     navigationIcon: ImageVector,
+    // 导航图标内容描述
     navigationIconContentDescription: String,
+    // 操作图标，即右边更多图标。
     actionIcon: ImageVector,
+    // 操作图标内容描述
     actionIconContentDescription: String,
     modifier: Modifier = Modifier,
+    // 颜色
     colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+    // 导航图标点击监听
     onNavigationClick: () -> Unit = {},
+    // 操作图标点击监听
     onActionClick: () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
+        // 标题
         title = { Text(text = stringResource(id = titleRes)) },
+        // 导航图标
         navigationIcon = {
             IconButton(onClick = onNavigationClick) {
                 Icon(
@@ -59,6 +70,7 @@ fun NiaTopAppBar(
                 )
             }
         },
+        // 操作图标
         actions = {
             IconButton(onClick = onActionClick) {
                 Icon(
@@ -68,6 +80,7 @@ fun NiaTopAppBar(
                 )
             }
         },
+        // 颜色
         colors = colors,
         modifier = modifier.testTag("niaTopAppBar"),
     )
@@ -76,6 +89,7 @@ fun NiaTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview("Top App Bar")
 @Composable
+// 预览
 private fun NiaTopAppBarPreview() {
     NiaTopAppBar(
         titleRes = android.R.string.untitled,

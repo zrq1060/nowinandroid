@@ -25,8 +25,11 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+// 用户数据的仓库（UserDataRepository）-默认实现。使用DataSource实现。
 internal class OfflineFirstUserDataRepository @Inject constructor(
+    // SP数据源
     private val niaPreferencesDataSource: NiaPreferencesDataSource,
+    // 分析辅助
     private val analyticsHelper: AnalyticsHelper,
 ) : UserDataRepository {
 
@@ -39,6 +42,7 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
 
     override suspend fun setTopicIdFollowed(followedTopicId: String, followed: Boolean) {
         niaPreferencesDataSource.setTopicIdFollowed(followedTopicId, followed)
+        // 分析辅助-记录Topic主题关注切换了
         analyticsHelper.logTopicFollowToggled(followedTopicId, followed)
     }
 

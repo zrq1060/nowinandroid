@@ -28,6 +28,7 @@ import dagger.hilt.testing.TestInstallIn
     components = [SingletonComponent::class],
     replaces = [SyncModule::class],
 )
+// 单例，测试（test和androidTest）构建下，替换SyncModule，即全部不使用同步。
 internal interface TestSyncModule {
     @Binds
     fun bindsSyncStatusMonitor(

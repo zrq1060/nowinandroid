@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.model.data
 
+// 主题品牌
 enum class ThemeBrand {
     DEFAULT,
     ANDROID,

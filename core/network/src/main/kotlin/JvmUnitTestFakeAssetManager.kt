@@ -23,9 +23,11 @@ import java.util.Properties
 /**
  * This class helps with loading Android `/assets` files, especially when running JVM unit tests.
  * It must remain on the root package for an easier [Class.getResource] with relative paths.
+ * 这个类有助于加载Android /assets文件，特别是在运行JVM单元测试时。它必须保留在根包中，以便使用相对路径的更简单的[Class.getResource]。
  * @see <a href="https://developer.android.com/reference/tools/gradle-api/7.3/com/android/build/api/dsl/UnitTestOptions">UnitTestOptions</a>
  */
 @VisibleForTesting
+// 测试用FakeAssetManager
 internal object JvmUnitTestFakeAssetManager : FakeAssetManager {
     private val config =
         requireNotNull(javaClass.getResource("com/android/tools/test_config.properties")) {

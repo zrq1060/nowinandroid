@@ -25,6 +25,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
+// 单例，prod构建下，给NiaNetworkDataSource提供RetrofitNiaNetwork，即从网络获取。
 internal interface FlavoredNetworkModule {
 
     @Binds

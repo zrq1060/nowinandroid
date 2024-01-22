@@ -78,6 +78,7 @@ import com.google.samples.apps.nowinandroid.core.ui.UserNewsResourcePreviewParam
 import com.google.samples.apps.nowinandroid.core.ui.newsFeed
 
 @Composable
+// Bookmarks（书签、Saved）屏-路由，有ViewModel。
 internal fun BookmarksRoute(
     onTopicClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
@@ -89,6 +90,7 @@ internal fun BookmarksRoute(
         feedState = feedState,
         onShowSnackbar = onShowSnackbar,
         removeFromBookmarks = viewModel::removeFromSavedResources,
+        // 设置新闻资源已浏览
         onNewsResourceViewed = { viewModel.setNewsResourceViewed(it, true) },
         onTopicClick = onTopicClick,
         modifier = modifier,
@@ -104,6 +106,7 @@ internal fun BookmarksRoute(
  */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 @Composable
+// Bookmarks（书签、Saved）屏-UI，无ViewModel。
 internal fun BookmarksScreen(
     feedState: NewsFeedUiState,
     onShowSnackbar: suspend (String, String?) -> Boolean,
@@ -118,31 +121,42 @@ internal fun BookmarksScreen(
     val bookmarkRemovedMessage = stringResource(id = R.string.feature_bookmarks_removed)
     val undoText = stringResource(id = R.string.feature_bookmarks_undo)
 
+    // 是否展示撤销书签提示
     LaunchedEffect(shouldDisplayUndoBookmark) {
         if (shouldDisplayUndoBookmark) {
+            // 显示撤销书签提示
             val snackBarResult = onShowSnackbar(bookmarkRemovedMessage, undoText)
             if (snackBarResult) {
+                // 点击了撤销按钮，通知撤销移除书签的回调。
                 undoBookmarkRemoval()
             } else {
+                // 未点击撤销按钮，清除撤销状态，此次事件结束。
                 clearUndoState()
             }
         }
     }
 
+    // onStop生命周期，清除撤销状态。
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
+                // onStop生命周期，清除撤销状态，防止页面提前（Snackbar消失前）关闭后，导致没清除撤销状态后会再恢复。
                 clearUndoState()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+        // 清理操作
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // 新闻摘要，加载中状态显示Loading，成功状态并且有数据显示书签网格列表，成功状态并且没有数据显示空状态提示。
     when (feedState) {
+        // 加载中，显示Loading
         Loading -> LoadingState(modifier)
+        // 成功
         is Success -> if (feedState.feed.isNotEmpty()) {
+            // 成功-有数据，书签网格列表
             BookmarksGrid(
                 feedState,
                 removeFromBookmarks,
@@ -151,6 +165,7 @@ internal fun BookmarksScreen(
                 modifier,
             )
         } else {
+            // 成功-有数据，空状态提示
             EmptyState(modifier)
         }
     }
@@ -159,6 +174,7 @@ internal fun BookmarksScreen(
 }
 
 @Composable
+// 加载中
 private fun LoadingState(modifier: Modifier = Modifier) {
     NiaLoadingWheel(
         modifier = modifier
@@ -170,6 +186,7 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 }
 
 @Composable
+// 书签网格列表
 private fun BookmarksGrid(
     feedState: NewsFeedUiState,
     removeFromBookmarks: (String) -> Unit,
@@ -179,10 +196,12 @@ private fun BookmarksGrid(
 ) {
     val scrollableState = rememberLazyStaggeredGridState()
     TrackScrollJank(scrollableState = scrollableState, stateName = "bookmarks:grid")
+    // 书签列表容器
     Box(
         modifier = modifier
             .fillMaxSize(),
     ) {
+        // 垂直流式网格布局，同FouYou屏。
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(300.dp),
             contentPadding = PaddingValues(16.dp),
@@ -193,16 +212,19 @@ private fun BookmarksGrid(
                 .fillMaxSize()
                 .testTag("bookmarks:feed"),
         ) {
+            // 新闻摘要-item列表
             newsFeed(
                 feedState = feedState,
                 onNewsResourcesCheckedChanged = { id, _ -> removeFromBookmarks(id) },
                 onNewsResourceViewed = onNewsResourceViewed,
                 onTopicClick = onTopicClick,
             )
+            // 间隔-item一项，解决无网络Snackbar的展示。
             item(span = StaggeredGridItemSpan.FullLine) {
                 Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
             }
         }
+        // 可用的item总数
         val itemsAvailable = when (feedState) {
             Loading -> 1
             is Success -> feedState.feed.size
@@ -210,6 +232,7 @@ private fun BookmarksGrid(
         val scrollbarState = scrollableState.scrollbarState(
             itemsAvailable = itemsAvailable,
         )
+        // 可拖动滚动条（右侧）
         scrollableState.DraggableScrollbar(
             modifier = Modifier
                 .fillMaxHeight()
@@ -226,7 +249,9 @@ private fun BookmarksGrid(
 }
 
 @Composable
+// 空状态提示
 private fun EmptyState(modifier: Modifier = Modifier) {
+    // 空状态提示列容器
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -236,6 +261,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val iconTint = LocalTintTheme.current.iconTint
+        // 图
         Image(
             modifier = Modifier.fillMaxWidth(),
             painter = painterResource(id = R.drawable.feature_bookmarks_img_empty_bookmarks),
@@ -243,8 +269,10 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             contentDescription = null,
         )
 
+        // 间隔
         Spacer(modifier = Modifier.height(48.dp))
 
+        // 标题
         Text(
             text = stringResource(id = R.string.feature_bookmarks_empty_error),
             modifier = Modifier.fillMaxWidth(),
@@ -253,8 +281,10 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
         )
 
+        // 间隔
         Spacer(modifier = Modifier.height(8.dp))
 
+        // 子标题
         Text(
             text = stringResource(id = R.string.feature_bookmarks_empty_description),
             modifier = Modifier.fillMaxWidth(),
@@ -266,6 +296,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
+// 加载状态的Loading预览
 private fun LoadingStatePreview() {
     NiaTheme {
         LoadingState()
@@ -274,6 +305,7 @@ private fun LoadingStatePreview() {
 
 @Preview
 @Composable
+// 书签列表预览
 private fun BookmarksGridPreview(
     @PreviewParameter(UserNewsResourcePreviewParameterProvider::class)
     userNewsResources: List<UserNewsResource>,
@@ -290,6 +322,7 @@ private fun BookmarksGridPreview(
 
 @Preview
 @Composable
+// 空状态布局预览
 private fun EmptyStatePreview() {
     NiaTheme {
         EmptyState()

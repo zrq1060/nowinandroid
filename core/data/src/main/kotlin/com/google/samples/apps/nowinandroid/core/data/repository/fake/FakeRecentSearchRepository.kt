@@ -24,7 +24,9 @@ import javax.inject.Inject
 
 /**
  * Fake implementation of the [RecentSearchRepository]
+ * [RecentSearchRepository]的虚假实现
  */
+// 最近搜索结果的仓库（RecentSearchRepository）-假的实现。插入无操作、获取返回空列表、清空无操作。
 class FakeRecentSearchRepository @Inject constructor() : RecentSearchRepository {
     override suspend fun insertOrReplaceRecentSearch(searchQuery: String) = Unit
 

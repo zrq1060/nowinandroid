@@ -19,7 +19,9 @@ package com.google.samples.apps.nowinandroid.core.model.data
 /**
  * An entity of [SearchResult] with additional user information such as whether the user is
  * following a topic.
+ * [SearchResult]的一个实体，包含附加的用户信息，比如用户是否在关注某个主题。
  */
+// 用户搜索结果，包含：FollowableTopic（带有是否关注的Topic）列表、UserNewsResource（带有UserData用户信息的NewsResource新闻资源）列表。
 data class UserSearchResult(
     val topics: List<FollowableTopic> = emptyList(),
     val newsResources: List<UserNewsResource> = emptyList(),
