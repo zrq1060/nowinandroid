@@ -37,7 +37,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -128,7 +128,7 @@ fun SettingsDialog(
         // 内容
         text = {
             // 线
-            Divider()
+            HorizontalDivider()
             // 列容器，垂直可滚动
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 when (settingsUiState) {
@@ -153,7 +153,7 @@ fun SettingsDialog(
                     }
                 }
                 // 线
-                Divider(Modifier.padding(top = 8.dp))
+                HorizontalDivider(Modifier.padding(top = 8.dp))
                 // 协议面板
                 LinksPanel()
             }

@@ -42,14 +42,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,7 +58,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaLoadingWheel
 import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.DraggableScrollbar
@@ -137,17 +135,8 @@ internal fun BookmarksScreen(
     }
 
     // onStop生命周期，清除撤销状态。
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                // onStop生命周期，清除撤销状态，防止页面提前（Snackbar消失前）关闭后，导致没清除撤销状态后会再恢复。
-                clearUndoState()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        // 清理操作
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+        clearUndoState()
     }
 
     // 新闻摘要，加载中状态显示Loading，成功状态并且有数据显示书签网格列表，成功状态并且没有数据显示空状态提示。

@@ -84,6 +84,8 @@ fun NiaFilterChip(
         shape = CircleShape,
         // 边框
         border = FilterChipDefaults.filterChipBorder(
+            enabled = enabled,
+            selected = selected,
             // 边框颜色
             borderColor = MaterialTheme.colorScheme.onBackground,
             // 选中的边框颜色

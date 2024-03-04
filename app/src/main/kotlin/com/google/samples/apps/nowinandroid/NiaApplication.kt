@@ -23,7 +23,6 @@ import com.google.samples.apps.nowinandroid.sync.initializers.Sync
 import com.google.samples.apps.nowinandroid.util.ProfileVerifierLogger
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * [Application] class for NiA
@@ -32,7 +31,7 @@ import javax.inject.Provider
 // 应用的Application，初始化了ImageLoader、SyncWorker、ProfileVerifierLogger。
 class NiaApplication : Application(), ImageLoaderFactory {
     @Inject
-    lateinit var imageLoader: Provider<ImageLoader>
+    lateinit var imageLoader: dagger.Lazy<ImageLoader>
 
     @Inject
     lateinit var profileVerifierLogger: ProfileVerifierLogger

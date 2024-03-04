@@ -17,6 +17,7 @@
 package com.google.samples.apps.nowinandroid.core.network.di
 
 import android.content.Context
+import androidx.tracing.trace
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.util.DebugLogger
@@ -56,17 +57,18 @@ internal object NetworkModule {
     @Provides
     @Singleton
     // 单例，提供OkHttpClient
-    fun okHttpCallFactory(): Call.Factory = OkHttpClient.Builder()
-        .addInterceptor(
-            HttpLoggingInterceptor()
-                .apply {
-                    if (BuildConfig.DEBUG) {
-                        // debug模式下，打印日志。
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
-                    }
-                },
-        )
-        .build()
+    fun okHttpCallFactory(): Call.Factory = trace("NiaOkHttpClient") {
+        OkHttpClient.Builder()
+            .addInterceptor(
+                HttpLoggingInterceptor()
+                    .apply {
+                        if (BuildConfig.DEBUG) {
+                            setLevel(HttpLoggingInterceptor.Level.BODY)
+                        }
+                    },
+            )
+            .build()
+    }
 
     /**
      * Since we're displaying SVGs in the app, Coil needs an ImageLoader which supports this
@@ -81,24 +83,25 @@ internal object NetworkModule {
     @Singleton
     // 单例，提供ImageLoader（coil库）
     fun imageLoader(
-        okHttpCallFactory: Call.Factory,
+        // We specifically request dagger.Lazy here, so that it's not instantiated from Dagger.
+        okHttpCallFactory: dagger.Lazy<Call.Factory>,
         @ApplicationContext application: Context,
-    ): ImageLoader = ImageLoader.Builder(application)
-        // 使用okHttp调用加载
-        .callFactory(okHttpCallFactory)
-        .components {
+    ): ImageLoader = trace("NiaImageLoader") {
+        ImageLoader.Builder(application)
+            // 使用okHttp调用加载
+            .callFactory { okHttpCallFactory.get() }
             // 支持Svg
-            add(SvgDecoder.Factory())
-        }
-        // Assume most content images are versioned urls
-        // but some problematic images are fetching each time
-        // 假设大多数内容图像都是版本化的url，但每次都抓取一些有问题的图像。
-        .respectCacheHeaders(false)
-        .apply {
-            if (BuildConfig.DEBUG) {
-                // debug模式下，打印日志。
-                logger(DebugLogger())
+            .components { add(SvgDecoder.Factory()) }
+            // Assume most content images are versioned urls
+            // but some problematic images are fetching each time
+            // 假设大多数内容图像都是版本化的url，但每次都抓取一些有问题的图像。
+            .respectCacheHeaders(false)
+            .apply {
+                if (BuildConfig.DEBUG) {
+                    // debug模式下，打印日志。
+                    logger(DebugLogger())
+                }
             }
-        }
-        .build()
+            .build()
+    }
 }

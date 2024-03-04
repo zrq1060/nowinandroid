@@ -108,7 +108,7 @@ fun NiaTabRow(
         contentColor = MaterialTheme.colorScheme.onSurface,
         // 指示器
         indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
+            TabRowDefaults.SecondaryIndicator(
                 // 指示器偏移为选中的tab位置的距离
                 modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
                 height = 2.dp,

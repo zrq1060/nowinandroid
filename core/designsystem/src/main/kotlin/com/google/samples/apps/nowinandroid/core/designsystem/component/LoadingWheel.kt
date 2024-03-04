@@ -116,9 +116,9 @@ fun NiaLoadingWheel(
                 animation = keyframes {
                     durationMillis = ROTATION_TIME / 2
                     // KeyframeEntity，在0.5s时，颜色为progressLineColor，线性宽松。
-                    progressLineColor at ROTATION_TIME / NUM_OF_LINES / 2 with LinearEasing
+                    progressLineColor at ROTATION_TIME / NUM_OF_LINES / 2 using LinearEasing
                     // KeyframeEntity，在1s时，颜色为baseLineColor，线性宽松。
-                    baseLineColor at ROTATION_TIME / NUM_OF_LINES with LinearEasing
+                    baseLineColor at ROTATION_TIME / NUM_OF_LINES using LinearEasing
                 },
                 // 重复模式：重新启动
                 repeatMode = RepeatMode.Restart,

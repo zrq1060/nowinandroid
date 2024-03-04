@@ -138,7 +138,7 @@ fun NewsResourceCardExpanded(
                         BookmarkButton(isBookmarked, onToggleBookmark)
                     }
                     // 间隔
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     // 未读通知点+时间+类型
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (!hasBeenViewed) {
@@ -154,7 +154,7 @@ fun NewsResourceCardExpanded(
                         NewsResourceMetaData(userNewsResource.publishDate, userNewsResource.type)
                     }
                     // 间隔
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     // 短描述
                     NewsResourceShortDescription(userNewsResource.content)
                     // 间隔

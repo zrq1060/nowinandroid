@@ -337,17 +337,6 @@ fun NiaOutlinedButtonPreview() {
 
 @ThemePreviews
 @Composable
-// ThemePreview两个样式（亮和暗），普通按钮-无前图标-可用状态下的效果。
-fun NiaButtonPreview2() {
-    NiaTheme {
-        NiaBackground(modifier = Modifier.size(150.dp, 50.dp)) {
-            NiaButton(onClick = {}, text = { Text("Test button") })
-        }
-    }
-}
-
-@ThemePreviews
-@Composable
 // ThemePreview两个样式（亮和暗），普通按钮-有前图标-可用状态下的效果。
 fun NiaButtonLeadingIconPreview() {
     NiaTheme {
