@@ -82,10 +82,10 @@ private const val SCROLLBAR_INACTIVE_TO_DORMANT_TIME_IN_MS = 2_000L
 @Composable
 // 可拖动的Scrollbar
 fun ScrollableState.DraggableScrollbar(
-    modifier: Modifier = Modifier,
     state: ScrollbarState,
     orientation: Orientation,
     onThumbMoved: (Float) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     // 可变交互源
     // 返回一个新的MutableInteractionSource，它可以被提升并提供给组件，允许监听这些组件内部的交互更改。
@@ -123,9 +123,9 @@ fun ScrollableState.DraggableScrollbar(
 @Composable
 // 装饰的Scrollbar
 fun ScrollableState.DecorativeScrollbar(
-    modifier: Modifier = Modifier,
     state: ScrollbarState,
     orientation: Orientation,
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Scrollbar(

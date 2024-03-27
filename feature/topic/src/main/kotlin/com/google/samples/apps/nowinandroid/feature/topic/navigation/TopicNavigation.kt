@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
@@ -32,6 +33,7 @@ private val URL_CHARACTER_ENCODING = UTF_8.name()
 
 @VisibleForTesting
 internal const val TOPIC_ID_ARG = "topicId"
+const val TOPIC_ROUTE = "topic_route"
 
 // Topic（主题）参数，topicId为savedStateHandle[TOPIC_ID_ARG]的解码值。
 internal class TopicArgs(val topicId: String) {
@@ -40,15 +42,17 @@ internal class TopicArgs(val topicId: String) {
 }
 
 // 导航控制-导航到Topic（主题）屏
-fun NavController.navigateToTopic(topicId: String) {
+fun NavController.navigateToTopic(topicId: String, navOptions: NavOptionsBuilder.() -> Unit = {}) {
     val encodedId = URLEncoder.encode(topicId, URL_CHARACTER_ENCODING)
-    navigate("topic_route/$encodedId") {
-        launchSingleTop = true
+    val newRoute = "$TOPIC_ROUTE/$encodedId"
+    navigate(newRoute) {
+        navOptions()
     }
 }
 
 // 导航图构建-Topic（主题）屏（参数+UI）
 fun NavGraphBuilder.topicScreen(
+    showBackButton: Boolean,
     onBackClick: () -> Unit,
     onTopicClick: (String) -> Unit,
 ) {
@@ -60,6 +64,10 @@ fun NavGraphBuilder.topicScreen(
         ),
     ) {
         // Topic（主题）屏-Route（ViewModel+UI）
-        TopicRoute(onBackClick = onBackClick, onTopicClick = onTopicClick)
+        TopicRoute(
+            showBackButton = showBackButton,
+            onBackClick = onBackClick,
+            onTopicClick = onTopicClick,
+        )
     }
 }

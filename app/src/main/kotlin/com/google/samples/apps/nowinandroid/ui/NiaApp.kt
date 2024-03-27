@@ -17,7 +17,6 @@
 package com.google.samples.apps.nowinandroid.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -39,7 +38,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,8 +60,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.samples.apps.nowinandroid.R
-import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
-import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaGradientBackground
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaNavigationBar
@@ -81,25 +77,11 @@ import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
 
 @OptIn(
     ExperimentalMaterial3Api::class,
-    ExperimentalLayoutApi::class,
     ExperimentalComposeUiApi::class,
 )
 @Composable
 // AppUI，包括背景、无网络提示、设置Dialog、一级导航（水平+垂直）、标题栏、顶层导航图。
-fun NiaApp(
-    // window大小
-    windowSizeClass: WindowSizeClass,
-    // 网络监控
-    networkMonitor: NetworkMonitor,
-    // 用户新闻资源库
-    userNewsResourceRepository: UserNewsResourceRepository,
-    // app状态
-    appState: NiaAppState = rememberNiaAppState(
-        networkMonitor = networkMonitor,
-        windowSizeClass = windowSizeClass,
-        userNewsResourceRepository = userNewsResourceRepository,
-    ),
-) {
+fun NiaApp(appState: NiaAppState) {
     // 是否展示渐变背景（只有ForYou（为你）屏展示）
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.FOR_YOU
@@ -229,15 +211,18 @@ fun NiaApp(
                         }
 
                         // 顶层导航图，默认ForYou（为你）屏。
-                        NiaNavHost(appState = appState, onShowSnackbar = { message, action ->
-                            // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
-                            // ActionPerformed：在超时之前，单击了Snackbar上的操作。
-                            snackbarHostState.showSnackbar(
-                                message = message,
-                                actionLabel = action,
-                                duration = Short,
-                            ) == ActionPerformed
-                        })
+                        NiaNavHost(
+                            appState = appState,
+                            onShowSnackbar = { message, action ->
+                                // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
+                                // ActionPerformed：在超时之前，单击了Snackbar上的操作。
+                                snackbarHostState.showSnackbar(
+                                    message = message,
+                                    actionLabel = action,
+                                    duration = Short,
+                                ) == ActionPerformed
+                            },
+                        )
                     }
 
                     // TODO: We may want to add padding or spacer when the snackbar is shown so that

@@ -22,12 +22,11 @@ import androidx.navigation.compose.NavHost
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.bookmarksScreen
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.FOR_YOU_ROUTE
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.forYouScreen
-import com.google.samples.apps.nowinandroid.feature.interests.navigation.interestsGraph
+import com.google.samples.apps.nowinandroid.feature.interests.navigation.navigateToInterests
 import com.google.samples.apps.nowinandroid.feature.search.navigation.searchScreen
-import com.google.samples.apps.nowinandroid.feature.topic.navigation.navigateToTopic
-import com.google.samples.apps.nowinandroid.feature.topic.navigation.topicScreen
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.INTERESTS
 import com.google.samples.apps.nowinandroid.ui.NiaAppState
+import com.google.samples.apps.nowinandroid.ui.interests2pane.interestsListDetailScreen
 
 /**
  * Top-level navigation graph. Navigation is organized as explained at
@@ -58,30 +57,18 @@ fun NiaNavHost(
         modifier = modifier,
     ) {
         // forYou（为你）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
-        forYouScreen(onTopicClick = navController::navigateToTopic)
+        forYouScreen(onTopicClick = navController::navigateToInterests)
         // bookmarks（书签、Saved）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
         bookmarksScreen(
-            onTopicClick = navController::navigateToTopic,
-            // 用于显示撤销书签提示
+            onTopicClick = navController::navigateToInterests,
             onShowSnackbar = onShowSnackbar,
         )
         // search（搜索）屏，返回按钮导航返回一级，点击Interests（兴趣，搜索空结果-Interests）导航到顶级-Interests（兴趣）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
         searchScreen(
             onBackClick = navController::popBackStack,
             onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
-            onTopicClick = navController::navigateToTopic,
+            onTopicClick = navController::navigateToInterests,
         )
-        // interests（兴趣）图，点击主题（兴趣列表Item）跳到Topic（主题）屏。
-        interestsGraph(
-            onTopicClick = navController::navigateToTopic,
-            // 嵌套图
-            nestedGraphs = {
-                // topic（主题）屏，返回按钮导航返回一级，点击主题（新闻摘要-底部水平标签、兴趣列表Item）跳到Topic（主题）屏。
-                topicScreen(
-                    onBackClick = navController::popBackStack,
-                    onTopicClick = navController::navigateToTopic,
-                )
-            },
-        )
+        interestsListDetailScreen()
     }
 }

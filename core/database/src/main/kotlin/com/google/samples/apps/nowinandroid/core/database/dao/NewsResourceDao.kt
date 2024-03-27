@@ -115,14 +115,6 @@ interface NewsResourceDao {
     ): Flow<List<String>>
 
     /**
-     * Inserts [entities] into the db if they don't exist, and ignores those that do
-     * 如果[entities]不存在，则插入到数据库中，并忽略存在的实体
-     */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    // 插入或忽略（如果存在则忽略）指定entities的NewsResourceEntity
-    suspend fun insertOrIgnoreNewsResources(entities: List<NewsResourceEntity>): List<Long>
-
-    /**
      * Inserts or updates [newsResourceEntities] in the db under the specified primary keys
      * 在指定的主键下插入或更新数据库中的[newsResourceEntities]
      */

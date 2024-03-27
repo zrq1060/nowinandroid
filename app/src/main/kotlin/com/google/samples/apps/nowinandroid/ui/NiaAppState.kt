@@ -32,13 +32,14 @@ import androidx.navigation.navOptions
 import androidx.tracing.trace
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import com.google.samples.apps.nowinandroid.core.ui.TrackDisposableJank
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.BOOKMARKS_ROUTE
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.navigateToBookmarks
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.FOR_YOU_ROUTE
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.navigateToForYou
 import com.google.samples.apps.nowinandroid.feature.interests.navigation.INTERESTS_ROUTE
-import com.google.samples.apps.nowinandroid.feature.interests.navigation.navigateToInterestsGraph
+import com.google.samples.apps.nowinandroid.feature.interests.navigation.navigateToInterests
 import com.google.samples.apps.nowinandroid.feature.search.navigation.navigateToSearch
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.BOOKMARKS
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.TimeZone
 
 @Composable
 // App的状态，用remember记录。
@@ -60,6 +62,7 @@ fun rememberNiaAppState(
     networkMonitor: NetworkMonitor,
     // 用户新闻资源库
     userNewsResourceRepository: UserNewsResourceRepository,
+    timeZoneMonitor: TimeZoneMonitor,
     // 协程作用域
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     // 导航控制器
@@ -72,13 +75,15 @@ fun rememberNiaAppState(
         windowSizeClass,
         networkMonitor,
         userNewsResourceRepository,
+        timeZoneMonitor,
     ) {
         NiaAppState(
-            navController,
-            coroutineScope,
-            windowSizeClass,
-            networkMonitor,
-            userNewsResourceRepository,
+            navController = navController,
+            coroutineScope = coroutineScope,
+            windowSizeClass = windowSizeClass,
+            networkMonitor = networkMonitor,
+            userNewsResourceRepository = userNewsResourceRepository,
+            timeZoneMonitor = timeZoneMonitor,
         )
     }
 }
@@ -87,10 +92,11 @@ fun rememberNiaAppState(
 // App状态
 class NiaAppState(
     val navController: NavHostController,
-    val coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope,
     val windowSizeClass: WindowSizeClass,
     networkMonitor: NetworkMonitor,
     userNewsResourceRepository: UserNewsResourceRepository,
+    timeZoneMonitor: TimeZoneMonitor,
 ) {
     // 当前的目的地
     val currentDestination: NavDestination?
@@ -146,11 +152,19 @@ class NiaAppState(
                     // 同上
                     BOOKMARKS.takeIf { bookmarkedNewsResources.any { !it.hasBeenViewed } },
                 )
-            }.stateIn(
+            }
+            .stateIn(
                 coroutineScope,
                 SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptySet(),
             )
+
+    val currentTimeZone = timeZoneMonitor.currentTimeZone
+        .stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(5_000),
+            TimeZone.currentSystemDefault(),
+        )
 
     /**
      * UI logic for navigating to a top level destination in the app. Top level destinations have
@@ -185,7 +199,7 @@ class NiaAppState(
                 // 导航控制-导航到ForYou、Bookmarks（书签、Saved）、Interests（兴趣）屏，由各个feature模块自己负责跳转。
                 FOR_YOU -> navController.navigateToForYou(topLevelNavOptions)
                 BOOKMARKS -> navController.navigateToBookmarks(topLevelNavOptions)
-                INTERESTS -> navController.navigateToInterestsGraph(topLevelNavOptions)
+                INTERESTS -> navController.navigateToInterests(null, topLevelNavOptions)
             }
         }
     }

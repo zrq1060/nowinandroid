@@ -16,16 +16,18 @@
 
 package com.google.samples.apps.nowinandroid.feature.interests
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.samples.apps.nowinandroid.core.data.repository.UserDataRepository
 import com.google.samples.apps.nowinandroid.core.domain.GetFollowableTopicsUseCase
 import com.google.samples.apps.nowinandroid.core.domain.TopicSortField
 import com.google.samples.apps.nowinandroid.core.model.data.FollowableTopic
+import com.google.samples.apps.nowinandroid.feature.interests.navigation.TOPIC_ID_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,27 +35,35 @@ import javax.inject.Inject
 @HiltViewModel
 // Interests（兴趣）屏-ViewModel
 class InterestsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     val userDataRepository: UserDataRepository,
     // 获取带有是否关注的FollowableTopic列表的用例
     getFollowableTopics: GetFollowableTopicsUseCase,
 ) : ViewModel() {
 
+    val selectedTopicId: StateFlow<String?> = savedStateHandle.getStateFlow(TOPIC_ID_ARG, null)
+
     // Interests（兴趣）屏-UiState，默认加载中状态。
-    val uiState: StateFlow<InterestsUiState> =
-        // 获取FollowableTopic（带有是否关注的）列表，并按照名称排序，并把List<FollowableTopic>列表转为InterestsUiState.Interests。
-        getFollowableTopics(sortBy = TopicSortField.NAME).map(
-            InterestsUiState::Interests,
-        ).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = InterestsUiState.Loading,
-        )
+    val uiState: StateFlow<InterestsUiState> = combine(
+        selectedTopicId,
+        // 获取FollowableTopic（带有是否关注的）列表，并按照名称排序
+        getFollowableTopics(sortBy = TopicSortField.NAME),
+        InterestsUiState::Interests,
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = InterestsUiState.Loading,
+    )
 
     // 设置-关注/取消关注-主题
     fun followTopic(followedTopicId: String, followed: Boolean) {
         viewModelScope.launch {
             userDataRepository.setTopicIdFollowed(followedTopicId, followed)
         }
+    }
+
+    fun onTopicClick(topicId: String?) {
+        savedStateHandle[TOPIC_ID_ARG] = topicId
     }
 }
 
@@ -64,6 +74,7 @@ sealed interface InterestsUiState {
 
     // 成功-有数据
     data class Interests(
+        val selectedTopicId: String?,
         val topics: List<FollowableTopic>,
     ) : InterestsUiState
 

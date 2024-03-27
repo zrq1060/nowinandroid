@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
@@ -42,10 +43,13 @@ import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsHelper
 import com.google.samples.apps.nowinandroid.core.analytics.LocalAnalyticsHelper
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
+import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroid.core.model.data.DarkThemeConfig
 import com.google.samples.apps.nowinandroid.core.model.data.ThemeBrand
+import com.google.samples.apps.nowinandroid.core.ui.LocalTimeZone
 import com.google.samples.apps.nowinandroid.ui.NiaApp
+import com.google.samples.apps.nowinandroid.ui.rememberNiaAppState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -70,6 +74,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     // 网络监控，用于监听无网络。
     lateinit var networkMonitor: NetworkMonitor
+
+    @Inject
+    lateinit var timeZoneMonitor: TimeZoneMonitor
 
     @Inject
     // 分析辅助类，用于处理事件（如：打印日至等）。
@@ -141,9 +148,19 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            // 提供本地Provider供使用
-            CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
-                // 自己APP的样式
+            val appState = rememberNiaAppState(
+                windowSizeClass = calculateWindowSizeClass(this),
+                networkMonitor = networkMonitor,
+                userNewsResourceRepository = userNewsResourceRepository,
+                timeZoneMonitor = timeZoneMonitor,
+            )
+
+            val currentTimeZone by appState.currentTimeZone.collectAsStateWithLifecycle()
+
+            CompositionLocalProvider(
+                LocalAnalyticsHelper provides analyticsHelper,
+                LocalTimeZone provides currentTimeZone,
+            ) {
                 NiaTheme(
                     // 暗模式
                     darkTheme = darkTheme,
@@ -152,15 +169,7 @@ class MainActivity : ComponentActivity() {
                     // 禁用动态样式
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
-                    // 自己APP样式下的内容
-                    NiaApp(
-                        // 网络监控
-                        networkMonitor = networkMonitor,
-                        // window大小
-                        windowSizeClass = calculateWindowSizeClass(this),
-                        // 用户新闻资源库
-                        userNewsResourceRepository = userNewsResourceRepository,
-                    )
+                    NiaApp(appState)
                 }
             }
         }

@@ -22,7 +22,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.util.DebugLogger
 import com.google.samples.apps.nowinandroid.core.network.BuildConfig
-import com.google.samples.apps.nowinandroid.core.network.fake.FakeAssetManager
+import com.google.samples.apps.nowinandroid.core.network.demo.DemoAssetManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,11 +48,11 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    // 单例，提供FakeAssetManager
-    fun providesFakeAssetManager(
+    // 单例，提供DemoAssetManager
+    fun providesDemoAssetManager(
         @ApplicationContext context: Context,
-        // FakeAssetManager能创建，应该是匿名内部类导致。
-    ): FakeAssetManager = FakeAssetManager(context.assets::open)
+        // DemoAssetManager能创建，应该是匿名内部类导致。
+    ): DemoAssetManager = DemoAssetManager(context.assets::open)
 
     @Provides
     @Singleton

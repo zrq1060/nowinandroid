@@ -66,7 +66,7 @@ class TopicViewModel @Inject constructor(
         )
 
     // 新闻-UiState
-    val newUiState: StateFlow<NewsUiState> = newsUiState(
+    val newsUiState: StateFlow<NewsUiState> = newsUiState(
         topicId = topicArgs.topicId,
         userDataRepository = userDataRepository,
         userNewsResourceRepository = userNewsResourceRepository,
@@ -87,7 +87,7 @@ class TopicViewModel @Inject constructor(
     // 关注新闻书签切换
     fun bookmarkNews(newsResourceId: String, bookmarked: Boolean) {
         viewModelScope.launch {
-            userDataRepository.updateNewsResourceBookmark(newsResourceId, bookmarked)
+            userDataRepository.setNewsResourceBookmarked(newsResourceId, bookmarked)
         }
     }
 

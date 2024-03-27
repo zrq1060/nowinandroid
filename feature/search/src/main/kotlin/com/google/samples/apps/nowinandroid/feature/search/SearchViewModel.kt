@@ -23,14 +23,15 @@ import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsEvent
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsEvent.Param
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsHelper
 import com.google.samples.apps.nowinandroid.core.data.repository.RecentSearchRepository
+import com.google.samples.apps.nowinandroid.core.data.repository.SearchContentsRepository
+import com.google.samples.apps.nowinandroid.core.data.repository.UserDataRepository
 import com.google.samples.apps.nowinandroid.core.domain.GetRecentSearchQueriesUseCase
-import com.google.samples.apps.nowinandroid.core.domain.GetSearchContentsCountUseCase
 import com.google.samples.apps.nowinandroid.core.domain.GetSearchContentsUseCase
-import com.google.samples.apps.nowinandroid.core.result.Result
-import com.google.samples.apps.nowinandroid.core.result.asResult
+import com.google.samples.apps.nowinandroid.core.model.data.UserSearchResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -43,13 +44,14 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     // 获取搜索内容（UserSearchResult）的用例
     getSearchContentsUseCase: GetSearchContentsUseCase,
-    // 获取搜索内容数量的用例
-    getSearchContentsCountUseCase: GetSearchContentsCountUseCase,
     // 最近搜索查询用例
     recentSearchQueriesUseCase: GetRecentSearchQueriesUseCase,
+    // 搜索内容仓库
+    private val searchContentsRepository: SearchContentsRepository,
     // 最近搜索仓库
     private val recentSearchRepository: RecentSearchRepository,
-    // SavedStateHandle
+    // 用户数据仓库
+    private val userDataRepository: UserDataRepository,
     private val savedStateHandle: SavedStateHandle,
     // 分析辅助
     private val analyticsHelper: AnalyticsHelper,
@@ -60,7 +62,7 @@ class SearchViewModel @Inject constructor(
 
     // Search结果的UiState，默认加载中。
     val searchResultUiState: StateFlow<SearchResultUiState> =
-        getSearchContentsCountUseCase()
+        searchContentsRepository.getSearchContentsCount()
             .flatMapLatest { totalCount ->
                 if (totalCount < SEARCH_MIN_FTS_ENTITY_COUNT) {
                     // 小于1个，搜索没准备好，返回SearchResultUiState.SearchNotReady。
@@ -74,21 +76,15 @@ class SearchViewModel @Inject constructor(
                         } else {
                             // 查询的内容长度大于等于2，则认为是搜索，获取搜索内容。
                             getSearchContentsUseCase(query)
-                                .asResult()
-                                .map { result ->
-                                    when (result) {
-                                        // 成功，返回SearchResultUiState.Success。
-                                        is Result.Success -> SearchResultUiState.Success(
-                                            topics = result.data.topics,
-                                            newsResources = result.data.newsResources,
-                                        )
-
-                                        // 加载中，返回SearchResultUiState.Loading。
-                                        is Result.Loading -> SearchResultUiState.Loading
-                                        // 失败，返回SearchResultUiState.LoadFailed。
-                                        is Result.Error -> SearchResultUiState.LoadFailed
-                                    }
+                                // Not using .asResult() here, because it emits Loading state every
+                                // time the user types a letter in the search box, which flickers the screen.
+                                .map<UserSearchResult, SearchResultUiState> { data ->
+                                    SearchResultUiState.Success(
+                                        topics = data.topics,
+                                        newsResources = data.newsResources,
+                                    )
                                 }
+                                .catch { emit(SearchResultUiState.LoadFailed) }
                         }
                     }
                 }
@@ -144,6 +140,24 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             // 清除
             recentSearchRepository.clearRecentSearches()
+        }
+    }
+
+    fun setNewsResourceBookmarked(newsResourceId: String, isChecked: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setNewsResourceBookmarked(newsResourceId, isChecked)
+        }
+    }
+
+    fun followTopic(followedTopicId: String, followed: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setTopicIdFollowed(followedTopicId, followed)
+        }
+    }
+
+    fun setNewsResourceViewed(newsResourceId: String, viewed: Boolean) {
+        viewModelScope.launch {
+            userDataRepository.setNewsResourceViewed(newsResourceId, viewed)
         }
     }
 }

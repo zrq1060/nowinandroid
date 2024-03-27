@@ -134,7 +134,7 @@ class ForYouViewModel @Inject constructor(
     // 更新新闻资源是否已保存（加入书签）
     fun updateNewsResourceSaved(newsResourceId: String, isChecked: Boolean) {
         viewModelScope.launch {
-            userDataRepository.updateNewsResourceBookmark(newsResourceId, isChecked)
+            userDataRepository.setNewsResourceBookmarked(newsResourceId, isChecked)
         }
     }
 

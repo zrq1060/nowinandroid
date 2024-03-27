@@ -22,33 +22,36 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import androidx.navigation.navigation
 import com.google.samples.apps.nowinandroid.feature.interests.InterestsRoute
 
-private const val INTERESTS_GRAPH_ROUTE_PATTERN = "interests_graph"
+const val TOPIC_ID_ARG = "topicId"
+const val INTERESTS_ROUTE_BASE = "interests_route"
 // Interests（兴趣）屏的Route
-const val INTERESTS_ROUTE = "interests_route"
+const val INTERESTS_ROUTE = "$INTERESTS_ROUTE_BASE?$TOPIC_ID_ARG={$TOPIC_ID_ARG}"
 
-// 导航控制-导航到Interests（兴趣）图
-fun NavController.navigateToInterestsGraph(navOptions: NavOptions) = navigate(INTERESTS_GRAPH_ROUTE_PATTERN, navOptions)
+fun NavController.navigateToInterests(topicId: String? = null, navOptions: NavOptions? = null) {
+    val route = if (topicId != null) {
+        "${INTERESTS_ROUTE_BASE}?${TOPIC_ID_ARG}=$topicId"
+    } else {
+        INTERESTS_ROUTE_BASE
+    }
+    navigate(route, navOptions)
+}
 
-// 导航图构建-Interests（兴趣）图（参数+UI）
-fun NavGraphBuilder.interestsGraph(
+fun NavGraphBuilder.interestsScreen(
     onTopicClick: (String) -> Unit,
-    nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
-    // 嵌套导航图，开始目的地为Interests（兴趣）屏。
-    navigation(
-        route = INTERESTS_GRAPH_ROUTE_PATTERN,
-        startDestination = INTERESTS_ROUTE,
+    composable(
+        route = INTERESTS_ROUTE,
+        arguments = listOf(
+            navArgument(TOPIC_ID_ARG) {
+                defaultValue = null
+                nullable = true
+                type = NavType.StringType
+            },
+        ),
     ) {
-        // Interests（兴趣）屏
-        composable(route = INTERESTS_ROUTE) {
-            // Interests（兴趣）屏-Route（ViewModel+UI）
-            InterestsRoute(onTopicClick)
-        }
-        // 嵌套图
-        nestedGraphs()
+        // Interests（兴趣）屏-Route（ViewModel+UI）
+        InterestsRoute(onTopicClick = onTopicClick)
     }
 }

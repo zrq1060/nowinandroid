@@ -68,8 +68,7 @@ class BookmarksViewModel @Inject constructor(
             shouldDisplayUndoBookmark = true
             // 记录最后移除的Id，好方便撤回移除。
             lastRemovedBookmarkId = newsResourceId
-            // 移除操作（底层DataStore）
-            userDataRepository.updateNewsResourceBookmark(newsResourceId, false)
+            userDataRepository.setNewsResourceBookmarked(newsResourceId, false)
         }
     }
 
@@ -84,8 +83,7 @@ class BookmarksViewModel @Inject constructor(
     fun undoBookmarkRemoval() {
         viewModelScope.launch {
             lastRemovedBookmarkId?.let {
-                // 恢复移除
-                userDataRepository.updateNewsResourceBookmark(it, true)
+                userDataRepository.setNewsResourceBookmarked(it, true)
             }
         }
         // 清除撤销状态，防止再次展示是否撤销提示。

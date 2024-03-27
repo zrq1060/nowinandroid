@@ -33,14 +33,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +47,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,7 +68,7 @@ import com.google.samples.apps.nowinandroid.core.model.data.NewsResource
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
-import java.time.ZoneId
+import kotlinx.datetime.toJavaZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
@@ -81,7 +78,6 @@ import java.util.Locale
  * [NewsResource]卡在以下屏幕上使用：For You（为您），Saved（已保存）
  */
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 // 新闻资源的卡片UI，包含了：网络图片加载、书签切换等。
 fun NewsResourceCardExpanded(
@@ -290,35 +286,11 @@ fun NotificationDot(
 }
 
 @Composable
-// 时间格式化
-fun dateFormatted(publishDate: Instant): String {
-    var zoneId by remember { mutableStateOf(ZoneId.systemDefault()) }
-
-    val context = LocalContext.current
-
-    // DisposableEffect：是一个用于处理资源管理和清理的 Compose 函数
-    DisposableEffect(context) {
-        // 执行副作用操作
-        val receiver = TimeZoneBroadcastReceiver(
-            // 时区改变，更改zoneId。
-            onTimeZoneChanged = { zoneId = ZoneId.systemDefault() },
-        )
-        // -注册广播
-        receiver.register(context)
-        onDispose {
-            // 在组件被丢弃时执行清理操作
-            // -反注册
-            receiver.unregister(context)
-        }
-    }
-
-    return DateTimeFormatter
-        // 中等文本样式，带有一些细节。例如，格式可能是'Jan 12, 1952'。
-        .ofLocalizedDate(FormatStyle.MEDIUM)
-        .withLocale(Locale.getDefault())
-        .withZone(zoneId)
-        .format(publishDate.toJavaInstant())
-}
+fun dateFormatted(publishDate: Instant): String = DateTimeFormatter
+    .ofLocalizedDate(FormatStyle.MEDIUM)
+    .withLocale(Locale.getDefault())
+    .withZone(LocalTimeZone.current.toJavaZoneId())
+    .format(publishDate.toJavaInstant())
 
 @Composable
 // 展示新闻资源其他数据（时间+类型）

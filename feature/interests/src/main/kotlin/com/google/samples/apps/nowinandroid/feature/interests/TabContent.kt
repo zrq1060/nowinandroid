@@ -39,6 +39,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollba
 import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.rememberDraggableScroller
 import com.google.samples.apps.nowinandroid.core.designsystem.component.scrollbar.scrollbarState
 import com.google.samples.apps.nowinandroid.core.model.data.FollowableTopic
+import com.google.samples.apps.nowinandroid.core.ui.InterestsItem
 
 @Composable
 // Interests（兴趣）Tab内容
@@ -49,6 +50,8 @@ fun TopicsTabContent(
     modifier: Modifier = Modifier,
     // 是否设置底部的间距
     withBottomSpacer: Boolean = true,
+    selectedTopicId: String? = null,
+    highlightSelectedTopic: Boolean = false,
 ) {
     // Box容器
     Box(
@@ -68,6 +71,7 @@ fun TopicsTabContent(
             topics.forEach { followableTopic ->
                 val topicId = followableTopic.topic.id
                 item(key = topicId) {
+                    val isSelected = highlightSelectedTopic && topicId == selectedTopicId
                     // Item布局
                     InterestsItem(
                         name = followableTopic.topic.name,
@@ -76,6 +80,7 @@ fun TopicsTabContent(
                         topicImageUrl = followableTopic.topic.imageUrl,
                         onClick = { onTopicClick(topicId) },
                         onFollowButtonClick = { onFollowButtonClick(topicId, it) },
+                        isSelected = isSelected,
                     )
                 }
             }

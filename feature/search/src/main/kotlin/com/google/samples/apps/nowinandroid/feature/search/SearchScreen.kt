@@ -55,7 +55,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -88,64 +87,47 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
 import com.google.samples.apps.nowinandroid.core.model.data.FollowableTopic
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import com.google.samples.apps.nowinandroid.core.ui.DevicePreviews
+import com.google.samples.apps.nowinandroid.core.ui.InterestsItem
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState.Success
 import com.google.samples.apps.nowinandroid.core.ui.R.string
 import com.google.samples.apps.nowinandroid.core.ui.TrackScreenViewEvent
 import com.google.samples.apps.nowinandroid.core.ui.newsFeed
-import com.google.samples.apps.nowinandroid.feature.bookmarks.BookmarksViewModel
-import com.google.samples.apps.nowinandroid.feature.foryou.ForYouViewModel
-import com.google.samples.apps.nowinandroid.feature.interests.InterestsItem
-import com.google.samples.apps.nowinandroid.feature.interests.InterestsViewModel
 import com.google.samples.apps.nowinandroid.feature.search.R as searchR
 
 @Composable
 // Search（搜索）屏-路由，有ViewModel。
 internal fun SearchRoute(
-    modifier: Modifier = Modifier,
     // 返回点击
     onBackClick: () -> Unit,
     // Interests（兴趣）点击，在空的搜索结果上展示此按钮。
     onInterestsClick: () -> Unit,
     // 主题点击，在有数据的搜索结果上展示。
     onTopicClick: (String) -> Unit,
-    // 书签的ViewModel，用于设置新闻资源是否已浏览，底层userDataRepository实现。
-    bookmarksViewModel: BookmarksViewModel = hiltViewModel(),
-    // 兴趣的ViewModel，用于设置-关注/取消关注-主题，底层userDataRepository实现。
-    interestsViewModel: InterestsViewModel = hiltViewModel(),
-    // 搜索的ViewModel，此页面的。
+    modifier: Modifier = Modifier,
+    // 搜索的ViewModel
     searchViewModel: SearchViewModel = hiltViewModel(),
-    // 为你的ViewModel，用于更新新闻资源是否已保存（加入书签），底层userDataRepository实现。
-    forYouViewModel: ForYouViewModel = hiltViewModel(),
 ) {
     val recentSearchQueriesUiState by searchViewModel.recentSearchQueriesUiState.collectAsStateWithLifecycle()
     val searchResultUiState by searchViewModel.searchResultUiState.collectAsStateWithLifecycle()
     val searchQuery by searchViewModel.searchQuery.collectAsStateWithLifecycle()
     SearchScreen(
         modifier = modifier,
-        // 返回点击
-        onBackClick = onBackClick,
-        // 清除最近搜索列表
-        onClearRecentSearches = searchViewModel::clearRecentSearches,
-        // 关注/取消关注按钮点击，设置-关注/取消关注-主题，在SearchResultUiState.Success状态下并且有数据的Topics列表下展示。
-        onFollowButtonClick = interestsViewModel::followTopic,
-        // 主题点击，在SearchResultUiState.Success状态下并且无数据下展示。
-        onInterestsClick = onInterestsClick,
-        // 搜索查询改变。
+        searchQuery = searchQuery,
+        recentSearchesUiState = recentSearchQueriesUiState,
+        searchResultUiState = searchResultUiState,
         onSearchQueryChanged = searchViewModel::onSearchQueryChanged,
         // 搜索触发的
         onSearchTriggered = searchViewModel::onSearchTriggered,
+        onClearRecentSearches = searchViewModel::clearRecentSearches,
+        // 新闻资源关注改变
+        onNewsResourcesCheckedChanged = searchViewModel::setNewsResourceBookmarked,
+        // 新闻资源已浏览
+        onNewsResourceViewed = { searchViewModel.setNewsResourceViewed(it, true) },
+        onFollowButtonClick = searchViewModel::followTopic,
+        onBackClick = onBackClick,
+        onInterestsClick = onInterestsClick,
         // 主题点击
         onTopicClick = onTopicClick,
-        // 新闻资源关注改变
-        onNewsResourcesCheckedChanged = forYouViewModel::updateNewsResourceSaved,
-        // 新闻资源已浏览
-        onNewsResourceViewed = { bookmarksViewModel.setNewsResourceViewed(it, true) },
-        // 最近搜索查询列表的UiState
-        recentSearchesUiState = recentSearchQueriesUiState,
-        // 查询内容
-        searchQuery = searchQuery,
-        // 搜索结果的UiState
-        searchResultUiState = searchResultUiState,
     )
 }
 
@@ -153,18 +135,18 @@ internal fun SearchRoute(
 // Search（搜索）屏-UI，无ViewModel。
 internal fun SearchScreen(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
-    onClearRecentSearches: () -> Unit = {},
-    onFollowButtonClick: (String, Boolean) -> Unit = { _, _ -> },
-    onInterestsClick: () -> Unit = {},
-    onNewsResourcesCheckedChanged: (String, Boolean) -> Unit = { _, _ -> },
-    onNewsResourceViewed: (String) -> Unit = {},
-    onSearchQueryChanged: (String) -> Unit = {},
-    onSearchTriggered: (String) -> Unit = {},
-    onTopicClick: (String) -> Unit = {},
     searchQuery: String = "",
     recentSearchesUiState: RecentSearchQueriesUiState = RecentSearchQueriesUiState.Loading,
     searchResultUiState: SearchResultUiState = SearchResultUiState.Loading,
+    onSearchQueryChanged: (String) -> Unit = {},
+    onSearchTriggered: (String) -> Unit = {},
+    onClearRecentSearches: () -> Unit = {},
+    onNewsResourcesCheckedChanged: (String, Boolean) -> Unit = { _, _ -> },
+    onNewsResourceViewed: (String) -> Unit = {},
+    onFollowButtonClick: (String, Boolean) -> Unit = { _, _ -> },
+    onBackClick: () -> Unit = {},
+    onInterestsClick: () -> Unit = {},
+    onTopicClick: (String) -> Unit = {},
 ) {
     // 记录事件
     TrackScreenViewEvent(screenName = "Search")
@@ -214,8 +196,8 @@ internal fun SearchScreen(
                     // 搜索结果为空，展示提示无发现布局+最近搜索查询列表。
                     // -无发现提示布局
                     EmptySearchResultBody(
-                        onInterestsClick = onInterestsClick,
                         searchQuery = searchQuery,
+                        onInterestsClick = onInterestsClick,
                     )
                     // -最近搜索查询列表
                     if (recentSearchesUiState is RecentSearchQueriesUiState.Success) {
@@ -231,14 +213,14 @@ internal fun SearchScreen(
                 } else {
                     // 搜索结果不为空，展示搜索结果（Topics+Updates）。
                     SearchResultBody(
+                        searchQuery = searchQuery,
                         topics = searchResultUiState.topics,
-                        onFollowButtonClick = onFollowButtonClick,
-                        onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
-                        onNewsResourceViewed = onNewsResourceViewed,
+                        newsResources = searchResultUiState.newsResources,
                         onSearchTriggered = onSearchTriggered,
                         onTopicClick = onTopicClick,
-                        newsResources = searchResultUiState.newsResources,
-                        searchQuery = searchQuery,
+                        onNewsResourcesCheckedChanged = onNewsResourcesCheckedChanged,
+                        onNewsResourceViewed = onNewsResourceViewed,
+                        onFollowButtonClick = onFollowButtonClick,
                     )
                 }
             }
@@ -251,8 +233,8 @@ internal fun SearchScreen(
 @Composable
 // 搜索结果为空，无发现提示布局。
 fun EmptySearchResultBody(
-    onInterestsClick: () -> Unit,
     searchQuery: String,
+    onInterestsClick: () -> Unit,
 ) {
     // 列容器
     Column(
@@ -345,14 +327,14 @@ private fun SearchNotReadyBody() {
 @Composable
 // 搜索结果不为空，展示搜索结果（Topics+Updates）。
 private fun SearchResultBody(
+    searchQuery: String,
     topics: List<FollowableTopic>,
     newsResources: List<UserNewsResource>,
-    onFollowButtonClick: (String, Boolean) -> Unit,
-    onNewsResourcesCheckedChanged: (String, Boolean) -> Unit,
-    onNewsResourceViewed: (String) -> Unit,
     onSearchTriggered: (String) -> Unit,
     onTopicClick: (String) -> Unit,
-    searchQuery: String = "",
+    onNewsResourcesCheckedChanged: (String, Boolean) -> Unit,
+    onNewsResourceViewed: (String) -> Unit,
+    onFollowButtonClick: (String, Boolean) -> Unit,
 ) {
     val state = rememberLazyStaggeredGridState()
     Box(
@@ -468,9 +450,9 @@ private fun SearchResultBody(
 @Composable
 // 最近搜索查询列表
 private fun RecentSearchesBody(
+    recentSearchQueries: List<String>,
     onClearRecentSearches: () -> Unit,
     onRecentSearchClicked: (String) -> Unit,
-    recentSearchQueries: List<String>,
 ) {
     // 列容器
     Column {
@@ -529,11 +511,11 @@ private fun RecentSearchesBody(
 @Composable
 // 搜索标题栏
 private fun SearchToolbar(
-    modifier: Modifier = Modifier,
-    onBackClick: () -> Unit,
+    searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
-    searchQuery: String = "",
     onSearchTriggered: (String) -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     // 行容器
     Row(
@@ -558,12 +540,11 @@ private fun SearchToolbar(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 // 搜索文本框
 private fun SearchTextField(
-    onSearchQueryChanged: (String) -> Unit,
     searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
     onSearchTriggered: (String) -> Unit,
 ) {
     // 焦点请求者
@@ -663,6 +644,7 @@ private fun SearchTextField(
 private fun SearchToolbarPreview() {
     NiaTheme {
         SearchToolbar(
+            searchQuery = "",
             onBackClick = {},
             onSearchQueryChanged = {},
             onSearchTriggered = {},
