@@ -28,7 +28,7 @@ import dagger.hilt.android.components.ActivityComponent
 
 @Module
 @InstallIn(ActivityComponent::class)
-// 生命周期为Activity，提供JankStats。
+// 生命周期为Activity，提供JankStats、Window。
 object JankStatsModule {
     @Provides
     fun providesOnFrameListener(): OnFrameListener = OnFrameListener { frameData ->

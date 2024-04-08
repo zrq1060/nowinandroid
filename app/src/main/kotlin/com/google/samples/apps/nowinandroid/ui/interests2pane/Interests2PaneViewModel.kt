@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
+// interestsListDetail（兴趣列表详情）屏-ViewModel
 class Interests2PaneViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {

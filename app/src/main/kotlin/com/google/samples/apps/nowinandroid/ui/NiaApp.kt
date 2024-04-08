@@ -147,6 +147,7 @@ fun NiaApp(appState: NiaAppState) {
                             destinationsWithUnreadResources = unreadDestinations,
                             // 切换item跳到目的地
                             onNavigateToDestination = appState::navigateToTopLevelDestination,
+                            // 当前的目的地
                             currentDestination = appState.currentDestination,
                             modifier = Modifier.testTag("NiaBottomBar"),
                         )

@@ -76,6 +76,7 @@ class MainActivity : ComponentActivity() {
     lateinit var networkMonitor: NetworkMonitor
 
     @Inject
+    // 时区监视器
     lateinit var timeZoneMonitor: TimeZoneMonitor
 
     @Inject

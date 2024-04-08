@@ -48,6 +48,7 @@ import javax.inject.Singleton
  * Utility for reporting current timezone the device has set.
  * It always emits at least once with default setting and then for each TZ change.
  */
+// 时区监视器
 interface TimeZoneMonitor {
     val currentTimeZone: Flow<TimeZone>
 }

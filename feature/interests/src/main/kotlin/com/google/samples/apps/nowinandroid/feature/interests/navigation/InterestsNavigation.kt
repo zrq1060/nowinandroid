@@ -29,6 +29,7 @@ const val INTERESTS_ROUTE_BASE = "interests_route"
 // Interests（兴趣）屏的Route
 const val INTERESTS_ROUTE = "$INTERESTS_ROUTE_BASE?$TOPIC_ID_ARG={$TOPIC_ID_ARG}"
 
+// Interests（兴趣/兴趣详情）屏。
 fun NavController.navigateToInterests(topicId: String? = null, navOptions: NavOptions? = null) {
     val route = if (topicId != null) {
         "${INTERESTS_ROUTE_BASE}?${TOPIC_ID_ARG}=$topicId"

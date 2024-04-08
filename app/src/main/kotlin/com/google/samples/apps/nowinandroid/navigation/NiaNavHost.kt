@@ -56,19 +56,22 @@ fun NiaNavHost(
         startDestination = startDestination,
         modifier = modifier,
     ) {
-        // forYou（为你）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
+        // forYou（为你）屏，点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
         forYouScreen(onTopicClick = navController::navigateToInterests)
-        // bookmarks（书签、Saved）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
+        // bookmarks（书签、Saved）屏，点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
         bookmarksScreen(
             onTopicClick = navController::navigateToInterests,
             onShowSnackbar = onShowSnackbar,
         )
-        // search（搜索）屏，返回按钮导航返回一级，点击Interests（兴趣，搜索空结果-Interests）导航到顶级-Interests（兴趣）屏，点击主题（新闻摘要-底部水平标签）跳到Topic（主题）屏。
+        // search（搜索）屏，返回按钮导航返回一级，
+        // 点击Interests（兴趣，搜索空结果-Interests）导航到顶级-Interests（兴趣）屏，
+        // 点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
         searchScreen(
             onBackClick = navController::popBackStack,
             onInterestsClick = { appState.navigateToTopLevelDestination(INTERESTS) },
             onTopicClick = navController::navigateToInterests,
         )
+        // interestsListDetail（兴趣列表详情）屏。
         interestsListDetailScreen()
     }
 }

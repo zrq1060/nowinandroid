@@ -62,6 +62,7 @@ fun rememberNiaAppState(
     networkMonitor: NetworkMonitor,
     // 用户新闻资源库
     userNewsResourceRepository: UserNewsResourceRepository,
+    // 时区监视器
     timeZoneMonitor: TimeZoneMonitor,
     // 协程作用域
     coroutineScope: CoroutineScope = rememberCoroutineScope(),

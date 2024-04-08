@@ -44,6 +44,7 @@ import com.google.samples.apps.nowinandroid.feature.topic.navigation.topicScreen
 
 private const val DETAIL_PANE_NAVHOST_ROUTE = "detail_pane_route"
 
+// 导航图构建-interestsListDetail（兴趣列表详情）屏（参数+UI）。
 fun NavGraphBuilder.interestsListDetailScreen() {
     composable(
         route = INTERESTS_ROUTE,
@@ -60,6 +61,7 @@ fun NavGraphBuilder.interestsListDetailScreen() {
 }
 
 @Composable
+// interestsListDetail（兴趣列表详情）屏-Route（ViewModel+UI）
 internal fun InterestsListDetailScreen(
     viewModel: Interests2PaneViewModel = hiltViewModel(),
 ) {
@@ -70,12 +72,14 @@ internal fun InterestsListDetailScreen(
     )
 }
 
+// interestsListDetail（兴趣列表详情）屏-UI，无ViewModel。
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun InterestsListDetailScreen(
     selectedTopicId: String?,
     onTopicClick: (String) -> Unit,
 ) {
+    // TODO 待研究
     val listDetailNavigator = rememberListDetailPaneScaffoldNavigator<Nothing>()
     BackHandler(listDetailNavigator.canNavigateBack()) {
         listDetailNavigator.navigateBack()
