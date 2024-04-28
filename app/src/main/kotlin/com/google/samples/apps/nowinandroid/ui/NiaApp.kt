@@ -75,20 +75,16 @@ import com.google.samples.apps.nowinandroid.navigation.NiaNavHost
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
 import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
 
-@OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalComposeUiApi::class,
-)
 @Composable
 // AppUI，包括背景、无网络提示、设置Dialog、一级导航（水平+垂直）、标题栏、顶层导航图。
-fun NiaApp(appState: NiaAppState) {
+fun NiaApp(appState: NiaAppState, modifier: Modifier = Modifier) {
     // 是否展示渐变背景（只有ForYou（为你）屏展示）
     val shouldShowGradientBackground =
         appState.currentTopLevelDestination == TopLevelDestination.FOR_YOU
     // 是否展示设置Dialog（默认不展示）
     var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
 
-    NiaBackground {
+    NiaBackground(modifier = modifier) {
         NiaGradientBackground(
             // 背景颜色
             gradientColors = if (shouldShowGradientBackground) {
@@ -118,119 +114,145 @@ fun NiaApp(appState: NiaAppState) {
                 }
             }
 
-            if (showSettingsDialog) {
-                // 展示设置Dialog
-                SettingsDialog(
-                    // 销毁请求，即不展示请求，设置showSettingsDialog = false。
-                    onDismiss = { showSettingsDialog = false },
+            NiaApp(
+                appState = appState,
+                snackbarHostState = snackbarHostState,
+                showSettingsDialog = showSettingsDialog,
+                onSettingsDismissed = { showSettingsDialog = false },
+                onTopAppBarActionClick = { showSettingsDialog = true },
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+internal fun NiaApp(
+    appState: NiaAppState,
+    snackbarHostState: SnackbarHostState,
+    showSettingsDialog: Boolean,
+    onSettingsDismissed: () -> Unit,
+    onTopAppBarActionClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // 所有未读的目的地
+    val unreadDestinations by appState.topLevelDestinationsWithUnreadResources
+        .collectAsStateWithLifecycle()
+
+    if (showSettingsDialog) {
+        // 展示设置Dialog
+        SettingsDialog(
+            onDismiss = { onSettingsDismissed() },
+        )
+    }
+    Scaffold(
+        modifier = modifier.semantics {
+            testTagsAsResourceId = true
+        },
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            if (appState.shouldShowBottomBar) {
+                // 展示底部bar（底部bar和侧边bar只能二选一）。
+                NiaBottomBar(
+                    // 所有顶级目的地，TopLevelDestination枚举类集合。
+                    destinations = appState.topLevelDestinations,
+                    // 所有未读的目的地
+                    destinationsWithUnreadResources = unreadDestinations,
+                    // 切换item跳到目的地
+                    onNavigateToDestination = appState::navigateToTopLevelDestination,
+                    // 当前的目的地
+                    currentDestination = appState.currentDestination,
+                    modifier = Modifier.testTag("NiaBottomBar"),
+                )
+            }
+        },
+    ) { padding ->
+        // 行，为了兼容横屏UI。
+        Row(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(
+                        WindowInsetsSides.Horizontal,
+                    ),
+                ),
+        ) {
+            if (appState.shouldShowNavRail) {
+                // 展示侧边bar（底部bar和侧边bar只能二选一）。
+                // 参数同NiaBottomBar。
+                NiaNavRail(
+                    destinations = appState.topLevelDestinations,
+                    destinationsWithUnreadResources = unreadDestinations,
+                    onNavigateToDestination = appState::navigateToTopLevelDestination,
+                    currentDestination = appState.currentDestination,
+                    modifier = Modifier
+                        .testTag("NiaNavRail")
+                        .safeDrawingPadding(),
                 )
             }
 
-            // 所有未读的目的地
-            val unreadDestinations by appState.topLevelDestinationsWithUnreadResources.collectAsStateWithLifecycle()
-
-            Scaffold(
-                modifier = Modifier.semantics {
-                    testTagsAsResourceId = true
-                },
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                contentWindowInsets = WindowInsets(0, 0, 0, 0),
-                snackbarHost = { SnackbarHost(snackbarHostState) },
-                bottomBar = {
-                    if (appState.shouldShowBottomBar) {
-                        // 展示底部bar（底部bar和侧边bar只能二选一）。
-                        NiaBottomBar(
-                            // 所有顶级目的地，TopLevelDestination枚举类集合。
-                            destinations = appState.topLevelDestinations,
-                            // 所有未读的目的地
-                            destinationsWithUnreadResources = unreadDestinations,
-                            // 切换item跳到目的地
-                            onNavigateToDestination = appState::navigateToTopLevelDestination,
-                            // 当前的目的地
-                            currentDestination = appState.currentDestination,
-                            modifier = Modifier.testTag("NiaBottomBar"),
-                        )
-                    }
-                },
-            ) { padding ->
-                // 行，为了兼容横屏UI。
-                Row(
-                    Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .consumeWindowInsets(padding)
-                        .windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(
-                                WindowInsetsSides.Horizontal,
-                            ),
+            // 栏目内容（列），通用（包括横屏和竖屏）。
+            Column(Modifier.fillMaxSize()) {
+                // Show the top app bar on top level destinations.
+                // 在顶级目的地显示顶级应用程序栏。
+                val destination = appState.currentTopLevelDestination
+                val shouldShowTopAppBar = destination != null
+                if (destination != null) {
+                    // 顶部标题栏（搜索、标题、设置）
+                    NiaTopAppBar(
+                        // 标题
+                        titleRes = destination.titleTextId,
+                        // 搜索
+                        navigationIcon = NiaIcons.Search,
+                        navigationIconContentDescription = stringResource(
+                            id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
                         ),
-                ) {
-                    if (appState.shouldShowNavRail) {
-                        // 展示侧边bar（底部bar和侧边bar只能二选一）。
-                        // 参数同NiaBottomBar。
-                        NiaNavRail(
-                            destinations = appState.topLevelDestinations,
-                            destinationsWithUnreadResources = unreadDestinations,
-                            onNavigateToDestination = appState::navigateToTopLevelDestination,
-                            currentDestination = appState.currentDestination,
-                            modifier = Modifier
-                                .testTag("NiaNavRail")
-                                .safeDrawingPadding(),
-                        )
-                    }
-
-                    // 栏目内容（列），通用（包括横屏和竖屏）。
-                    Column(Modifier.fillMaxSize()) {
-                        // Show the top app bar on top level destinations.
-                        // 在顶级目的地显示顶级应用程序栏。
-                        val destination = appState.currentTopLevelDestination
-                        if (destination != null) {
-                            // 顶部标题栏（搜索、标题、设置）
-                            NiaTopAppBar(
-                                // 标题
-                                titleRes = destination.titleTextId,
-                                // 搜索
-                                navigationIcon = NiaIcons.Search,
-                                navigationIconContentDescription = stringResource(
-                                    id = settingsR.string.feature_settings_top_app_bar_navigation_icon_description,
-                                ),
-                                // 设置
-                                actionIcon = NiaIcons.Settings,
-                                actionIconContentDescription = stringResource(
-                                    id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
-                                ),
-                                // 颜色
-                                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                    containerColor = Color.Transparent,
-                                ),
-                                // 设置点击
-                                onActionClick = { showSettingsDialog = true },
-                                // 搜索点击
-                                onNavigationClick = { appState.navigateToSearch() },
-                            )
-                        }
-
-                        // 顶层导航图，默认ForYou（为你）屏。
-                        NiaNavHost(
-                            appState = appState,
-                            onShowSnackbar = { message, action ->
-                                // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
-                                // ActionPerformed：在超时之前，单击了Snackbar上的操作。
-                                snackbarHostState.showSnackbar(
-                                    message = message,
-                                    actionLabel = action,
-                                    duration = Short,
-                                ) == ActionPerformed
-                            },
-                        )
-                    }
-
-                    // TODO: We may want to add padding or spacer when the snackbar is shown so that
-                    //  content doesn't display behind it.
-                    // 我们可能想要在显示snackbar时添加填充或间隔，这样内容就不会显示在它后面。
+                        // 设置
+                        actionIcon = NiaIcons.Settings,
+                        actionIconContentDescription = stringResource(
+                            id = settingsR.string.feature_settings_top_app_bar_action_icon_description,
+                        ),
+                        // 颜色
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = Color.Transparent,
+                        ),
+                        // 设置点击
+                        onActionClick = { onTopAppBarActionClick() },
+                        // 搜索点击
+                        onNavigationClick = { appState.navigateToSearch() },
+                    )
                 }
+
+                // 顶层导航图，默认ForYou（为你）屏。
+                NiaNavHost(
+                    appState = appState,
+                    onShowSnackbar = { message, action ->
+                        // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
+                        // ActionPerformed：在超时之前，单击了Snackbar上的操作。
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            actionLabel = action,
+                            duration = Short,
+                        ) == ActionPerformed
+                    },
+                    modifier = if (shouldShowTopAppBar) {
+                        Modifier.consumeWindowInsets(
+                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
+                        )
+                    } else {
+                        Modifier
+                    },
+                )
             }
+
+            // TODO: We may want to add padding or spacer when the snackbar is shown so that
+            //  content doesn't display behind it.
+            // 我们可能想要在显示snackbar时添加填充或间隔，这样内容就不会显示在它后面。
         }
     }
 }

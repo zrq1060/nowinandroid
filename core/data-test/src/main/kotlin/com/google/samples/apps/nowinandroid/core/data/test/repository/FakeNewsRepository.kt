@@ -43,7 +43,7 @@ import javax.inject.Inject
  * 这允许我们使用假数据运行应用程序，而不需要互联网连接或工作后端。
  */
 // 新闻的仓库（NewsRepository）-假的实现。使用FakeNiaNetworkDataSource（底层是本地json文件）实现。
-internal class FakeNewsRepository @Inject constructor(
+class FakeNewsRepository @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val datasource: DemoNiaNetworkDataSource,
 ) : NewsRepository {
