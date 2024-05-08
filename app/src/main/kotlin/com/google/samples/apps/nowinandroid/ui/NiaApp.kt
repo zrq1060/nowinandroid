@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -227,19 +228,7 @@ internal fun NiaApp(
                         onNavigationClick = { appState.navigateToSearch() },
                     )
                 }
-
-                // 顶层导航图，默认ForYou（为你）屏。
-                NiaNavHost(
-                    appState = appState,
-                    onShowSnackbar = { message, action ->
-                        // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
-                        // ActionPerformed：在超时之前，单击了Snackbar上的操作。
-                        snackbarHostState.showSnackbar(
-                            message = message,
-                            actionLabel = action,
-                            duration = Short,
-                        ) == ActionPerformed
-                    },
+                Box(
                     modifier = if (shouldShowTopAppBar) {
                         Modifier.consumeWindowInsets(
                             WindowInsets.safeDrawing.only(WindowInsetsSides.Top),
@@ -247,7 +236,21 @@ internal fun NiaApp(
                     } else {
                         Modifier
                     },
-                )
+                ) {
+                    // 顶层导航图，默认ForYou（为你）屏。
+                    NiaNavHost(
+                        appState = appState,
+                        onShowSnackbar = { message, action ->
+                            // 展示Snackbar，并返回是否需要撤销操作，返回true代表需要撤销书签移除（内部会进行恢复）。
+                            // ActionPerformed：在超时之前，单击了Snackbar上的操作。
+                            snackbarHostState.showSnackbar(
+                                message = message,
+                                actionLabel = action,
+                                duration = Short,
+                            ) == ActionPerformed
+                        },
+                    )
+                }
             }
 
             // TODO: We may want to add padding or spacer when the snackbar is shown so that

@@ -43,14 +43,17 @@ internal class TopicArgs(val topicId: String) {
 
 // 导航控制-导航到Topic（主题）屏
 fun NavController.navigateToTopic(topicId: String, navOptions: NavOptionsBuilder.() -> Unit = {}) {
-    val encodedId = URLEncoder.encode(topicId, URL_CHARACTER_ENCODING)
-    val newRoute = "$TOPIC_ROUTE/$encodedId"
-    navigate(newRoute) {
+    navigate(createTopicRoute(topicId)) {
         navOptions()
     }
 }
 
 // 导航图构建-Topic（主题）屏（参数+UI）
+fun createTopicRoute(topicId: String): String {
+    val encodedId = URLEncoder.encode(topicId, URL_CHARACTER_ENCODING)
+    return "$TOPIC_ROUTE/$encodedId"
+}
+
 fun NavGraphBuilder.topicScreen(
     showBackButton: Boolean,
     onBackClick: () -> Unit,
