@@ -71,10 +71,8 @@ internal class SystemTrayNotifier @Inject constructor(
         val newsNotifications = truncatedNewsResources.map { newsResource ->
             // 创建新闻通知
             createNewsNotification {
-                // 图标
-                setSmallIcon(
-                    com.google.samples.apps.nowinandroid.core.common.R.drawable.core_common_ic_nia_notification,
-                )
+                    // 图标
+                    setSmallIcon(R.drawable.core_notifications_ic_nia_notification)
                     // 标题
                     .setContentTitle(newsResource.title)
                     // 内容
@@ -96,9 +94,7 @@ internal class SystemTrayNotifier @Inject constructor(
             )
             setContentTitle(title)
                 .setContentText(title)
-                .setSmallIcon(
-                    com.google.samples.apps.nowinandroid.core.common.R.drawable.core_common_ic_nia_notification,
-                )
+                .setSmallIcon(R.drawable.core_notifications_ic_nia_notification)
                 // Build summary info into InboxStyle template.
                 // 在InboxStyle模板中构建摘要信息。
                 // 设置此通知的样式，标题（XXX news updates）+子内容（一行标题）列表。

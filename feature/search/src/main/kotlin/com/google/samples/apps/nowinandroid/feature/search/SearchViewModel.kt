@@ -78,6 +78,7 @@ class SearchViewModel @Inject constructor(
                             getSearchContentsUseCase(query)
                                 // Not using .asResult() here, because it emits Loading state every
                                 // time the user types a letter in the search box, which flickers the screen.
+                                // 这里没有使用asResult()，因为每次用户在搜索框中键入字母时，它都会发出Loading状态，该状态会在屏幕上闪烁。
                                 .map<UserSearchResult, SearchResultUiState> { data ->
                                     SearchResultUiState.Success(
                                         topics = data.topics,
