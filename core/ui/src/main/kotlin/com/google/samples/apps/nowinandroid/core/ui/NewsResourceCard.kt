@@ -16,8 +16,15 @@
 
 package com.google.samples.apps.nowinandroid.core.ui
 
+import android.content.ClipData
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
+import android.view.View
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.draganddrop.dragAndDropSource
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -78,6 +86,7 @@ import java.util.Locale
  * [NewsResource]卡在以下屏幕上使用：For You（为您），Saved（已保存）
  */
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 // 新闻资源的卡片UI，包含了：网络图片加载、书签切换等。
 fun NewsResourceCardExpanded(
@@ -91,6 +100,19 @@ fun NewsResourceCardExpanded(
 ) {
     // 点击卡片的提示
     val clickActionLabel = stringResource(R.string.core_ui_card_tap_action)
+    val sharingLabel = stringResource(R.string.core_ui_feed_sharing)
+    val sharingContent = stringResource(
+        R.string.core_ui_feed_sharing_data,
+        userNewsResource.title,
+        userNewsResource.url,
+    )
+
+    val dragAndDropFlags = if (VERSION.SDK_INT >= VERSION_CODES.N) {
+        View.DRAG_FLAG_GLOBAL
+    } else {
+        0
+    }
+
     Card(
         // 点击
         onClick = onClick,
@@ -126,7 +148,23 @@ fun NewsResourceCardExpanded(
                         // 新闻标题
                         NewsResourceTitle(
                             userNewsResource.title,
-                            modifier = Modifier.fillMaxWidth((.8f)),
+                            modifier = Modifier
+                                .fillMaxWidth((.8f))
+                                .dragAndDropSource {
+                                    detectTapGestures(
+                                        onLongPress = {
+                                            startTransfer(
+                                                DragAndDropTransferData(
+                                                    ClipData.newPlainText(
+                                                        sharingLabel,
+                                                        sharingContent,
+                                                    ),
+                                                    flags = dragAndDropFlags,
+                                                ),
+                                            )
+                                        },
+                                    )
+                                },
                         )
                         // 间隔
                         Spacer(modifier = Modifier.weight(1f))
