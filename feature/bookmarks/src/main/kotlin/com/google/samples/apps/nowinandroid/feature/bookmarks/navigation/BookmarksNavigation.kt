@@ -21,20 +21,19 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.google.samples.apps.nowinandroid.feature.bookmarks.BookmarksRoute
+import kotlinx.serialization.Serializable
 
-// Bookmarks（书签、Saved）屏的Route
-const val BOOKMARKS_ROUTE = "bookmarks_route"
+@Serializable object BookmarksRoute
 
-// 导航控制-导航到Bookmarks（书签、Saved）屏
-fun NavController.navigateToBookmarks(navOptions: NavOptions) = navigate(BOOKMARKS_ROUTE, navOptions)
+fun NavController.navigateToBookmarks(navOptions: NavOptions) =
+    navigate(route = BookmarksRoute, navOptions)
 
 // 导航图构建-Bookmarks（书签、Saved）屏（参数+UI）
 fun NavGraphBuilder.bookmarksScreen(
     onTopicClick: (String) -> Unit,
     onShowSnackbar: suspend (String, String?) -> Boolean,
 ) {
-    composable(route = BOOKMARKS_ROUTE) {
-        // Bookmarks（书签、Saved）屏-Route（ViewModel+UI）
+    composable<BookmarksRoute> {
         BookmarksRoute(onTopicClick, onShowSnackbar)
     }
 }

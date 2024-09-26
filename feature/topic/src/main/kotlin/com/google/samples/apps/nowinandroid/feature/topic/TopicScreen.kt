@@ -71,8 +71,7 @@ import com.google.samples.apps.nowinandroid.core.ui.userNewsResourceCardItems
 import com.google.samples.apps.nowinandroid.feature.topic.R.string
 
 @Composable
-// Topic（主题）屏-路由，有ViewModel。
-internal fun TopicRoute(
+internal fun TopicScreen(
     showBackButton: Boolean,
     onBackClick: () -> Unit,
     onTopicClick: (String) -> Unit,

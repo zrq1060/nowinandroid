@@ -17,42 +17,17 @@
 package com.google.samples.apps.nowinandroid.feature.interests.navigation
 
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.google.samples.apps.nowinandroid.feature.interests.InterestsRoute
+import kotlinx.serialization.Serializable
 
-const val TOPIC_ID_ARG = "topicId"
-const val INTERESTS_ROUTE_BASE = "interests_route"
-// Interests（兴趣）屏的Route
-const val INTERESTS_ROUTE = "$INTERESTS_ROUTE_BASE?$TOPIC_ID_ARG={$TOPIC_ID_ARG}"
+@Serializable data class InterestsRoute(
+    // The ID of the topic which will be initially selected at this destination
+    val initialTopicId: String? = null,
+)
 
-// Interests（兴趣/兴趣详情）屏。
-fun NavController.navigateToInterests(topicId: String? = null, navOptions: NavOptions? = null) {
-    val route = if (topicId != null) {
-        "${INTERESTS_ROUTE_BASE}?${TOPIC_ID_ARG}=$topicId"
-    } else {
-        INTERESTS_ROUTE_BASE
-    }
-    navigate(route, navOptions)
-}
-
-fun NavGraphBuilder.interestsScreen(
-    onTopicClick: (String) -> Unit,
+fun NavController.navigateToInterests(
+    initialTopicId: String? = null,
+    navOptions: NavOptions? = null,
 ) {
-    composable(
-        route = INTERESTS_ROUTE,
-        arguments = listOf(
-            navArgument(TOPIC_ID_ARG) {
-                defaultValue = null
-                nullable = true
-                type = NavType.StringType
-            },
-        ),
-    ) {
-        // Interests（兴趣）屏-Route（ViewModel+UI）
-        InterestsRoute(onTopicClick = onTopicClick)
-    }
+    navigate(route = InterestsRoute(initialTopicId), navOptions)
 }

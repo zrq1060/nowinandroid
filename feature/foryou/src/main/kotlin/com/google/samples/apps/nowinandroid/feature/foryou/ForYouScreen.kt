@@ -82,7 +82,6 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.tracing.trace
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus.Denied
 import com.google.accompanist.permissions.rememberPermissionState
@@ -106,8 +105,7 @@ import com.google.samples.apps.nowinandroid.core.ui.launchCustomChromeTab
 import com.google.samples.apps.nowinandroid.core.ui.newsFeed
 
 @Composable
-// ForYou（为你）屏-路由，有ViewModel。
-internal fun ForYouRoute(
+internal fun ForYouScreen(
     onTopicClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ForYouViewModel = hiltViewModel(),
@@ -414,7 +412,7 @@ private fun TopicSelection(
     onboardingUiState: OnboardingUiState.Shown,
     onTopicCheckedChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-) = trace("TopicSelection") {
+) {
     val lazyGridState = rememberLazyGridState()
     val topicSelectionTestTag = "forYou:topicSelection"
 
@@ -493,8 +491,7 @@ private fun SingleTopicButton(
     imageUrl: String,
     isSelected: Boolean,
     onClick: (String, Boolean) -> Unit,
-) = trace("SingleTopicButton") {
-    // 布局
+) {
     Surface(
         // 装饰：宽312，高最小56。
         modifier = Modifier

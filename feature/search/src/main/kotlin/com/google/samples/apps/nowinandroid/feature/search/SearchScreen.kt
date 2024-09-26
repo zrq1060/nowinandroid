@@ -41,7 +41,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -66,6 +65,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -73,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -260,31 +261,34 @@ fun EmptySearchResultBody(
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = 24.dp),
         )
-        // 提示尝试搜索其它或者到Interests来浏览主题
-        val interests = stringResource(id = searchR.string.feature_search_interests)
         val tryAnotherSearchString = buildAnnotatedString {
             // 【Try another search or explorer 】
             append(stringResource(id = searchR.string.feature_search_try_another_search))
             // 加空格，上面的内容内带不生效。
             append(" ")
-            // 样式，加粗+下划线。
-            withStyle(
-                style = SpanStyle(
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Bold,
+            withLink(
+                LinkAnnotation.Clickable(
+                    tag = "",
+                    linkInteractionListener = {
+                        onInterestsClick()
+                    },
                 ),
             ) {
-                pushStringAnnotation(tag = interests, annotation = interests)
-                append(interests)
+                withStyle(
+                    style = SpanStyle(
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                ) {
+                    append(stringResource(id = searchR.string.feature_search_interests))
+                }
             }
-            // 加空格，下面的内容内带不生效。
+
             append(" ")
             // 【 to browse topics】
             append(stringResource(id = searchR.string.feature_search_to_browse_topics))
         }
-        // -可点击的文本
-        ClickableText(
-            // 组合AnnotatedString文本
+        Text(
             text = tryAnotherSearchString,
             // 样式，大body字体，居中。
             style = MaterialTheme.typography.bodyLarge.merge(
@@ -294,15 +298,8 @@ fun EmptySearchResultBody(
                 ),
             ),
             modifier = Modifier
-                .padding(start = 36.dp, end = 36.dp, bottom = 24.dp)
-                .clickable {},
-        ) { offset ->
-            // 当用户单击文本时执行的回调。这个回调用被点击的字符的偏移量来调用。
-            tryAnotherSearchString.getStringAnnotations(start = offset, end = offset)
-                .firstOrNull()
-                // 通知主题点击
-                ?.let { onInterestsClick() }
-        }
+                .padding(start = 36.dp, end = 36.dp, bottom = 24.dp),
+        )
     }
 }
 

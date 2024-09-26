@@ -60,6 +60,7 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.samples.apps.nowinandroid.R
 import com.google.samples.apps.nowinandroid.core.designsystem.component.NiaBackground
@@ -72,6 +73,7 @@ import com.google.samples.apps.nowinandroid.core.designsystem.theme.LocalGradien
 import com.google.samples.apps.nowinandroid.feature.settings.SettingsDialog
 import com.google.samples.apps.nowinandroid.navigation.NiaNavHost
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination
+import kotlin.reflect.KClass
 import com.google.samples.apps.nowinandroid.feature.settings.R as settingsR
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -161,7 +163,7 @@ internal fun NiaApp(
             appState.topLevelDestinations.forEach { destination ->
                 val hasUnread = unreadDestinations.contains(destination)
                 val selected = currentDestination
-                    .isTopLevelDestinationInHierarchy(destination)
+                    .isRouteInHierarchy(destination.route)
                 item(
                     selected = selected,
                     onClick = { appState.navigateToTopLevelDestination(destination) },
@@ -210,9 +212,10 @@ internal fun NiaApp(
                 // Show the top app bar on top level destinations.
                 // 在顶级目的地显示顶级应用程序栏。
                 val destination = appState.currentTopLevelDestination
-                val shouldShowTopAppBar = destination != null
+                var shouldShowTopAppBar = false
+
                 if (destination != null) {
-                    // 顶部标题栏（搜索、标题、设置）
+                    shouldShowTopAppBar = true
                     NiaTopAppBar(
                         // 标题
                         titleRes = destination.titleTextId,
@@ -293,8 +296,7 @@ private fun Modifier.notificationDot(): Modifier =
         }
     }
 
-// 是否顶层目的地在层次结构中
-private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
+private fun NavDestination?.isRouteInHierarchy(route: KClass<*>) =
     this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
+        it.hasRoute(route)
     } ?: false

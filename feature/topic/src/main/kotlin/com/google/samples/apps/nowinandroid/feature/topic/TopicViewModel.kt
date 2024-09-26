@@ -19,6 +19,7 @@ package com.google.samples.apps.nowinandroid.feature.topic
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.google.samples.apps.nowinandroid.core.data.repository.NewsResourceQuery
 import com.google.samples.apps.nowinandroid.core.data.repository.TopicsRepository
 import com.google.samples.apps.nowinandroid.core.data.repository.UserDataRepository
@@ -28,7 +29,7 @@ import com.google.samples.apps.nowinandroid.core.model.data.Topic
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import com.google.samples.apps.nowinandroid.core.result.Result
 import com.google.samples.apps.nowinandroid.core.result.asResult
-import com.google.samples.apps.nowinandroid.feature.topic.navigation.TopicArgs
+import com.google.samples.apps.nowinandroid.feature.topic.navigation.TopicRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,14 +49,11 @@ class TopicViewModel @Inject constructor(
     userNewsResourceRepository: UserNewsResourceRepository,
 ) : ViewModel() {
 
-    // 主题参数（topicId），必传，不传会崩溃。
-    private val topicArgs: TopicArgs = TopicArgs(savedStateHandle)
-
-    val topicId = topicArgs.topicId
+    val topicId = savedStateHandle.toRoute<TopicRoute>().id
 
     // Topic（主题）屏-UiState
     val topicUiState: StateFlow<TopicUiState> = topicUiState(
-        topicId = topicArgs.topicId,
+        topicId = topicId,
         userDataRepository = userDataRepository,
         topicsRepository = topicsRepository,
     )
@@ -67,7 +65,7 @@ class TopicViewModel @Inject constructor(
 
     // 新闻-UiState
     val newsUiState: StateFlow<NewsUiState> = newsUiState(
-        topicId = topicArgs.topicId,
+        topicId = topicId,
         userDataRepository = userDataRepository,
         userNewsResourceRepository = userNewsResourceRepository,
     )
@@ -80,7 +78,7 @@ class TopicViewModel @Inject constructor(
     // 关注主题切换
     fun followTopicToggle(followed: Boolean) {
         viewModelScope.launch {
-            userDataRepository.setTopicIdFollowed(topicArgs.topicId, followed)
+            userDataRepository.setTopicIdFollowed(topicId, followed)
         }
     }
 

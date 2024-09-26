@@ -27,8 +27,8 @@ import com.google.samples.apps.nowinandroid.core.data.repository.UserDataReposit
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.util.SyncManager
 import com.google.samples.apps.nowinandroid.core.domain.GetFollowableTopicsUseCase
+import com.google.samples.apps.nowinandroid.core.notifications.DEEP_LINK_NEWS_RESOURCE_ID_KEY
 import com.google.samples.apps.nowinandroid.core.ui.NewsFeedUiState
-import com.google.samples.apps.nowinandroid.feature.foryou.navigation.LINKED_NEWS_RESOURCE_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,7 +58,7 @@ class ForYouViewModel @Inject constructor(
 
     // 深度链接的UserNewsResource，在savedStateHandle中获取，为了恢复。
     val deepLinkedNewsResource = savedStateHandle.getStateFlow<String?>(
-        key = LINKED_NEWS_RESOURCE_ID,
+        key = DEEP_LINK_NEWS_RESOURCE_ID_KEY,
         null,
     )
         // map转并收集最后的
@@ -148,8 +148,7 @@ class ForYouViewModel @Inject constructor(
     // 深度链接打开了-回调
     fun onDeepLinkOpened(newsResourceId: String) {
         if (newsResourceId == deepLinkedNewsResource.value?.id) {
-            // 已经恢复了，就清空不再恢复了。
-            savedStateHandle[LINKED_NEWS_RESOURCE_ID] = null
+            savedStateHandle[DEEP_LINK_NEWS_RESOURCE_ID_KEY] = null
         }
         // 统计
         analyticsHelper.logNewsDeepLinkOpen(newsResourceId = newsResourceId)
@@ -176,7 +175,7 @@ private fun AnalyticsHelper.logNewsDeepLinkOpen(newsResourceId: String) =
             type = "news_deep_link_opened",
             extras = listOf(
                 Param(
-                    key = LINKED_NEWS_RESOURCE_ID,
+                    key = DEEP_LINK_NEWS_RESOURCE_ID_KEY,
                     value = newsResourceId,
                 ),
             ),

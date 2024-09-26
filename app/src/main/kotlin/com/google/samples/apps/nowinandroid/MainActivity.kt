@@ -23,7 +23,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -55,8 +54,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "MainActivity"
-
 @AndroidEntryPoint
 // 首页
 class MainActivity : ComponentActivity() {
@@ -85,7 +82,7 @@ class MainActivity : ComponentActivity() {
     // 用户新闻资源库
     lateinit var userNewsResourceRepository: UserNewsResourceRepository
 
-    val viewModel: MainActivityViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // splash初始化
@@ -167,7 +164,6 @@ class MainActivity : ComponentActivity() {
                     // 禁用动态样式
                     disableDynamicTheming = shouldDisableDynamicTheming(uiState),
                 ) {
-                    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
                     NiaApp(appState)
                 }
             }

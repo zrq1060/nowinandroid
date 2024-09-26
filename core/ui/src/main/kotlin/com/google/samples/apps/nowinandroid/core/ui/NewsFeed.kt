@@ -102,13 +102,7 @@ fun LazyStaggeredGridScope.newsFeed(
                     // 修饰：内边距水平为8，宽占满。
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
-                        // animateItemPlacement：
-                        // -这个修饰符使项目在网格中的位置具有动画效果。
-                        // -当您向后滚动时，交错网格可以移动已经可见的项目，以纠正先前项目大小估计中的累积错误。这个修饰符可以使这些动作具有动画效果。
-                        // -除此之外，当你通过LazyStaggeredGridScope.item / LazyStaggeredGridScope.items提供一个键时，这个修饰符将启用项重新排序动画。
-                        // -参数:
-                        // --animationSpec -一个有限的动画，将用于动画项目的放置。
-                        .animateItemPlacement(),
+                        .animateItem(),
                 )
             }
         }

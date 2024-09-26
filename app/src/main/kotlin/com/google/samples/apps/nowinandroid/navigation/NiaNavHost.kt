@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.bookmarksScreen
-import com.google.samples.apps.nowinandroid.feature.foryou.navigation.FOR_YOU_ROUTE
+import com.google.samples.apps.nowinandroid.feature.foryou.navigation.ForYouRoute
 import com.google.samples.apps.nowinandroid.feature.foryou.navigation.forYouScreen
 import com.google.samples.apps.nowinandroid.feature.interests.navigation.navigateToInterests
 import com.google.samples.apps.nowinandroid.feature.search.navigation.searchScreen
@@ -43,7 +43,6 @@ fun NiaNavHost(
     appState: NiaAppState,
     onShowSnackbar: suspend (String, String?) -> Boolean,
     modifier: Modifier = Modifier,
-    startDestination: String = FOR_YOU_ROUTE,
 ) {
     val navController = appState.navController
     // NavHost：
@@ -53,7 +52,7 @@ fun NiaNavHost(
     // 导航配置，定义了每个屏的交互，要跳转到哪个位置。
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = ForYouRoute,
         modifier = modifier,
     ) {
         // forYou（为你）屏，点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
