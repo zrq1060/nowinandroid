@@ -73,6 +73,7 @@ android {
 }
 
 dependencies {
+    // 依赖于各个feature
     implementation(projects.feature.interests)
     implementation(projects.feature.foryou)
     implementation(projects.feature.bookmarks)
@@ -80,6 +81,13 @@ dependencies {
     implementation(projects.feature.search)
     implementation(projects.feature.settings)
 
+    // common（ProfileVerifierLogger用）
+    // ui（设置全局的LocalTimeZone、使用TrackDisposableJank）
+    // designsystem（用于操作组件、图标、样式等）
+    // data（调用仓库获取数据、及获取data层util下的工具类 TODO 思考）
+    // model（获取UserData、model模块下的配置数据）
+    // analytics（用于打印日志，MainActivity类需要，设置全局的LocalAnalyticsHelper）
+    // work（初始化同步开始）
     implementation(projects.core.common)
     implementation(projects.core.ui)
     implementation(projects.core.designsystem)

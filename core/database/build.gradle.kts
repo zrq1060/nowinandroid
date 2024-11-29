@@ -26,6 +26,7 @@ android {
 }
 
 dependencies {
+    // model（用于转外部类）
     api(projects.core.model)
 
     implementation(libs.kotlinx.datetime)

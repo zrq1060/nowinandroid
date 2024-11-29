@@ -31,11 +31,13 @@ android {
 }
 
 dependencies {
+    // database、network，这2个是必须的（因为要操作这2个），还得需要datastore（用于获取存储的数据）、common（用于指定线程，操作数据库时使用）
     api(projects.core.common)
     api(projects.core.database)
     api(projects.core.datastore)
     api(projects.core.network)
 
+    // analytics（用于打印日志）、notifications（用于获取到新闻消息后，进行通知）
     implementation(projects.core.analytics)
     implementation(projects.core.notifications)
 

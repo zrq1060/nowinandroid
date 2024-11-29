@@ -34,9 +34,11 @@ android {
 
 dependencies {
     api(libs.androidx.dataStore)
+    // datastoreProto（用于操作存储）、model（用于转化数据）
     api(projects.core.datastoreProto)
     api(projects.core.model)
 
+    // common（创建datastore时，需要指定线程）
     implementation(projects.core.common)
 
     testImplementation(projects.core.datastoreTest)

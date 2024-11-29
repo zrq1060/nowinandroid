@@ -25,6 +25,7 @@ android {
 
 dependencies {
     api(libs.androidx.metrics)
+    // analytics（用于打印日志）、designsystem（用于操作组件、图标、样式等）、model（用于组合UI的数据）
     api(projects.core.analytics)
     api(projects.core.designsystem)
     api(projects.core.model)

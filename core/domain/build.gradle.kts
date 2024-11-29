@@ -24,6 +24,7 @@ android {
 }
 
 dependencies {
+    // data（用于获取仓库）、model（用于对数据进行操作）
     api(projects.core.data)
     api(projects.core.model)
 

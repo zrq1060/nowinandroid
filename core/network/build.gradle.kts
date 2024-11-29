@@ -40,6 +40,8 @@ secrets {
 
 dependencies {
     api(libs.kotlinx.datetime)
+
+    // common（用于获取操作DataSource-demo的执行本地json的线程）、model（只是用作文档用，可去掉）
     api(projects.core.common)
     api(projects.core.model)
 

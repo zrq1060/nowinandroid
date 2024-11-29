@@ -23,8 +23,10 @@ android {
 }
 
 dependencies {
+    // model（传递进来的列表model数据，用于操作展示通知）
     api(projects.core.model)
 
+    // common（无用，可删掉）
     implementation(projects.core.common)
 
     compileOnly(platform(libs.androidx.compose.bom))

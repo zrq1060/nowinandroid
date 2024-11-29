@@ -32,9 +32,10 @@ dependencies {
     implementation(libs.androidx.tracing.ktx)
     implementation(libs.androidx.work.ktx)
     implementation(libs.hilt.ext.work)
+    // analytics（用于打印日志）、data（用于操作仓库的同步逻辑）、notifications（无用，可删掉）
     implementation(projects.core.analytics)
     implementation(projects.core.data)
-    implementation(projects.core.notifications)
+//    implementation(projects.core.notifications)
 
     prodImplementation(libs.firebase.cloud.messaging)
     prodImplementation(platform(libs.firebase.bom))
