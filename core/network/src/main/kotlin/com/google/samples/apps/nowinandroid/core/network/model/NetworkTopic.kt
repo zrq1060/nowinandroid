@@ -34,3 +34,13 @@ data class NetworkTopic(
     val imageUrl: String = "",
     val followed: Boolean = false,
 )
+
+fun NetworkTopic.asExternalModel(): Topic =
+    Topic(
+        id = id,
+        name = name,
+        shortDescription = shortDescription,
+        longDescription = longDescription,
+        url = url,
+        imageUrl = imageUrl,
+    )

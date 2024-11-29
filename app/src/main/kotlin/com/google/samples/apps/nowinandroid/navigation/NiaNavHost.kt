@@ -20,10 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.google.samples.apps.nowinandroid.feature.bookmarks.navigation.bookmarksScreen
-import com.google.samples.apps.nowinandroid.feature.foryou.navigation.ForYouRoute
-import com.google.samples.apps.nowinandroid.feature.foryou.navigation.forYouScreen
+import com.google.samples.apps.nowinandroid.feature.foryou.navigation.ForYouBaseRoute
+import com.google.samples.apps.nowinandroid.feature.foryou.navigation.forYouSection
 import com.google.samples.apps.nowinandroid.feature.interests.navigation.navigateToInterests
 import com.google.samples.apps.nowinandroid.feature.search.navigation.searchScreen
+import com.google.samples.apps.nowinandroid.feature.topic.navigation.navigateToTopic
+import com.google.samples.apps.nowinandroid.feature.topic.navigation.topicScreen
 import com.google.samples.apps.nowinandroid.navigation.TopLevelDestination.INTERESTS
 import com.google.samples.apps.nowinandroid.ui.NiaAppState
 import com.google.samples.apps.nowinandroid.ui.interests2pane.interestsListDetailScreen
@@ -52,11 +54,18 @@ fun NiaNavHost(
     // 导航配置，定义了每个屏的交互，要跳转到哪个位置。
     NavHost(
         navController = navController,
-        startDestination = ForYouRoute,
+        startDestination = ForYouBaseRoute,
         modifier = modifier,
     ) {
-        // forYou（为你）屏，点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
-        forYouScreen(onTopicClick = navController::navigateToInterests)
+        forYouSection(
+            onTopicClick = navController::navigateToTopic,
+        ) {
+            topicScreen(
+                showBackButton = true,
+                onBackClick = navController::popBackStack,
+                onTopicClick = navController::navigateToTopic,
+            )
+        }
         // bookmarks（书签、Saved）屏，点击主题（新闻摘要-底部水平标签）跳到Interests（兴趣/兴趣详情）屏。
         bookmarksScreen(
             onTopicClick = navController::navigateToInterests,

@@ -122,6 +122,7 @@ dependencies {
     kspTest(libs.hilt.compiler)
 
     testImplementation(projects.core.dataTest)
+    testImplementation(projects.core.datastoreTest)
     testImplementation(libs.hilt.android.testing)
     testImplementation(projects.sync.syncTest)
     testImplementation(libs.kotlin.test)

@@ -36,20 +36,3 @@ data class NetworkNewsResource(
     val type: String,
     val topics: List<String> = listOf(),
 )
-
-/**
- * Network representation of [NewsResource] when fetched from /newsresources/{id}
- * 从/newsresources/{id}获取[NewsResource]时的网络表示
- */
-@Serializable
-// NewsResourceExpanded新闻资源展开的-网络层表示
-data class NetworkNewsResourceExpanded(
-    val id: String,
-    val title: String,
-    val content: String,
-    val url: String,
-    val headerImageUrl: String,
-    val publishDate: Instant,
-    val type: String,
-    val topics: List<NetworkTopic> = listOf(),
-)

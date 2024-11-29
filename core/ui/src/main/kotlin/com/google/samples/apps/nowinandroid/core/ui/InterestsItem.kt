@@ -60,7 +60,7 @@ fun InterestsItem(
     ListItem(
         // 居前内容，居左，如icon。
         leadingContent = {
-            InterestsIcon(topicImageUrl, iconModifier.size(64.dp))
+            InterestsIcon(topicImageUrl, iconModifier.size(48.dp))
         },
         // 标题内容，居中。
         headlineContent = {

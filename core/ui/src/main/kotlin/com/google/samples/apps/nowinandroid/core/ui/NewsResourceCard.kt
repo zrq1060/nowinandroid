@@ -56,6 +56,7 @@ import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -124,10 +125,11 @@ fun NewsResourceCardExpanded(
         // Pass null for action to only override the label and not the actual action.
         // 使用可访问性服务的自定义标签向用户传达按钮的操作。
         // 传递null表示操作只覆盖标签而不覆盖实际操作。
-        // semantics：语义
-        modifier = modifier.semantics {
-            onClick(label = clickActionLabel, action = null)
-        },
+        modifier = modifier
+            .semantics {
+                onClick(label = clickActionLabel, action = null)
+            }
+            .testTag("newsResourceCard:${userNewsResource.id}"),
     ) {
         Column {
             // 标题图片
@@ -393,9 +395,11 @@ fun NewsResourceTopics(
                     // 文本内容
                     Text(
                         text = followableTopic.topic.name.uppercase(Locale.getDefault()),
-                        modifier = Modifier.semantics {
-                            this.contentDescription = contentDescription
-                        },
+                        modifier = Modifier
+                            .semantics {
+                                this.contentDescription = contentDescription
+                            }
+                            .testTag("topicTag:${followableTopic.topic.id}"),
                     )
                 },
             )
