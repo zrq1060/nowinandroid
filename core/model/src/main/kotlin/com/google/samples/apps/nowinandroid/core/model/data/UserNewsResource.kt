@@ -23,7 +23,6 @@ import kotlinx.datetime.Instant
  * news resource's topics and whether they have saved (bookmarked) this news resource.
  * 带有附加用户信息的NewsResource，例如用户是否在关注新闻资源的主题，以及他们是否保存(书签)了此新闻资源。
  */
-@ConsistentCopyVisibility
 data class UserNewsResource internal constructor(
     val id: String,
     val title: String,

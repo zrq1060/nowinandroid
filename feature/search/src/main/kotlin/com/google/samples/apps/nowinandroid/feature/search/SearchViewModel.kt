@@ -70,8 +70,8 @@ class SearchViewModel @Inject constructor(
                 } else {
                     // 大于1个，搜索准备好了，开始进行搜索查询。
                     searchQuery.flatMapLatest { query ->
-                        if (query.length < SEARCH_QUERY_MIN_LENGTH) {
-                            // 查询的内容长度小于2，则认为没搜索，返回SearchResultUiState.EmptyQuery。
+                        // 查询的内容长度小于2，则认为没搜索，返回SearchResultUiState.EmptyQuery。
+                        if (query.trim().length < SEARCH_QUERY_MIN_LENGTH) {
                             flowOf(SearchResultUiState.EmptyQuery)
                         } else {
                             // 查询的内容长度大于等于2，则认为是搜索，获取搜索内容。
@@ -128,6 +128,7 @@ class SearchViewModel @Inject constructor(
     // -搜索成功-Topics（主题）列表-Item点击
     // -搜索成功-Updates（新闻摘要）列表-Item点击
     fun onSearchTriggered(query: String) {
+        if (query.isBlank()) return
         viewModelScope.launch {
             // 保存搜索结果
             recentSearchRepository.insertOrReplaceRecentSearch(searchQuery = query)

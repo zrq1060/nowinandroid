@@ -21,7 +21,6 @@ import android.net.Uri
 import androidx.annotation.ColorInt
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
@@ -46,7 +45,6 @@ import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
  * Depending on the [feedState], this might emit no items.
  * LazyListScope的扩展，定义了一个带有新闻资源的提要。根据feedState的不同，这可能不会产生任何项。
  */
-@OptIn(ExperimentalFoundationApi::class)
 // 新闻摘要-item列表，NewsFeedUiState.Success展示新闻资源列表，处理了点击item打开网页；NewsFeedUiState.Loading什么都不展示。用于交错网格使用。
 fun LazyStaggeredGridScope.newsFeed(
     feedState: NewsFeedUiState,

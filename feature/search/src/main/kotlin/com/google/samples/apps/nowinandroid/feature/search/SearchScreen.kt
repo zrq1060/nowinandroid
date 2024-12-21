@@ -603,6 +603,7 @@ private fun SearchTextField(
             .focusRequester(focusRequester)
             .onKeyEvent {
                 if (it.key == Key.Enter) {
+                    if (searchQuery.isBlank()) return@onKeyEvent false
                     onSearchExplicitlyTriggered()
                     true
                 } else {
@@ -621,6 +622,7 @@ private fun SearchTextField(
         // 键盘点击，点击搜索按钮，通知明确触发搜索。
         keyboardActions = KeyboardActions(
             onSearch = {
+                if (searchQuery.isBlank()) return@KeyboardActions
                 onSearchExplicitlyTriggered()
             },
         ),

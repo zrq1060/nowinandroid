@@ -21,11 +21,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.google.samples.apps.nowinandroid.feature.search.SearchRoute
+import kotlinx.serialization.Serializable
 
-const val SEARCH_ROUTE = "search_route"
+@Serializable data object SearchRoute
 
-// 导航控制-导航到Search（搜索）屏
-fun NavController.navigateToSearch(navOptions: NavOptions? = null) = navigate(SEARCH_ROUTE, navOptions)
+fun NavController.navigateToSearch(navOptions: NavOptions? = null) =
+    navigate(SearchRoute, navOptions)
 
 // 导航图构建-Search（搜索）屏（参数+UI）
 fun NavGraphBuilder.searchScreen(
@@ -36,7 +37,7 @@ fun NavGraphBuilder.searchScreen(
     // TODO: Handle back stack for each top-level destination. At the moment each top-level
     // destination may have own search screen's back stack.
     // 处理每个顶级目的地的回栈。目前，每个顶级目的地可能都有自己的搜索屏幕的返回堆栈。
-    composable(route = SEARCH_ROUTE) {
+    composable<SearchRoute> {
         // Search（搜索）屏-Route（ViewModel+UI）
         SearchRoute(
             onBackClick = onBackClick,

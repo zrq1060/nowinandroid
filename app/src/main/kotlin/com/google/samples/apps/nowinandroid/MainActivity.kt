@@ -22,10 +22,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,21 +32,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
+import androidx.tracing.trace
 import com.google.samples.apps.nowinandroid.MainActivityUiState.Loading
-import com.google.samples.apps.nowinandroid.MainActivityUiState.Success
 import com.google.samples.apps.nowinandroid.core.analytics.AnalyticsHelper
 import com.google.samples.apps.nowinandroid.core.analytics.LocalAnalyticsHelper
 import com.google.samples.apps.nowinandroid.core.data.repository.UserNewsResourceRepository
 import com.google.samples.apps.nowinandroid.core.data.util.NetworkMonitor
 import com.google.samples.apps.nowinandroid.core.data.util.TimeZoneMonitor
 import com.google.samples.apps.nowinandroid.core.designsystem.theme.NiaTheme
-import com.google.samples.apps.nowinandroid.core.model.data.DarkThemeConfig
-import com.google.samples.apps.nowinandroid.core.model.data.ThemeBrand
 import com.google.samples.apps.nowinandroid.core.ui.LocalTimeZone
 import com.google.samples.apps.nowinandroid.ui.NiaApp
 import com.google.samples.apps.nowinandroid.ui.rememberNiaAppState
+import com.google.samples.apps.nowinandroid.util.isSystemInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -89,16 +87,52 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        // 当前页面的UI状态，默认为加载中。
-        var uiState: MainActivityUiState by mutableStateOf(Loading)
+        // We keep this as a mutable state, so that we can track changes inside the composition.
+        // This allows us to react to dark/light mode changes.
+        var themeSettings by mutableStateOf(
+            ThemeSettings(
+                darkTheme = resources.configuration.isSystemInDarkTheme,
+                androidTheme = Loading.shouldUseAndroidTheme,
+                disableDynamicTheming = Loading.shouldDisableDynamicTheming,
+            ),
+        )
 
         // Update the uiState
         // 更新uiState
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState
-                    .onEach { uiState = it }
-                    .collect()
+                combine(
+                    isSystemInDarkTheme(),
+                    viewModel.uiState,
+                ) { systemDark, uiState ->
+                    ThemeSettings(
+                        darkTheme = uiState.shouldUseDarkTheme(systemDark),
+                        androidTheme = uiState.shouldUseAndroidTheme,
+                        disableDynamicTheming = uiState.shouldDisableDynamicTheming,
+                    )
+                }
+                    .onEach { themeSettings = it }
+                    .map { it.darkTheme }
+                    .distinctUntilChanged()
+                    .collect { darkTheme ->
+                        trace("niaEdgeToEdge") {
+                            // Turn off the decor fitting system windows, which allows us to handle insets,
+                            // including IME animations, and go edge-to-edge.
+                            // This is the same parameters as the default enableEdgeToEdge call, but we manually
+                            // resolve whether or not to show dark theme using uiState, since it can be different
+                            // than the configuration's dark theme value based on the user preference.
+                            enableEdgeToEdge(
+                                statusBarStyle = SystemBarStyle.auto(
+                                    lightScrim = android.graphics.Color.TRANSPARENT,
+                                    darkScrim = android.graphics.Color.TRANSPARENT,
+                                ) { darkTheme },
+                                navigationBarStyle = SystemBarStyle.auto(
+                                    lightScrim = lightScrim,
+                                    darkScrim = darkScrim,
+                                ) { darkTheme },
+                            )
+                        }
+                    }
             }
         }
 
@@ -106,44 +140,9 @@ class MainActivity : ComponentActivity() {
         // evaluated each time the app needs to be redrawn so it should be fast to avoid blocking
         // the UI.
         // 在UI状态加载完成之前，保持启动画面在屏幕上。每次需要重新绘制应用程序时，都会评估此条件，因此它应该很快，以避免阻塞UI。
-        splashScreen.setKeepOnScreenCondition {
-            when (uiState) {
-                Loading -> true
-                is Success -> false
-            }
-        }
-
-        // Turn off the decor fitting system windows, which allows us to handle insets,
-        // including IME animations, and go edge-to-edge
-        // This also sets up the initial system bar style based on the platform theme
-        // 关闭装饰配件系统窗口，它允许我们处理插页，包括IME动画，并边缘到边缘
-        // 根据平台主题设置初始的系统栏样式
-        enableEdgeToEdge()
+        splashScreen.setKeepOnScreenCondition { viewModel.uiState.value.shouldKeepSplashScreen() }
 
         setContent {
-            // 是否是暗主题
-            val darkTheme = shouldUseDarkTheme(uiState)
-
-            // Update the edge to edge configuration to match the theme
-            // This is the same parameters as the default enableEdgeToEdge call, but we manually
-            // resolve whether or not to show dark theme using uiState, since it can be different
-            // than the configuration's dark theme value based on the user preference.
-            // 更新边缘到边缘的配置以匹配主题
-            // 这是与默认的enableEdgeToEdge调用相同的参数，但是我们使用uiState手动解决是否显示暗主题，因为它可以与基于用户首选项的配置的暗主题值不同。
-            DisposableEffect(darkTheme) {
-                enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.auto(
-                        android.graphics.Color.TRANSPARENT,
-                        android.graphics.Color.TRANSPARENT,
-                    ) { darkTheme },
-                    navigationBarStyle = SystemBarStyle.auto(
-                        lightScrim,
-                        darkScrim,
-                    ) { darkTheme },
-                )
-                onDispose {}
-            }
-
             val appState = rememberNiaAppState(
                 networkMonitor = networkMonitor,
                 userNewsResourceRepository = userNewsResourceRepository,
@@ -158,11 +157,11 @@ class MainActivity : ComponentActivity() {
             ) {
                 NiaTheme(
                     // 暗模式
-                    darkTheme = darkTheme,
+                    darkTheme = themeSettings.darkTheme,
                     // android样式
-                    androidTheme = shouldUseAndroidTheme(uiState),
+                    androidTheme = themeSettings.androidTheme,
                     // 禁用动态样式
-                    disableDynamicTheming = shouldDisableDynamicTheming(uiState),
+                    disableDynamicTheming = themeSettings.disableDynamicTheming,
                 ) {
                     NiaApp(appState)
                 }
@@ -182,53 +181,6 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Returns `true` if the Android theme should be used, as a function of the [uiState].
- * 如果要使用Android主题，返回' true '，作为[uiState]的一个函数。
- */
-@Composable
-// 是否用android样式，加载中状态不用，成功状态用用户自己设置的。
-private fun shouldUseAndroidTheme(
-    uiState: MainActivityUiState,
-): Boolean = when (uiState) {
-    Loading -> false
-    is Success -> when (uiState.userData.themeBrand) {
-        ThemeBrand.DEFAULT -> false
-        ThemeBrand.ANDROID -> true
-    }
-}
-
-/**
- * Returns `true` if the dynamic color is disabled, as a function of the [uiState].
- * 如果动态颜色被禁用，返回true，作为[uiState]的一个函数。
- */
-@Composable
-// 是否禁用动态模式，加载中状态不禁用，成功状态用用户自己设置的。
-private fun shouldDisableDynamicTheming(
-    uiState: MainActivityUiState,
-): Boolean = when (uiState) {
-    Loading -> false
-    is Success -> !uiState.userData.useDynamicColor
-}
-
-/**
- * Returns `true` if dark theme should be used, as a function of the [uiState] and the
- * current system context.
- * 如果应该使用dark主题，作为[uiState]和当前系统上下文的函数，则返回true。
- */
-@Composable
-// 是否用暗模式，加载中状态用系统动态默认的，成功状态用用户自己设置的。
-private fun shouldUseDarkTheme(
-    uiState: MainActivityUiState,
-): Boolean = when (uiState) {
-    Loading -> isSystemInDarkTheme()
-    is Success -> when (uiState.userData.darkThemeConfig) {
-        DarkThemeConfig.FOLLOW_SYSTEM -> isSystemInDarkTheme()
-        DarkThemeConfig.LIGHT -> false
-        DarkThemeConfig.DARK -> true
-    }
-}
-
-/**
  * The default light scrim, as defined by androidx and the platform:
  * 由androidx和平台定义的默认 light scrim：
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=35-38;drc=27e7d52e8604a080133e8b842db10c89b4482598
@@ -241,3 +193,13 @@ private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
  * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:activity/activity/src/main/java/androidx/activity/EdgeToEdge.kt;l=40-44;drc=27e7d52e8604a080133e8b842db10c89b4482598
  */
 private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
+/**
+ * Class for the system theme settings.
+ * This wrapping class allows us to combine all the changes and prevent unnecessary recompositions.
+ */
+data class ThemeSettings(
+    val darkTheme: Boolean,
+    val androidTheme: Boolean,
+    val disableDynamicTheming: Boolean,
+)
