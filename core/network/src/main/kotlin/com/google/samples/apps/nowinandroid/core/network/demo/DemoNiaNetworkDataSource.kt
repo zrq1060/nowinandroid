@@ -46,11 +46,9 @@ class DemoNiaNetworkDataSource @Inject constructor(
     private val assets: DemoAssetManager = JvmUnitTestDemoAssetManager,
 ) : NiaNetworkDataSource {
 
-    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getTopics(ids: List<String>?): List<NetworkTopic> =
         getDataFromJsonFile(TOPICS_ASSET)
 
-    @OptIn(ExperimentalSerializationApi::class)
     override suspend fun getNewsResources(ids: List<String>?): List<NetworkNewsResource> =
         getDataFromJsonFile(NEWS_ASSET)
 
