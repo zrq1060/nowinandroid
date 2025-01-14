@@ -317,9 +317,16 @@ Using the above modularization strategy, the Now in Android app has the followin
 
 Our modularization approach was defined taking into account the “Now in Android” project roadmap, upcoming work and new features. Additionally, our aim this time around was to find the right balance between overmodularizing a relatively small app and using this opportunity to showcase a modularization pattern fit for a much larger codebase, closer to real world apps in production environments.
 
+我们的模块化方法是根据“现在在Android”的项目路线图、即将开展的工作和新功能来定义的。此外，我们这次的目标是在过度模块化相对较小的应用程序和利用这个机会展示适合更大代码库的模块化模式之间找到适当的平衡，更接近生产环境中的实际应用程序。
+
 This approach was discussed with the Android community, and evolved taking their feedback into account. With modularization however, there isn’t one right answer that makes all others wrong. Ultimately, there are many ways and approaches to modularizing an app and rarely does one approach fit all purposes, codebases and team preferences. This is why planning beforehand and taking into account all goals, problems you’re trying to solve, future work and predicting potential stepping stones are all crucial steps for defining the best fit structure under your own, unique circumstances. Developers can benefit from a brainstorming session to draw out a graph of modules and dependencies to visualize and plan this better.
+
+我们与Android社区讨论了这种方法，并根据他们的反馈进行了改进。然而，对于模块化，没有一个正确的答案会使其他所有的答案都是错误的。最终，有许多方法和方法可以模块化应用程序，很少有一种方法适合所有目的、代码库和团队偏好。这就是为什么提前计划，考虑到所有的目标，你想要解决的问题，未来的工作和预测潜在的垫脚石都是在你自己独特的情况下定义最适合的结构的关键步骤。开发人员可以从头脑风暴会议中受益，以绘制模块和依赖关系的图表，从而更好地可视化和规划。
 
 Our approach is such an example - we don’t expect it to be an unchangeable structure applicable to all cases, and in fact, it could evolve and change in the future. It’s a general guideline we found to be the best fit for our project and offer it as one example you can further modify, expand and build on top of. One way of doing this would be to increase the granularity of the codebase even more. Granularity is the extent to which your codebase is composed of modules. If your data layer is small, it’s fine to keep it in a single module. But once the number of repositories and data sources starts to grow, it might be worth considering splitting them into separate modules.
 
+我们的方法就是这样一个例子——我们并不期望它是一个适用于所有情况的不可改变的结构，事实上，它可能在未来发展和改变。我们发现这是一个最适合我们项目的通用指导原则，并将其作为一个示例，您可以在此基础上进一步修改、扩展和构建。这样做的一种方法是进一步增加代码库的粒度。粒度是指代码库由模块组成的程度。如果您的数据层很小，可以将其保存在单个模块中。但是，一旦存储库和数据源的数量开始增长，就应该考虑将它们拆分为单独的模块。
+
 We are also always open to your constructive feedback - learning from the community and exchanging ideas is one of the key elements to improving our guidance.
 
+我们也总是对你的建设性反馈持开放态度——从社区中学习和交换意见是改进我们指导的关键因素之一。
