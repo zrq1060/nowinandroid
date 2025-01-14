@@ -272,6 +272,7 @@ _示例：关注主题_
 Simply call `UserDataRepository.toggleFollowedTopicId` with the ID of the topic the user wishes to follow and `followed=true` to indicate that the topic should be followed (use `false` to unfollow a topic).
 
 只需使用用户希望关注的主题的ID调用`UserDataRepository.toggleFollowedTopicId`，并使用`followed=true`表示应该关注该主题（使用`false`表示取消关注某个主题）。
+
 ### Data sources
 ### 数据源
 

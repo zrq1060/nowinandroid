@@ -152,19 +152,13 @@ fun NewsResourceCardExpanded(
                             userNewsResource.title,
                             modifier = Modifier
                                 .fillMaxWidth((.8f))
-                                .dragAndDropSource {
-                                    detectTapGestures(
-                                        onLongPress = {
-                                            startTransfer(
-                                                DragAndDropTransferData(
-                                                    ClipData.newPlainText(
-                                                        sharingLabel,
-                                                        sharingContent,
-                                                    ),
-                                                    flags = dragAndDropFlags,
-                                                ),
-                                            )
-                                        },
+                                .dragAndDropSource { _ ->
+                                    DragAndDropTransferData(
+                                        ClipData.newPlainText(
+                                            sharingLabel,
+                                            sharingContent,
+                                        ),
+                                        flags = dragAndDropFlags,
                                     )
                                 },
                         )

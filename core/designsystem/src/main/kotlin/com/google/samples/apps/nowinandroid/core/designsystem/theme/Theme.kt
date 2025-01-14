@@ -248,6 +248,7 @@ fun NiaTheme(
             // 获取动态主题，高版本调用，SDK-31（android-12）及以上支持。。
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         // -禁用动态主题，或者不支持（低版本）动态主题，使用默认主题。
         else -> if (darkTheme) DarkDefaultColorScheme else LightDefaultColorScheme
     }

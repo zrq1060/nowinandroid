@@ -16,9 +16,7 @@
 
 package com.google.samples.apps.nowinandroid.core.model.data
 
-/** An entity that holds the search result
- * 保存搜索结果的实体
- **/
+/** An entity that holds the search result */
 // 搜索结果
 data class SearchResult(
     val topics: List<Topic> = emptyList(),

@@ -155,6 +155,7 @@ internal fun NiaApp(
             onDismiss = { onSettingsDismissed() },
         )
     }
+
     NiaNavigationSuiteScaffold(
         navigationSuiteItems = {
             appState.topLevelDestinations.forEach { destination ->
@@ -236,6 +237,7 @@ internal fun NiaApp(
                         onNavigationClick = { appState.navigateToSearch() },
                     )
                 }
+
                 Box(
                     // Workaround for https://issuetracker.google.com/338478720
                     modifier = Modifier.consumeWindowInsets(

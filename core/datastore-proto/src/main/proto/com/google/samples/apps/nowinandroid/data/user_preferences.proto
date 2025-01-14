@@ -15,6 +15,7 @@
  */
 
 syntax = "proto3";
+
 // 导入其它依赖proto
 import "com/google/samples/apps/nowinandroid/data/dark_theme_config.proto";
 import "com/google/samples/apps/nowinandroid/data/theme_brand.proto";

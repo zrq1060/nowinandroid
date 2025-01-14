@@ -32,6 +32,7 @@ import javax.inject.Inject
  * In this case you will see the correct state logged without any further action necessary.
  * To verify baseline profile installation locally, you need to manually trigger baseline
  * profile installation.
+ *
  * 当通过Google Play交付时，基线配置文件在安装过程中编译。在这种情况下，您将看到正确的状态记录，而不需要任何进一步的操作。
  * 要在本地验证基线配置文件安装，您需要手动触发基线配置文件安装。
  * For immediate compilation, call:
@@ -50,6 +51,7 @@ import javax.inject.Inject
  * To see quick turnaround of the ProfileVerifier, we recommend using `speed-profile`.
  * If you don't do either of these steps, you might only see the profile status reported as
  * "enqueued for compilation" when running the sample locally.
+ *
  * 要查看ProfileVerifier的快速周转，我们建议使用speed-profile。如果您不执行这两个步骤中的任何一个，那么在本地运行示例时，您可能只会看到概要文件状态报告为“排队等待编译”。
  * @see androidx.profileinstaller.ProfileVerifier.CompilationStatus.ResultCode
  */

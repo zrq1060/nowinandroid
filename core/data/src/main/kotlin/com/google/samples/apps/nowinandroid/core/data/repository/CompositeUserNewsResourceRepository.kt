@@ -57,7 +57,7 @@ class CompositeUserNewsResourceRepository @Inject constructor(
      */
     // 获取全部用户关注的UserNewsResource。
     override fun observeAllForFollowedTopics(): Flow<List<UserNewsResource>> =
-        `userDataRepository`.userData.map { it.followedTopics }.distinctUntilChanged()
+        userDataRepository.userData.map { it.followedTopics }.distinctUntilChanged()
             .flatMapLatest { followedTopics ->
                 // 已关注的-主题Id列表
                 when {

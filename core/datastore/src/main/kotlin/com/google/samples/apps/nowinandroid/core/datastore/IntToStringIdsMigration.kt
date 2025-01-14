@@ -37,7 +37,7 @@ internal object IntToStringIdsMigration : DataMigration<UserPreferences> {
             )
             deprecatedIntFollowedTopicIds.clear()
 
-            // Migrate author ids?
+            // Migrate author ids
             // 迁移作者ids
             deprecatedFollowedAuthorIds.clear()
             deprecatedFollowedAuthorIds.addAll(

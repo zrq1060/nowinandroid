@@ -116,6 +116,7 @@ fun launchCustomChromeTab(context: Context, uri: Uri, @ColorInt toolbarColor: In
     val customTabsIntent = CustomTabsIntent.Builder()
         .setDefaultColorSchemeParams(customTabBarColor)
         .build()
+
     // 打开网页
     customTabsIntent.launchUrl(context, uri)
 }

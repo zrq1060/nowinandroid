@@ -25,6 +25,7 @@ import java.util.Properties
  * 这个类有助于加载Android /assets文件，特别是在运行JVM单元测试时。它必须保留在根包中，以便使用相对路径的更简单的[Class.getResource]。
  * @see <a href="https://developer.android.com/reference/tools/gradle-api/7.3/com/android/build/api/dsl/UnitTestOptions">UnitTestOptions</a>
  */
+
 internal object JvmUnitTestDemoAssetManager : DemoAssetManager {
     private val config =
         requireNotNull(javaClass.getResource("com/android/tools/test_config.properties")) {

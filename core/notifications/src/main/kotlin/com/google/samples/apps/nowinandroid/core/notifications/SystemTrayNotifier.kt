@@ -74,9 +74,7 @@ internal class SystemTrayNotifier @Inject constructor(
         val newsNotifications = truncatedNewsResources.map { newsResource ->
             // 创建新闻通知
             createNewsNotification {
-                    // 图标
-                    setSmallIcon(R.drawable.core_notifications_ic_nia_notification)
-                    // 标题
+                setSmallIcon(R.drawable.core_notifications_ic_nia_notification)
                     .setContentTitle(newsResource.title)
                     // 内容
                     .setContentText(newsResource.content)
