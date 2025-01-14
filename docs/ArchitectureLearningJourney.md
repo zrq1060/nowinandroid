@@ -345,7 +345,7 @@ See the `OfflineFirstNewsRepository.syncWith` for an example of data synchroniza
 
 ## Domain layer
 ## 领域层
-The [domain layer](https://developer.android.com/topic/architecture/domain-layer) contains use cases. These are classes which have a single invocable method (`operator fun invoke`) containing business logic.
+The [domain layer](https://developer.android.com/topic/architecture/domain-layer) contains use cases. These are classes which have a single invocable method (`operator fun invoke`) containing business logic. 
 
 领域层包含用例。这些类只有一个包含业务逻辑的可调用方法（`operator fun invoke`）。
 

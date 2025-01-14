@@ -41,6 +41,7 @@ class UserNewsResourcePreviewParameterProvider : PreviewParameterProvider<List<U
 
     override val values: Sequence<List<UserNewsResource>> = sequenceOf(newsResources)
 }
+
 // 提供预览时需要的数据
 object PreviewParameterData {
 
