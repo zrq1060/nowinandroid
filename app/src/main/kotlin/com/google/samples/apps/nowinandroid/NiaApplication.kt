@@ -69,7 +69,7 @@ class NiaApplication : Application(), ImageLoaderFactory {
     private fun setStrictModePolicy() {
         if (isDebuggable()) {
             StrictMode.setThreadPolicy(
-                Builder().detectAll().penaltyLog().penaltyDeath().build(),
+                Builder().detectAll().penaltyLog().build(),
             )
         }
     }

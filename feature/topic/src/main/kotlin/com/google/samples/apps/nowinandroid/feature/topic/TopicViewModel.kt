@@ -16,10 +16,8 @@
 
 package com.google.samples.apps.nowinandroid.feature.topic
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.google.samples.apps.nowinandroid.core.data.repository.NewsResourceQuery
 import com.google.samples.apps.nowinandroid.core.data.repository.TopicsRepository
 import com.google.samples.apps.nowinandroid.core.data.repository.UserDataRepository
@@ -29,7 +27,9 @@ import com.google.samples.apps.nowinandroid.core.model.data.Topic
 import com.google.samples.apps.nowinandroid.core.model.data.UserNewsResource
 import com.google.samples.apps.nowinandroid.core.result.Result
 import com.google.samples.apps.nowinandroid.core.result.asResult
-import com.google.samples.apps.nowinandroid.feature.topic.navigation.TopicRoute
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,20 +38,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-// Topic（主题）屏-ViewModel
-class TopicViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = TopicViewModel.Factory::class)
+class TopicViewModel @AssistedInject constructor(
     private val userDataRepository: UserDataRepository,
     topicsRepository: TopicsRepository,
     userNewsResourceRepository: UserNewsResourceRepository,
+    @Assisted val topicId: String,
 ) : ViewModel() {
-
-    val topicId = savedStateHandle.toRoute<TopicRoute>().id
-
-    // Topic（主题）屏-UiState
     val topicUiState: StateFlow<TopicUiState> = topicUiState(
         topicId = topicId,
         userDataRepository = userDataRepository,
@@ -95,6 +89,13 @@ class TopicViewModel @Inject constructor(
             userDataRepository.setNewsResourceViewed(newsResourceId, viewed)
         }
     }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            topicId: String,
+        ): TopicViewModel
+    }
 }
 
 // TopicUiState生成
@@ -131,7 +132,6 @@ private fun topicUiState(
                 is Result.Success -> {
                     // Pair对，分解。
                     val (followedTopics, topic) = followedTopicToTopicResult.data
-                    // 转成功，FollowableTopic。
                     TopicUiState.Success(
                         followableTopic = FollowableTopic(
                             topic = topic,
@@ -155,8 +155,6 @@ private fun newsUiState(
     userDataRepository: UserDataRepository,
 ): Flow<NewsUiState> {
     // Observe news
-    // 观察新闻
-    // -获取到此topicId主题Id的所有新闻资源列表的Flow。
     val newsStream: Flow<List<UserNewsResource>> = userNewsResourceRepository.observeAll(
         NewsResourceQuery(filterTopicIds = setOf(element = topicId)),
     )

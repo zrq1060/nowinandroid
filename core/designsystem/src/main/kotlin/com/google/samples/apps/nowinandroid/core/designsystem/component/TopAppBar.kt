@@ -51,9 +51,7 @@ fun NiaTopAppBar(
     // 操作图标内容描述
     actionIconContentDescription: String,
     modifier: Modifier = Modifier,
-    // 颜色
-    colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-    // 导航图标点击监听
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     onNavigationClick: () -> Unit = {},
     // 操作图标点击监听
     onActionClick: () -> Unit = {},
